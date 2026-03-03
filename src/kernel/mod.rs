@@ -37,7 +37,8 @@ pub struct ZeptoKernel {
     /// Immutable configuration snapshot.
     pub config: Arc<Config>,
     /// Assembled provider chain (base → fallback → retry → quota).
-    pub provider: Arc<dyn LLMProvider>,
+    /// `None` when no runtime provider is configured (plugin-only setups).
+    pub provider: Option<Arc<dyn LLMProvider>>,
     /// All registered tools (built-in + MCP + plugins + composed).
     pub tools: ToolRegistry,
     /// Safety layer for injection/leak/policy checks. `None` when disabled.
@@ -69,18 +70,18 @@ impl ZeptoKernel {
         let filter = ToolFilter::from_config(&config, template, hand);
 
         // 2. Build provider chain
-        let provider: Arc<dyn LLMProvider> =
+        let provider: Option<Arc<dyn LLMProvider>> =
             if let Some((chain, names)) = provider::build_provider_chain(&config).await {
                 let chain_label = names.join(" -> ");
                 info!(
                     provider_chain = %chain_label,
                     "Assembled provider chain"
                 );
-                chain
+                Some(chain)
             } else {
-                // No runtime provider — use a placeholder; plugin providers may be
-                // set later by `create_agent_with_template()`.
-                Arc::new(crate::providers::ClaudeProvider::new(""))
+                // No runtime provider — plugin providers may be set later by
+                // `create_agent_with_template()`.
+                None
             };
 
         // 3. Safety layer
@@ -182,8 +183,8 @@ impl ZeptoKernel {
     }
 
     /// Get the provider for OpenAI-compat API pass-through.
-    pub fn provider(&self) -> Arc<dyn LLMProvider> {
-        Arc::clone(&self.provider)
+    pub fn provider(&self) -> Option<Arc<dyn LLMProvider>> {
+        self.provider.as_ref().map(Arc::clone)
     }
 
     /// Graceful shutdown: close MCP stdio clients.
@@ -208,7 +209,7 @@ mod tests {
 
         ZeptoKernel {
             config: Arc::new(config.clone()),
-            provider: Arc::new(crate::providers::ClaudeProvider::new("test-key")),
+            provider: Some(Arc::new(crate::providers::ClaudeProvider::new("test-key"))),
             tools,
             safety: if config.safety.enabled {
                 Some(SafetyLayer::new(config.safety.clone()))
@@ -242,8 +243,8 @@ mod tests {
     #[test]
     fn test_kernel_provider_returns_arc_clone() {
         let kernel = test_kernel();
-        let p1 = kernel.provider();
-        let p2 = kernel.provider();
+        let p1 = kernel.provider().expect("test kernel has provider");
+        let p2 = kernel.provider().expect("test kernel has provider");
         // Both are valid Arc clones (can't compare trait objects, but both usable)
         assert_eq!(p1.name(), p2.name());
     }
@@ -254,7 +255,7 @@ mod tests {
         config.safety.enabled = false;
         let kernel = ZeptoKernel {
             config: Arc::new(config.clone()),
-            provider: Arc::new(crate::providers::ClaudeProvider::new("test-key")),
+            provider: Some(Arc::new(crate::providers::ClaudeProvider::new("test-key"))),
             tools: ToolRegistry::new(),
             safety: None,
             metrics: Arc::new(MetricsCollector::new()),
@@ -271,7 +272,7 @@ mod tests {
         config.safety.enabled = true;
         let kernel = ZeptoKernel {
             config: Arc::new(config.clone()),
-            provider: Arc::new(crate::providers::ClaudeProvider::new("test-key")),
+            provider: Some(Arc::new(crate::providers::ClaudeProvider::new("test-key"))),
             tools: ToolRegistry::new(),
             safety: Some(SafetyLayer::new(config.safety.clone())),
             metrics: Arc::new(MetricsCollector::new()),

@@ -327,7 +327,9 @@ pub(crate) async fn create_agent_with_template(
     info!("Registered {} tools", agent.tool_count().await);
 
     // Set provider from kernel (already assembled: base → fallback → retry → quota)
-    agent.set_provider_arc(kernel.provider).await;
+    if let Some(provider) = kernel.provider {
+        agent.set_provider_arc(provider).await;
+    }
 
     // Build provider registry for runtime model switching (/model command).
     // Each configured provider is registered individually (without retry/fallback wrappers)

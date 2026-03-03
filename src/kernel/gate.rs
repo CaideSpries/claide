@@ -47,7 +47,13 @@ pub async fn execute_tool(
     }
 
     // Step 2: Execute
-    let output = registry.execute_with_context(name, input, ctx).await?;
+    let output = match registry.execute_with_context(name, input, ctx).await {
+        Ok(output) => output,
+        Err(e) => {
+            metrics.record_tool_call(name, start.elapsed(), false);
+            return Err(e);
+        }
+    };
 
     // Step 3: Safety check on output
     if let Some(safety_layer) = safety {
