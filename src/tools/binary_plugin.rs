@@ -411,11 +411,21 @@ mod tests {
 
     #[cfg(unix)]
     fn create_test_script(content: &str) -> (tempfile::TempDir, PathBuf) {
+        use std::io::Write;
         use std::os::unix::fs::PermissionsExt;
 
         let dir = tempfile::TempDir::new().unwrap();
         let script_path = dir.path().join("plugin.sh");
-        std::fs::write(&script_path, format!("#!/bin/sh\n{}", content)).unwrap();
+        // Explicitly open, write, sync, and close the file before setting
+        // permissions to avoid "Text file busy" (ETXTBSY) on Linux CI where
+        // the kernel may still consider the file open for writing when exec is
+        // called.
+        {
+            let mut f = std::fs::File::create(&script_path).unwrap();
+            f.write_all(format!("#!/bin/sh\n{}", content).as_bytes())
+                .unwrap();
+            f.sync_all().unwrap();
+        }
         std::fs::set_permissions(&script_path, std::fs::Permissions::from_mode(0o755)).unwrap();
         (dir, script_path)
     }
