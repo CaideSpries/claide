@@ -18,7 +18,7 @@ use tokio::time::timeout;
 
 use crate::error::{Result, ZeptoError};
 
-use super::web::{is_blocked_host, resolve_and_check_host};
+use super::web::{is_blocked_host, resolve_and_check_host, validate_redirect_target};
 use super::{Tool, ToolCategory, ToolContext, ToolOutput};
 
 /// Default page-load timeout in seconds.
@@ -38,6 +38,10 @@ const MIN_DIMENSION: u32 = 100;
 
 /// Maximum viewport dimension.
 const MAX_DIMENSION: u32 = 3840;
+
+/// Maximum allowed redirects before rejecting the navigation.
+/// Matches the limit used by `web_fetch` and `http_request` tools.
+const MAX_SCREENSHOT_REDIRECTS: usize = 5;
 
 /// Web screenshot tool that captures full-page screenshots of URLs.
 ///
@@ -195,6 +199,41 @@ impl Tool for WebScreenshotTool {
                 let _ = event;
             }
         });
+
+        // ---- Preflight: follow redirects with SSRF validation ----
+        // Before launching the browser, do an HTTP HEAD request to discover
+        // the final destination and validate each redirect hop. This catches
+        // SSRF via redirect chains before the browser fetches any content.
+        let preflight_client = reqwest::Client::builder()
+            .redirect(reqwest::redirect::Policy::custom(|attempt| {
+                if attempt.previous().len() >= MAX_SCREENSHOT_REDIRECTS {
+                    return attempt.error(format!(
+                        "Too many redirects (max {})",
+                        MAX_SCREENSHOT_REDIRECTS
+                    ));
+                }
+                match super::web::validate_redirect_target_for_policy(attempt.url()) {
+                    Ok(()) => attempt.follow(),
+                    Err(e) => attempt.error(e),
+                }
+            }))
+            .timeout(Duration::from_secs(10))
+            .build()
+            .map_err(|e| ZeptoError::Tool(format!("Failed to build preflight client: {}", e)))?;
+
+        let preflight_resp = preflight_client.head(url_str).send().await.map_err(|e| {
+            if e.is_redirect() {
+                ZeptoError::SecurityViolation(format!(
+                    "Screenshot blocked: redirect chain failed SSRF validation: {}",
+                    e
+                ))
+            } else {
+                ZeptoError::Tool(format!("Screenshot preflight request failed: {}", e))
+            }
+        })?;
+
+        // Validate the final destination after all redirects.
+        validate_redirect_target(preflight_resp.url()).await?;
 
         // ---- Navigate and screenshot (with timeout) ----
         let screenshot_result = timeout(Duration::from_secs(timeout_secs), async {
@@ -485,6 +524,132 @@ mod tests {
             .execute(json!({"url": "http://internal.local/data"}), &ctx)
             .await;
         assert!(result.is_err());
+    }
+
+    // ---- Redirect SSRF validation tests ----
+    // These test the redirect-target validation functions from web.rs
+    // that the screenshot tool now uses for preflight checks.
+
+    #[test]
+    fn test_redirect_to_localhost_blocked() {
+        let url = Url::parse("http://localhost/admin").unwrap();
+        let result = super::super::web::validate_redirect_target_basic(&url);
+        assert!(result.is_err());
+        let err = result.unwrap_err().to_string();
+        assert!(
+            err.contains("blocked") || err.contains("Blocked"),
+            "Expected redirect block error, got: {}",
+            err
+        );
+    }
+
+    #[test]
+    fn test_redirect_to_private_ip_blocked() {
+        let url = Url::parse("http://192.168.1.1/admin").unwrap();
+        let result = super::super::web::validate_redirect_target_basic(&url);
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_redirect_to_loopback_blocked() {
+        let url = Url::parse("http://127.0.0.1:9090/").unwrap();
+        let result = super::super::web::validate_redirect_target_basic(&url);
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_redirect_to_metadata_endpoint_blocked() {
+        let url = Url::parse("http://169.254.169.254/latest/meta-data/").unwrap();
+        let result = super::super::web::validate_redirect_target_basic(&url);
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_redirect_to_ten_network_blocked() {
+        let url = Url::parse("http://10.0.0.1/internal").unwrap();
+        let result = super::super::web::validate_redirect_target_basic(&url);
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_redirect_to_172_private_blocked() {
+        let url = Url::parse("http://172.16.0.1/").unwrap();
+        let result = super::super::web::validate_redirect_target_basic(&url);
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_redirect_to_dot_local_blocked() {
+        let url = Url::parse("http://internal.local/data").unwrap();
+        let result = super::super::web::validate_redirect_target_basic(&url);
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_redirect_ftp_scheme_blocked() {
+        let url = Url::parse("ftp://evil.com/file").unwrap();
+        let result = super::super::web::validate_redirect_target_basic(&url);
+        assert!(result.is_err());
+        let err = result.unwrap_err().to_string();
+        assert!(
+            err.contains("scheme"),
+            "Expected scheme error, got: {}",
+            err
+        );
+    }
+
+    #[test]
+    fn test_redirect_file_scheme_blocked() {
+        let url = Url::parse("file:///etc/passwd").unwrap();
+        let result = super::super::web::validate_redirect_target_basic(&url);
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_redirect_gopher_scheme_blocked() {
+        let url = Url::parse("gopher://evil.com/").unwrap();
+        let result = super::super::web::validate_redirect_target_basic(&url);
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_redirect_to_public_https_allowed() {
+        let url = Url::parse("https://example.com/page").unwrap();
+        let result = super::super::web::validate_redirect_target_basic(&url);
+        assert!(result.is_ok());
+    }
+
+    #[test]
+    fn test_redirect_to_public_http_allowed() {
+        let url = Url::parse("http://example.com/page").unwrap();
+        let result = super::super::web::validate_redirect_target_basic(&url);
+        assert!(result.is_ok());
+    }
+
+    #[test]
+    fn test_redirect_to_ipv6_loopback_blocked() {
+        let url = Url::parse("http://[::1]/admin").unwrap();
+        let result = super::super::web::validate_redirect_target_basic(&url);
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_redirect_to_ipv6_link_local_blocked() {
+        let url = Url::parse("http://[fe80::1]/").unwrap();
+        let result = super::super::web::validate_redirect_target_basic(&url);
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_redirect_to_zero_ip_blocked() {
+        let url = Url::parse("http://0.0.0.0/").unwrap();
+        let result = super::super::web::validate_redirect_target_basic(&url);
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_max_screenshot_redirects_constant() {
+        assert_eq!(MAX_SCREENSHOT_REDIRECTS, 5);
     }
 
     // ---- Parameter parsing / defaults tests ----
