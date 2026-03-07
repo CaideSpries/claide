@@ -1004,11 +1004,38 @@ impl AgentLoop {
         while response.has_tool_calls() && iteration < max_iterations {
             iteration += 1;
             debug!("Tool iteration {} of {}", iteration, max_iterations);
+
+            // Enforce tool call limit BEFORE recording metrics or adding
+            // the assistant message to the session. This ensures max_tool_calls=0
+            // never writes an orphaned tool-call message, and partial truncation
+            // keeps the transcript consistent (only executed calls are recorded).
+            if self.tool_call_limit.is_exceeded() {
+                info!(
+                    count = self.tool_call_limit.count(),
+                    limit = ?self.tool_call_limit.limit(),
+                    "Tool call limit already reached, skipping tool execution"
+                );
+                break;
+            }
+            // Truncate batch to remaining budget so we never overshoot.
+            if let Some(remaining) = self.tool_call_limit.remaining() {
+                let allowed = remaining as usize;
+                if allowed < response.tool_calls.len() {
+                    info!(
+                        batch_size = response.tool_calls.len(),
+                        remaining = allowed,
+                        "Truncating tool call batch to remaining budget"
+                    );
+                    response.tool_calls.truncate(allowed);
+                }
+            }
+
+            // Record metrics AFTER truncation so counts reflect actual execution.
             if let Some(metrics) = usage_metrics.as_ref() {
                 metrics.record_tool_calls(response.tool_calls.len() as u64);
             }
 
-            // Add assistant message with tool calls
+            // Add assistant message with tool calls (post-truncation).
             let mut assistant_msg = Message::assistant(&response.content);
             assistant_msg.tool_calls = Some(
                 response
@@ -1037,29 +1064,6 @@ impl AgentLoop {
                 crate::hooks::HookEngine::new(self.config.hooks.clone())
                     .with_bus(Arc::clone(&self.bus)),
             );
-
-            // Enforce tool call limit BEFORE building/executing the batch.
-            // If already exceeded (e.g. max_tool_calls=0), skip entirely.
-            if self.tool_call_limit.is_exceeded() {
-                info!(
-                    count = self.tool_call_limit.count(),
-                    limit = ?self.tool_call_limit.limit(),
-                    "Tool call limit already reached, skipping tool execution"
-                );
-                break;
-            }
-            // Truncate batch to remaining budget so we never overshoot.
-            if let Some(remaining) = self.tool_call_limit.remaining() {
-                let allowed = remaining as usize;
-                if allowed < response.tool_calls.len() {
-                    info!(
-                        batch_size = response.tool_calls.len(),
-                        remaining = allowed,
-                        "Truncating tool call batch to remaining budget"
-                    );
-                    response.tool_calls.truncate(allowed);
-                }
-            }
 
             // Compute dynamic tool result budget based on remaining context space
             let current_tokens = ContextMonitor::estimate_tokens(&session.messages);
@@ -1555,6 +1559,30 @@ impl AgentLoop {
         while response.has_tool_calls() && iteration < max_iterations {
             iteration += 1;
 
+            // Enforce tool call limit BEFORE adding assistant message to session
+            // (streaming path). Same rationale as non-streaming: avoids orphaned
+            // tool-call messages and keeps transcript consistent.
+            if self.tool_call_limit.is_exceeded() {
+                info!(
+                    count = self.tool_call_limit.count(),
+                    limit = ?self.tool_call_limit.limit(),
+                    "Tool call limit already reached, skipping streaming tool execution"
+                );
+                break;
+            }
+            if let Some(remaining) = self.tool_call_limit.remaining() {
+                let allowed = remaining as usize;
+                if allowed < response.tool_calls.len() {
+                    info!(
+                        batch_size = response.tool_calls.len(),
+                        remaining = allowed,
+                        "Truncating streaming tool call batch to remaining budget"
+                    );
+                    response.tool_calls.truncate(allowed);
+                }
+            }
+
+            // Add assistant message with tool calls (post-truncation).
             let mut assistant_msg = Message::assistant(&response.content);
             assistant_msg.tool_calls = Some(
                 response
@@ -1578,27 +1606,6 @@ impl AgentLoop {
             let approval_gate = Arc::clone(&self.approval_gate);
             let safety_layer_stream = self.safety_layer.clone();
             let taint_engine_stream = self.taint.clone();
-
-            // Enforce tool call limit BEFORE building/executing the batch (streaming path).
-            if self.tool_call_limit.is_exceeded() {
-                info!(
-                    count = self.tool_call_limit.count(),
-                    limit = ?self.tool_call_limit.limit(),
-                    "Tool call limit already reached, skipping streaming tool execution"
-                );
-                break;
-            }
-            if let Some(remaining) = self.tool_call_limit.remaining() {
-                let allowed = remaining as usize;
-                if allowed < response.tool_calls.len() {
-                    info!(
-                        batch_size = response.tool_calls.len(),
-                        remaining = allowed,
-                        "Truncating streaming tool call batch to remaining budget"
-                    );
-                    response.tool_calls.truncate(allowed);
-                }
-            }
 
             // Compute dynamic tool result budget based on remaining context space
             let current_tokens_stream = ContextMonitor::estimate_tokens(&session.messages);
