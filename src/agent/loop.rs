@@ -1038,6 +1038,29 @@ impl AgentLoop {
                     .with_bus(Arc::clone(&self.bus)),
             );
 
+            // Enforce tool call limit BEFORE building/executing the batch.
+            // If already exceeded (e.g. max_tool_calls=0), skip entirely.
+            if self.tool_call_limit.is_exceeded() {
+                info!(
+                    count = self.tool_call_limit.count(),
+                    limit = ?self.tool_call_limit.limit(),
+                    "Tool call limit already reached, skipping tool execution"
+                );
+                break;
+            }
+            // Truncate batch to remaining budget so we never overshoot.
+            if let Some(remaining) = self.tool_call_limit.remaining() {
+                let allowed = remaining as usize;
+                if allowed < response.tool_calls.len() {
+                    info!(
+                        batch_size = response.tool_calls.len(),
+                        remaining = allowed,
+                        "Truncating tool call batch to remaining budget"
+                    );
+                    response.tool_calls.truncate(allowed);
+                }
+            }
+
             // Compute dynamic tool result budget based on remaining context space
             let current_tokens = ContextMonitor::estimate_tokens(&session.messages);
             let context_limit = self.config.compaction.context_limit;
@@ -1555,6 +1578,27 @@ impl AgentLoop {
             let approval_gate = Arc::clone(&self.approval_gate);
             let safety_layer_stream = self.safety_layer.clone();
             let taint_engine_stream = self.taint.clone();
+
+            // Enforce tool call limit BEFORE building/executing the batch (streaming path).
+            if self.tool_call_limit.is_exceeded() {
+                info!(
+                    count = self.tool_call_limit.count(),
+                    limit = ?self.tool_call_limit.limit(),
+                    "Tool call limit already reached, skipping streaming tool execution"
+                );
+                break;
+            }
+            if let Some(remaining) = self.tool_call_limit.remaining() {
+                let allowed = remaining as usize;
+                if allowed < response.tool_calls.len() {
+                    info!(
+                        batch_size = response.tool_calls.len(),
+                        remaining = allowed,
+                        "Truncating streaming tool call batch to remaining budget"
+                    );
+                    response.tool_calls.truncate(allowed);
+                }
+            }
 
             // Compute dynamic tool result budget based on remaining context space
             let current_tokens_stream = ContextMonitor::estimate_tokens(&session.messages);

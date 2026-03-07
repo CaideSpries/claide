@@ -56,6 +56,15 @@ impl ToolCallLimitTracker {
     pub fn limit(&self) -> Option<u32> {
         self.limit
     }
+
+    /// Returns the number of tool calls still allowed before the limit is hit.
+    ///
+    /// Returns `None` if the tracker has no limit (unlimited).
+    /// Returns `Some(0)` if the limit is already reached or exceeded.
+    pub fn remaining(&self) -> Option<u32> {
+        self.limit
+            .map(|max| max.saturating_sub(self.count.load(Ordering::Relaxed)))
+    }
 }
 
 #[cfg(test)]
@@ -104,5 +113,31 @@ mod tests {
         assert_eq!(tracker.limit(), Some(10));
         tracker.increment(5);
         assert_eq!(tracker.count(), 5);
+    }
+
+    #[test]
+    fn test_remaining_unlimited() {
+        let tracker = ToolCallLimitTracker::new(None);
+        assert_eq!(tracker.remaining(), None);
+        tracker.increment(100);
+        assert_eq!(tracker.remaining(), None);
+    }
+
+    #[test]
+    fn test_remaining_with_limit() {
+        let tracker = ToolCallLimitTracker::new(Some(10));
+        assert_eq!(tracker.remaining(), Some(10));
+        tracker.increment(3);
+        assert_eq!(tracker.remaining(), Some(7));
+        tracker.increment(7);
+        assert_eq!(tracker.remaining(), Some(0));
+        tracker.increment(5);
+        assert_eq!(tracker.remaining(), Some(0));
+    }
+
+    #[test]
+    fn test_remaining_zero_limit() {
+        let tracker = ToolCallLimitTracker::new(Some(0));
+        assert_eq!(tracker.remaining(), Some(0));
     }
 }
