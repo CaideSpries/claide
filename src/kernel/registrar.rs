@@ -17,10 +17,27 @@ use crate::hands::HandManifest;
 use crate::memory::longterm::LongTermMemory;
 use crate::memory::traits::MemorySearcher;
 use crate::runtime::ContainerRuntime;
+use crate::security::{ShellAllowlistMode, ShellSecurityConfig};
 use crate::tools::mcp::client::McpClient;
 use crate::tools::mcp::discovery::{discover_mcp_servers, DiscoveredMcpServer, McpTransportType};
 use crate::tools::mcp::wrapper::McpToolWrapper;
 use crate::tools::ToolRegistry;
+
+/// Build a [`ShellSecurityConfig`] from a template's `shell_allowlist` field.
+///
+/// When the template defines a non-`None` allowlist, the resulting config uses
+/// [`ShellAllowlistMode::Strict`] so only the listed binaries may execute.
+/// When `shell_allowlist` is `None` (or no template is provided), the default
+/// blocklist-only config is returned.
+pub fn build_shell_config(template: Option<&AgentTemplate>) -> ShellSecurityConfig {
+    match template.and_then(|t| t.shell_allowlist.as_ref()) {
+        None => ShellSecurityConfig::new(),
+        Some(list) => ShellSecurityConfig::new().with_allowlist(
+            list.iter().map(|s| s.as_str()).collect(),
+            ShellAllowlistMode::Strict,
+        ),
+    }
+}
 
 /// Encapsulates the 5 filtering dimensions that gate tool registration.
 ///
@@ -172,6 +189,8 @@ pub struct ToolDeps {
     pub memory_searcher: Arc<dyn MemorySearcher>,
     /// Shared long-term memory (None when memory is disabled).
     pub shared_ltm: Option<Arc<tokio::sync::Mutex<LongTermMemory>>>,
+    /// Active template (used to derive shell security config).
+    pub template: Option<AgentTemplate>,
 }
 
 /// Register all kernel-owned tools into `registry`, gated by `filter`.
@@ -189,6 +208,9 @@ pub async fn register_all_tools(
 ) -> anyhow::Result<Vec<Arc<McpClient>>> {
     use crate::tools::filesystem::{EditFileTool, ListDirTool, ReadFileTool, WriteFileTool};
     use crate::tools::shell::ShellTool;
+
+    // Build shared shell security config from template (once, then cloned per tool)
+    let shell_config = build_shell_config(deps.template.as_ref());
 
     // --- Group 1: Simple tools (no dependencies beyond config) ---
     if filter.is_enabled("echo") {
@@ -209,7 +231,10 @@ pub async fn register_all_tools(
 
     // --- Group 2: Runtime-dependent ---
     if filter.is_enabled("shell") {
-        registry.register(Box::new(ShellTool::with_runtime(Arc::clone(&deps.runtime))));
+        registry.register(Box::new(ShellTool::with_security_and_runtime(
+            shell_config.clone(),
+            Arc::clone(&deps.runtime),
+        )));
     }
 
     // --- Group 3: Git ---
@@ -571,10 +596,13 @@ pub async fn register_all_tools(
                                 }
                             }
                         } else {
-                            registry.register(Box::new(crate::tools::plugin::PluginTool::new(
-                                tool_def.clone(),
-                                plugin.name(),
-                            )));
+                            registry.register(Box::new(
+                                crate::tools::plugin::PluginTool::with_security(
+                                    tool_def.clone(),
+                                    plugin.name(),
+                                    shell_config.clone(),
+                                ),
+                            ));
                             info!(
                                 plugin = %plugin.name(),
                                 tool = %tool_def.name,
@@ -614,7 +642,8 @@ pub async fn register_all_tools(
             warn!(tool = %tool_def.name, "Skipping custom tool with empty command");
             continue;
         }
-        let tool = crate::tools::custom::CustomTool::new(tool_def.clone());
+        let tool =
+            crate::tools::custom::CustomTool::with_security(tool_def.clone(), shell_config.clone());
         registry.register(Box::new(tool));
         info!(tool = %tool_def.name, "Registered custom CLI tool");
     }
@@ -1077,6 +1106,86 @@ mod tests {
         // Unknown profile → profile stays None → all tools allowed
         assert!(filter.is_enabled("echo"));
         assert!(filter.is_enabled("shell"));
+    }
+
+    // -----------------------------------------------------------
+    // Regression: exact parity with inline closure
+    // -----------------------------------------------------------
+
+    // -----------------------------------------------------------
+    // build_shell_config — template shell_allowlist tests
+    // -----------------------------------------------------------
+
+    #[test]
+    fn test_build_shell_config_with_allowlist() {
+        let tpl = AgentTemplate {
+            name: "restricted".to_string(),
+            description: "test".to_string(),
+            system_prompt: "test".to_string(),
+            model: None,
+            max_tokens: None,
+            temperature: None,
+            allowed_tools: None,
+            blocked_tools: None,
+            max_tool_iterations: None,
+            shell_allowlist: Some(vec!["git".to_string(), "cargo".to_string()]),
+            max_token_budget: None,
+            max_tool_calls: None,
+            tags: vec![],
+        };
+        let config = build_shell_config(Some(&tpl));
+        assert!(config.validate_command("git status").is_ok());
+        assert!(config.validate_command("cargo build").is_ok());
+        assert!(config.validate_command("curl https://evil.com").is_err());
+    }
+
+    #[test]
+    fn test_build_shell_config_none_uses_default() {
+        let tpl = AgentTemplate {
+            name: "open".to_string(),
+            description: "test".to_string(),
+            system_prompt: "test".to_string(),
+            model: None,
+            max_tokens: None,
+            temperature: None,
+            allowed_tools: None,
+            blocked_tools: None,
+            max_tool_iterations: None,
+            shell_allowlist: None,
+            max_token_budget: None,
+            max_tool_calls: None,
+            tags: vec![],
+        };
+        let config = build_shell_config(Some(&tpl));
+        assert!(config.validate_command("curl https://example.com").is_ok());
+    }
+
+    #[test]
+    fn test_build_shell_config_empty_denies_all() {
+        let tpl = AgentTemplate {
+            name: "locked".to_string(),
+            description: "test".to_string(),
+            system_prompt: "test".to_string(),
+            model: None,
+            max_tokens: None,
+            temperature: None,
+            allowed_tools: None,
+            blocked_tools: None,
+            max_tool_iterations: None,
+            shell_allowlist: Some(vec![]),
+            max_token_budget: None,
+            max_tool_calls: None,
+            tags: vec![],
+        };
+        let config = build_shell_config(Some(&tpl));
+        assert!(config.validate_command("ls").is_err());
+        assert!(config.validate_command("git status").is_err());
+    }
+
+    #[test]
+    fn test_build_shell_config_no_template() {
+        let config = build_shell_config(None);
+        assert!(config.validate_command("curl https://example.com").is_ok());
     }
 
     // -----------------------------------------------------------
