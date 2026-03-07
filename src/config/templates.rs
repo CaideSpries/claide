@@ -61,6 +61,25 @@ pub struct AgentTemplate {
     /// Metadata tags for categorization and filtering.
     #[serde(default)]
     pub tags: Vec<String>,
+
+    /// Shell command allowlist — binary names the agent may execute.
+    /// `None` = use default shell config (blocklist-only, no allowlist).
+    /// `Some(vec![])` = deny all shell commands (Strict + empty allowlist).
+    /// `Some(vec!["git", "cargo"])` = only these binaries allowed (Strict mode).
+    /// Applied to ShellTool, CustomTool, and PluginTool.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub shell_allowlist: Option<Vec<String>>,
+
+    /// Token budget for this agent run (input + output tokens combined).
+    /// `None` = inherit from config.agents.defaults.token_budget.
+    /// When both template and global are set, the lower value wins.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub max_token_budget: Option<u64>,
+
+    /// Hard cap on total tool calls across the entire agent run.
+    /// `None` = no cap (only per-turn max_tool_iterations applies).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub max_tool_calls: Option<u32>,
 }
 
 // ============================================================================
@@ -89,6 +108,9 @@ fn builtin_coder() -> AgentTemplate {
         blocked_tools: None,
         max_tool_iterations: None,
         tags: vec!["development".to_string(), "coding".to_string()],
+        shell_allowlist: None,
+        max_token_budget: None,
+        max_tool_calls: None,
     }
 }
 
@@ -120,6 +142,9 @@ fn builtin_researcher() -> AgentTemplate {
         blocked_tools: None,
         max_tool_iterations: None,
         tags: vec!["research".to_string(), "information".to_string()],
+        shell_allowlist: None,
+        max_token_budget: None,
+        max_tool_calls: None,
     }
 }
 
@@ -151,6 +176,9 @@ fn builtin_writer() -> AgentTemplate {
         blocked_tools: None,
         max_tool_iterations: None,
         tags: vec!["writing".to_string(), "content".to_string()],
+        shell_allowlist: None,
+        max_token_budget: None,
+        max_tool_calls: None,
     }
 }
 
@@ -175,6 +203,9 @@ fn builtin_assistant() -> AgentTemplate {
         blocked_tools: None,
         max_tool_iterations: None,
         tags: vec!["general".to_string()],
+        shell_allowlist: None,
+        max_token_budget: None,
+        max_tool_calls: None,
     }
 }
 
@@ -217,6 +248,9 @@ fn builtin_task_manager() -> AgentTemplate {
             "tasks".to_string(),
             "personal-assistant".to_string(),
         ],
+        shell_allowlist: None,
+        max_token_budget: None,
+        max_tool_calls: None,
     }
 }
 
@@ -504,6 +538,9 @@ mod tests {
             blocked_tools: None,
             max_tool_iterations: Some(10),
             tags: vec!["devops".to_string(), "infrastructure".to_string()],
+            shell_allowlist: None,
+            max_token_budget: None,
+            max_tool_calls: None,
         };
 
         registry.register(custom);
@@ -536,6 +573,9 @@ mod tests {
             blocked_tools: None,
             max_tool_iterations: None,
             tags: vec!["development".to_string(), "rust".to_string()],
+            shell_allowlist: None,
+            max_token_budget: None,
+            max_tool_calls: None,
         };
         registry.register(custom_coder);
 
@@ -665,6 +705,9 @@ mod tests {
             blocked_tools: Some(vec!["web_search".to_string()]),
             max_tool_iterations: Some(15),
             tags: vec!["test".to_string()],
+            shell_allowlist: None,
+            max_token_budget: None,
+            max_tool_calls: None,
         };
 
         let json = serde_json::to_string_pretty(&template).unwrap();
@@ -809,6 +852,9 @@ mod tests {
             blocked_tools: None,
             max_tool_iterations: None,
             tags: vec![],
+            shell_allowlist: None,
+            max_token_budget: None,
+            max_tool_calls: None,
         };
 
         let json = serde_json::to_string(&template).unwrap();
@@ -818,6 +864,75 @@ mod tests {
         assert!(!json.contains("allowed_tools"));
         assert!(!json.contains("blocked_tools"));
         assert!(!json.contains("max_tool_iterations"));
+    }
+
+    #[test]
+    fn test_new_sandbox_fields_deserialize_from_json() {
+        let json = r#"{
+            "name": "sandboxed",
+            "description": "Sandboxed agent",
+            "system_prompt": "You are sandboxed.",
+            "shell_allowlist": ["git", "cargo"],
+            "max_token_budget": 50000,
+            "max_tool_calls": 100,
+            "tags": []
+        }"#;
+        let tpl: AgentTemplate = serde_json::from_str(json).unwrap();
+        assert_eq!(
+            tpl.shell_allowlist,
+            Some(vec!["git".to_string(), "cargo".to_string()])
+        );
+        assert_eq!(tpl.max_token_budget, Some(50000));
+        assert_eq!(tpl.max_tool_calls, Some(100));
+    }
+
+    #[test]
+    fn test_new_sandbox_fields_default_to_none() {
+        let json = r#"{
+            "name": "minimal",
+            "description": "Minimal template",
+            "system_prompt": "Hello."
+        }"#;
+        let tpl: AgentTemplate = serde_json::from_str(json).unwrap();
+        assert!(tpl.shell_allowlist.is_none());
+        assert!(tpl.max_token_budget.is_none());
+        assert!(tpl.max_tool_calls.is_none());
+    }
+
+    #[test]
+    fn test_empty_shell_allowlist_means_deny_all() {
+        let json = r#"{
+            "name": "no-shell",
+            "description": "No shell access",
+            "system_prompt": "No shell.",
+            "shell_allowlist": [],
+            "tags": []
+        }"#;
+        let tpl: AgentTemplate = serde_json::from_str(json).unwrap();
+        assert_eq!(tpl.shell_allowlist, Some(vec![]));
+    }
+
+    #[test]
+    fn test_serialization_skips_none_sandbox_fields() {
+        let tpl = AgentTemplate {
+            name: "sparse".to_string(),
+            description: "Sparse".to_string(),
+            system_prompt: "Hello.".to_string(),
+            model: None,
+            max_tokens: None,
+            temperature: None,
+            allowed_tools: None,
+            blocked_tools: None,
+            max_tool_iterations: None,
+            shell_allowlist: None,
+            max_token_budget: None,
+            max_tool_calls: None,
+            tags: vec![],
+        };
+        let json = serde_json::to_string(&tpl).unwrap();
+        assert!(!json.contains("shell_allowlist"));
+        assert!(!json.contains("max_token_budget"));
+        assert!(!json.contains("max_tool_calls"));
     }
 
     #[test]

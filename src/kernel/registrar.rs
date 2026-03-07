@@ -966,6 +966,9 @@ mod tests {
             blocked_tools: None,
             max_tool_iterations: None,
             tags: vec![],
+            shell_allowlist: None,
+            max_token_budget: None,
+            max_tool_calls: None,
         };
         let filter = ToolFilter::from_config(&config, Some(&template), None);
         assert!(filter.is_enabled("echo"));
@@ -987,6 +990,9 @@ mod tests {
             blocked_tools: Some(vec!["shell".to_string()]),
             max_tool_iterations: None,
             tags: vec![],
+            shell_allowlist: None,
+            max_token_budget: None,
+            max_tool_calls: None,
         };
         let filter = ToolFilter::from_config(&config, Some(&template), None);
         assert!(!filter.is_enabled("shell"));
@@ -1028,6 +1034,9 @@ mod tests {
             blocked_tools: None,
             max_tool_iterations: None,
             tags: vec![],
+            shell_allowlist: None,
+            max_token_budget: None,
+            max_tool_calls: None,
         };
         let hand = HandManifest {
             name: "test".to_string(),
@@ -1095,6 +1104,9 @@ mod tests {
             blocked_tools: Some(vec!["web_search".to_string()]),
             max_tool_iterations: None,
             tags: vec![],
+            shell_allowlist: None,
+            max_token_budget: None,
+            max_tool_calls: None,
         };
 
         let filter = ToolFilter::from_config(&config, Some(&template), None);
