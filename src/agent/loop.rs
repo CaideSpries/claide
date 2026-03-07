@@ -1322,15 +1322,43 @@ impl AgentLoop {
                 session.add_message(Message::tool_result(id, result));
             }
 
-            // Check tool call limit after executing (not before, to avoid off-by-one)
+            // Increment tool call counter after execution.
             self.tool_call_limit
                 .increment(response.tool_calls.len() as u32);
+            // If the limit is now hit, make one final LLM call WITHOUT tools
+            // so the model can synthesize the tool results into a proper answer
+            // instead of returning the stale tool-call stub content.
             if self.tool_call_limit.is_exceeded() {
                 info!(
                     count = self.tool_call_limit.count(),
                     limit = ?self.tool_call_limit.limit(),
-                    "Tool call limit reached, stopping tool execution"
+                    "Tool call limit reached, making final synthesis call"
                 );
+                let messages: Vec<_> = self
+                    .context_builder
+                    .build_messages_with_memory_override(
+                        &session.messages,
+                        "",
+                        memory_override.as_deref(),
+                    )
+                    .into_iter()
+                    .filter(|m| !(m.role == Role::User && m.content.is_empty()))
+                    .collect();
+                response = provider
+                    .chat(messages, vec![], model, options.clone())
+                    .await?;
+                if let (Some(metrics), Some(usage)) =
+                    (usage_metrics.as_ref(), response.usage.as_ref())
+                {
+                    metrics
+                        .record_tokens(usage.prompt_tokens as u64, usage.completion_tokens as u64);
+                }
+                if let Some(usage) = response.usage.as_ref() {
+                    metrics_collector
+                        .record_tokens(usage.prompt_tokens as u64, usage.completion_tokens as u64);
+                    self.token_budget
+                        .record(usage.prompt_tokens as u64, usage.completion_tokens as u64);
+                }
                 break;
             }
 
@@ -1833,15 +1861,20 @@ impl AgentLoop {
                 session.add_message(Message::tool_result(id, result));
             }
 
-            // Check tool call limit after executing (not before, to avoid off-by-one)
+            // Increment tool call counter after execution.
             self.tool_call_limit
                 .increment(response.tool_calls.len() as u32);
+            // If the limit is now hit, clear tool_calls so the post-loop code
+            // enters the streaming final call branch, which re-issues the
+            // conversation (with tool results in session) as a proper streamed
+            // response instead of returning the stale tool-call stub.
             if self.tool_call_limit.is_exceeded() {
                 info!(
                     count = self.tool_call_limit.count(),
                     limit = ?self.tool_call_limit.limit(),
-                    "Tool call limit reached, stopping streaming tool execution"
+                    "Tool call limit reached, proceeding to final streaming synthesis"
                 );
+                response.tool_calls.clear();
                 break;
             }
 
