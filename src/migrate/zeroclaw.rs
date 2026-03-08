@@ -7,11 +7,8 @@
 use std::path::{Path, PathBuf};
 
 use anyhow::{Context, Result};
-use serde_json::Value;
 
 use crate::config::{Config, DiscordConfig, ProviderConfig};
-
-use super::MigrationReport;
 
 // ---------------------------------------------------------------------------
 // Detection
@@ -78,30 +75,28 @@ pub fn convert_zeroclaw_config(
     let mut not_portable = Vec::new();
     let mut warnings = Vec::new();
 
-    // ── Provider (default_chat_model + api keys) ─────────────────────
-    if let Some(provider) = toml_str(zc, &["default_chat_model", "provider"]) {
-        if let Some(api_key) = toml_str(zc, &["default_chat_model", "api_key"]) {
+    // ── Provider (top-level api_key, default_provider, default_model) ──
+    if let Some(provider) = toml_str(zc, &["default_provider"]) {
+        if let Some(api_key) = toml_str(zc, &["api_key"]) {
             if let Some(pc) = get_provider_mut(&mut existing.providers, provider) {
                 pc.api_key = Some(api_key.to_string());
-                migrated.push(format!("default_chat_model.provider ({})", provider));
+                migrated.push(format!("default_provider ({})", provider));
             } else {
                 skipped.push((
-                    format!("default_chat_model.provider: {}", provider),
+                    format!("default_provider: {}", provider),
                     "Unknown provider".into(),
                 ));
             }
         }
 
-        if let Some(model) = toml_str(zc, &["default_chat_model", "model"]) {
+        if let Some(model) = toml_str(zc, &["default_model"]) {
             existing.agents.defaults.model = model.to_string();
-            migrated.push("default_chat_model.model".into());
+            migrated.push("default_model".into());
         }
 
-        if let Some(api_base) = toml_str(zc, &["default_chat_model", "api_base"]) {
-            if let Some(pc) = get_provider_mut(&mut existing.providers, provider) {
-                pc.api_base = Some(api_base.to_string());
-                migrated.push("default_chat_model.api_base".into());
-            }
+        if let Some(temp) = zc.get("default_temperature").and_then(|v| v.as_float()) {
+            existing.agents.defaults.temperature = temp as f32;
+            migrated.push("default_temperature".into());
         }
     }
 
@@ -113,30 +108,30 @@ pub fn convert_zeroclaw_config(
         migrated.push("workspace".into());
     }
 
-    // ── Discord channel ──────────────────────────────────────────────
-    if let Some(token) = toml_str(zc, &["discord", "bot_token"]) {
+    // ── Discord channel (channels_config.discord) ─────────────────────
+    if let Some(token) = toml_str(zc, &["channels_config", "discord", "bot_token"]) {
         let dc = existing
             .channels
             .discord
             .get_or_insert_with(DiscordConfig::default);
         dc.token = token.to_string();
         dc.enabled = true;
-        migrated.push("discord.bot_token".into());
+        migrated.push("channels_config.discord.bot_token".into());
 
         // Allowed users
-        if let Some(users) = toml_array_strings(zc, &["discord", "allowed_users"]) {
+        if let Some(users) = toml_array_strings(zc, &["channels_config", "discord", "allowed_users"]) {
             dc.allow_from = users;
-            migrated.push("discord.allowed_users".into());
+            migrated.push("channels_config.discord.allowed_users".into());
         }
     }
 
-    // ── Compact context ──────────────────────────────────────────────
-    if let Some(compact) = toml_bool(zc, &["compact_context"]) {
+    // ── Agent settings (agent.compact_context, agent.max_history_messages) ──
+    if let Some(compact) = toml_bool(zc, &["agent", "compact_context"]) {
         existing.compaction.enabled = compact;
-        migrated.push("compact_context".into());
+        migrated.push("agent.compact_context".into());
     }
 
-    if let Some(max_hist) = toml_u64(zc, &["max_history_messages"]) {
+    if let Some(max_hist) = toml_u64(zc, &["agent", "max_history_messages"]) {
         // Map to compaction settings — ZeroClaw uses this to limit conversation history
         warnings.push(format!(
             "max_history_messages={} — Claide uses compaction tiers instead. \
@@ -158,16 +153,36 @@ pub fn convert_zeroclaw_config(
         existing.transcription.model = model.to_string();
         migrated.push("transcription.model".into());
     }
+    if let Some(api_url) = toml_str(zc, &["transcription", "api_url"]) {
+        warnings.push(format!(
+            "transcription.api_url={} — Claide routes transcription through configured providers. \
+             Ensure the provider with transcription support is configured.",
+            api_url
+        ));
+    }
 
-    // ── Shell tool ───────────────────────────────────────────────────
-    if let Some(commands) = toml_array_strings(zc, &["shell", "allowed_commands"]) {
+    // ── Cost tracking ────────────────────────────────────────────────
+    if let Some(enabled) = toml_bool(zc, &["cost", "enabled"]) {
+        existing.cost.enabled = enabled;
+        migrated.push("cost.enabled".into());
+    }
+    if zc.get("cost").and_then(|c| c.get("daily_limit_usd")).is_some() {
+        warnings.push(
+            "cost.daily_limit_usd — Claide does not have per-day cost limits. \
+             Use provider-level rate limits instead."
+                .into(),
+        );
+    }
+
+    // ── Autonomy / shell settings (autonomy.*) ─────────────────────
+    if let Some(commands) = toml_array_strings(zc, &["autonomy", "allowed_commands"]) {
         if !commands.is_empty() {
             migrated.push(format!(
-                "shell.allowed_commands ({} commands)",
+                "autonomy.allowed_commands ({} commands)",
                 commands.len()
             ));
             warnings.push(
-                "shell.allowed_commands migrated — review Claide's approval gate config \
+                "autonomy.allowed_commands migrated — review Claide's approval gate config \
                  for equivalent security policy."
                     .into(),
             );
@@ -175,7 +190,7 @@ pub fn convert_zeroclaw_config(
     }
 
     // ZeroClaw workspace_only = false is critical — map to Claide's shell security
-    if let Some(ws_only) = toml_bool(zc, &["shell", "workspace_only"]) {
+    if let Some(ws_only) = toml_bool(zc, &["autonomy", "workspace_only"]) {
         if !ws_only {
             warnings.push(
                 "shell.workspace_only=false was set in ZeroClaw. \
@@ -190,8 +205,8 @@ pub fn convert_zeroclaw_config(
         ));
     }
 
-    // ── Auto-approve ─────────────────────────────────────────────────
-    if toml_array_strings(zc, &["auto_approve"]).is_some() {
+    // ── Auto-approve (autonomy.auto_approve) ─────────────────────────
+    if toml_array_strings(zc, &["autonomy", "auto_approve"]).is_some() {
         not_portable.push(
             "auto_approve — Claide uses approval gate config instead. \
              For async channels, tools are auto-approved by default."
