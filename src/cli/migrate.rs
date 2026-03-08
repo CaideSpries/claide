@@ -251,7 +251,7 @@ pub(crate) async fn cmd_migrate_zeroclaw(
             Some(c)
         }
         Err(e) => {
-            println!("  Warning: Could not load config: {}", e);
+            println!("  Warning: Could not load config: {:#}", e);
             println!("  Proceeding with workspace migration only.");
             None
         }
