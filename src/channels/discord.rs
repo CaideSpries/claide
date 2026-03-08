@@ -572,7 +572,8 @@ impl DiscordChannel {
         }
 
         let content = msg.content.trim().to_string();
-        if content.is_empty() {
+        let has_attachments = !msg.attachments.is_empty();
+        if content.is_empty() && !has_attachments {
             return None;
         }
 
@@ -600,7 +601,13 @@ impl DiscordChannel {
             return None;
         }
 
-        let inbound = InboundMessage::new("discord", &sender_id, &channel_id, &content)
+        // Use placeholder for voice-only messages (no text, only attachments)
+        let effective_content = if content.is_empty() && has_attachments {
+            "[voice message]".to_string()
+        } else {
+            content
+        };
+        let inbound = InboundMessage::new("discord", &sender_id, &channel_id, &effective_content)
             .with_metadata("discord_message_id", &msg.id);
 
         Some(inbound)
