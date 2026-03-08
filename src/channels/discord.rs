@@ -1053,6 +1053,36 @@ impl DiscordChannel {
                                                             if let Some(mut inbound) =
                                                                 Self::parse_message_create(data, &allowlist, deny_by_default)
                                                             {
+                                                                // React with 👀 and trigger typing indicator
+                                                                if let Ok(msg_data) = serde_json::from_value::<MessageCreateData>(data.clone()) {
+                                                                    let react_client = client.clone();
+                                                                    let react_token = token.clone();
+                                                                    let ch_id = msg_data.channel_id.clone();
+                                                                    let msg_id = msg_data.id.clone();
+                                                                    tokio::spawn(async move {
+                                                                        // Add 👀 reaction
+                                                                        let emoji = "%F0%9F%91%80"; // URL-encoded 👀
+                                                                        let url = format!(
+                                                                            "{}/channels/{}/messages/{}/reactions/{}/@me",
+                                                                            DISCORD_API_BASE, ch_id, msg_id, emoji
+                                                                        );
+                                                                        let _ = react_client.put(&url)
+                                                                            .header("Authorization", format!("Bot {}", react_token))
+                                                                            .header("Content-Length", "0")
+                                                                            .send()
+                                                                            .await;
+                                                                        // Trigger typing indicator
+                                                                        let url = format!(
+                                                                            "{}/channels/{}/typing",
+                                                                            DISCORD_API_BASE, ch_id
+                                                                        );
+                                                                        let _ = react_client.post(&url)
+                                                                            .header("Authorization", format!("Bot {}", react_token))
+                                                                            .header("Content-Length", "0")
+                                                                            .send()
+                                                                            .await;
+                                                                    });
+                                                                }
                                                                 // Download media attachments (images, audio, documents)
                                                                 if let Ok(msg_data) = serde_json::from_value::<MessageCreateData>(data.clone()) {
                                                                     for att in &msg_data.attachments {
