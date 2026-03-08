@@ -36,24 +36,44 @@ impl TranscriberService {
             return None;
         }
 
-        let candidates: Vec<TranscriptionCandidate> = PROVIDER_REGISTRY
+        let mut candidates: Vec<TranscriptionCandidate> = Vec::new();
+
+        // First, check for dedicated Groq transcription key (tools.transcribe.groq_api_key).
+        // This is preferred because it doesn't require Groq as a general provider.
+        if let Some(ref groq_key) = config.tools.transcribe.groq_api_key {
+            if !groq_key.is_empty() {
+                candidates.push(TranscriptionCandidate {
+                    provider_name: "groq".to_string(),
+                    api_key: groq_key.clone(),
+                    api_base: "https://api.groq.com/openai/v1".to_string(),
+                });
+            }
+        }
+
+        // Then add any configured OpenAI-compatible providers (skip Gemini — no transcription API).
+        for spec in PROVIDER_REGISTRY
             .iter()
-            .filter(|spec| spec.backend == "openai")
-            .filter_map(|spec| {
-                let pc = provider_config_by_name(config, spec.name)?;
-                let api_key = pc.api_key.clone()?;
-                let api_base = pc
-                    .api_base
-                    .clone()
-                    .or_else(|| spec.default_base_url.map(|s| s.to_string()))
-                    .unwrap_or_else(|| "https://api.openai.com/v1".to_string());
-                Some(TranscriptionCandidate {
-                    provider_name: spec.name.to_string(),
-                    api_key,
-                    api_base,
-                })
-            })
-            .collect();
+            .filter(|spec| spec.backend == "openai" && spec.name != "gemini")
+        {
+            if let Some(pc) = provider_config_by_name(config, spec.name) {
+                if let Some(api_key) = pc.api_key.clone() {
+                    // Skip if already added via groq_api_key
+                    if candidates.iter().any(|c| c.provider_name == spec.name) {
+                        continue;
+                    }
+                    let api_base = pc
+                        .api_base
+                        .clone()
+                        .or_else(|| spec.default_base_url.map(|s| s.to_string()))
+                        .unwrap_or_else(|| "https://api.openai.com/v1".to_string());
+                    candidates.push(TranscriptionCandidate {
+                        provider_name: spec.name.to_string(),
+                        api_key,
+                        api_base,
+                    });
+                }
+            }
+        }
 
         if candidates.is_empty() {
             return None;
