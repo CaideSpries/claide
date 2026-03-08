@@ -1,4 +1,4 @@
-//! Channel trait and types for ZeptoClaw
+//! Channel trait and types for Claide
 //!
 //! This module defines the `Channel` trait that all communication channels
 //! (Telegram, Discord, Slack, etc.) must implement, along with supporting types.
@@ -20,9 +20,9 @@ use crate::error::Result;
 ///
 /// ```ignore
 /// use async_trait::async_trait;
-/// use zeptoclaw::channels::{Channel, BaseChannelConfig};
-/// use zeptoclaw::bus::OutboundMessage;
-/// use zeptoclaw::error::Result;
+/// use claide::channels::{Channel, BaseChannelConfig};
+/// use claide::bus::OutboundMessage;
+/// use claide::error::Result;
 ///
 /// struct MyChannel {
 ///     config: BaseChannelConfig,
@@ -124,7 +124,7 @@ pub trait Channel: Send + Sync {
 /// # Example
 ///
 /// ```
-/// use zeptoclaw::channels::BaseChannelConfig;
+/// use claide::channels::BaseChannelConfig;
 ///
 /// let config = BaseChannelConfig {
 ///     name: "telegram".to_string(),
@@ -158,7 +158,7 @@ impl BaseChannelConfig {
     /// # Example
     ///
     /// ```
-    /// use zeptoclaw::channels::BaseChannelConfig;
+    /// use claide::channels::BaseChannelConfig;
     ///
     /// let config = BaseChannelConfig::new("telegram");
     /// assert!(config.is_allowed("anyone")); // Empty allowlist = allow all
@@ -181,7 +181,7 @@ impl BaseChannelConfig {
     /// # Example
     ///
     /// ```
-    /// use zeptoclaw::channels::BaseChannelConfig;
+    /// use claide::channels::BaseChannelConfig;
     ///
     /// let config = BaseChannelConfig::with_allowlist("telegram", vec!["user1".to_string()]);
     /// assert!(config.is_allowed("user1"));
@@ -211,7 +211,7 @@ impl BaseChannelConfig {
     /// # Example
     ///
     /// ```
-    /// use zeptoclaw::channels::BaseChannelConfig;
+    /// use claide::channels::BaseChannelConfig;
     ///
     /// // With allowlist
     /// let config = BaseChannelConfig {

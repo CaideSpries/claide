@@ -138,7 +138,7 @@ impl Default for InitializeParams {
             protocol_version: "2024-11-05".to_string(),
             capabilities: HashMap::new(),
             client_info: ClientInfo {
-                name: "zeptoclaw".to_string(),
+                name: "claide".to_string(),
                 version: env!("CARGO_PKG_VERSION").to_string(),
             },
         }
@@ -382,7 +382,7 @@ mod tests {
 
         assert_eq!(params.protocol_version, "2024-11-05");
         assert!(params.capabilities.is_empty());
-        assert_eq!(params.client_info.name, "zeptoclaw");
+        assert_eq!(params.client_info.name, "claide");
         assert!(!params.client_info.version.is_empty());
     }
 }

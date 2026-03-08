@@ -1,7 +1,7 @@
 //! Agent module - Core AI agent logic and conversation handling
 //!
 //! This module provides the core agent loop and context building functionality
-//! for ZeptoClaw. The agent is responsible for:
+//! for Claide. The agent is responsible for:
 //!
 //! - Processing inbound messages from channels
 //! - Building conversation context with system prompts and history
@@ -29,12 +29,12 @@
 //!
 //! ```rust,ignore
 //! use std::sync::Arc;
-//! use zeptoclaw::agent::AgentLoop;
-//! use zeptoclaw::bus::MessageBus;
-//! use zeptoclaw::config::Config;
-//! use zeptoclaw::session::SessionManager;
-//! use zeptoclaw::providers::ClaudeProvider;
-//! use zeptoclaw::tools::EchoTool;
+//! use claide::agent::AgentLoop;
+//! use claide::bus::MessageBus;
+//! use claide::config::Config;
+//! use claide::session::SessionManager;
+//! use claide::providers::ClaudeProvider;
+//! use claide::tools::EchoTool;
 //!
 //! async fn run_agent() {
 //!     let config = Config::default();

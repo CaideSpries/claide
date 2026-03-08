@@ -124,7 +124,7 @@ async fn accept_callback(listener: &TcpListener) -> Result<CallbackResult> {
     // Send success response
     let html = r#"<!DOCTYPE html><html><body>
 <h2>Authentication successful!</h2>
-<p>You can close this tab and return to ZeptoClaw.</p>
+<p>You can close this tab and return to Claide.</p>
 <script>window.close();</script>
 </body></html>"#;
 
@@ -730,7 +730,7 @@ mod tests {
             provider: "openai".to_string(),
             token_url: "https://auth.openai.com/oauth/token".to_string(),
             authorize_url: "https://auth.openai.com/oauth/authorize".to_string(),
-            client_name: "ZeptoClaw".to_string(),
+            client_name: "Claide".to_string(),
             scopes: vec!["openid".to_string(), "email".to_string()],
         };
         let pkce = PkceChallenge {

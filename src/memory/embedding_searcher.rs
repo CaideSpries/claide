@@ -6,7 +6,7 @@
 //!
 //! ## Persistence
 //!
-//! Vectors are persisted to a sidecar JSON file (`~/.zeptoclaw/memory/embeddings.json`)
+//! Vectors are persisted to a sidecar JSON file (`~/.claide/memory/embeddings.json`)
 //! so that previously indexed entries do not need to be re-embedded on every
 //! startup. The `index()` and `remove()` methods update and persist this store.
 //!

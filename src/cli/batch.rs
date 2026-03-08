@@ -6,10 +6,10 @@ use std::time::Instant;
 
 use anyhow::{Context, Result};
 
-use zeptoclaw::batch::{format_results, load_prompts, BatchOutputFormat, BatchResult};
-use zeptoclaw::bus::{InboundMessage, MessageBus};
-use zeptoclaw::config::Config;
-use zeptoclaw::providers::StreamEvent;
+use claide::batch::{format_results, load_prompts, BatchOutputFormat, BatchResult};
+use claide::bus::{InboundMessage, MessageBus};
+use claide::config::Config;
+use claide::providers::StreamEvent;
 
 use super::common::{create_agent, create_agent_with_template, resolve_template};
 use super::BatchFormat;
@@ -108,7 +108,7 @@ pub(crate) async fn cmd_batch(
 }
 
 async fn process_streaming(
-    agent: &Arc<zeptoclaw::agent::AgentLoop>,
+    agent: &Arc<claide::agent::AgentLoop>,
     inbound: &InboundMessage,
 ) -> Result<String> {
     let mut response = String::new();

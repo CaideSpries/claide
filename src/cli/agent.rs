@@ -5,11 +5,11 @@ use std::sync::Arc;
 
 use anyhow::{Context, Result};
 
-use zeptoclaw::bus::{InboundMessage, MessageBus};
-use zeptoclaw::config::Config;
-use zeptoclaw::gateway::ipc::UsageSnapshot;
-use zeptoclaw::health::UsageMetrics;
-use zeptoclaw::providers::{
+use claide::bus::{InboundMessage, MessageBus};
+use claide::config::Config;
+use claide::gateway::ipc::UsageSnapshot;
+use claide::health::UsageMetrics;
+use claide::providers::{
     configured_provider_names, resolve_runtime_provider, RUNTIME_SUPPORTED_PROVIDERS,
 };
 
@@ -59,7 +59,7 @@ pub(crate) async fn cmd_agent(
 
     // Spawn feedback printer to stderr
     tokio::spawn(async move {
-        use zeptoclaw::agent::ToolFeedbackPhase;
+        use claide::agent::ToolFeedbackPhase;
         while let Some(fb) = feedback_rx.recv().await {
             match fb.phase {
                 ToolFeedbackPhase::Starting => {
@@ -80,7 +80,7 @@ pub(crate) async fn cmd_agent(
         let configured = configured_provider_names(&config);
         if configured.is_empty() {
             eprintln!(
-                "Warning: No AI provider configured. Set ZEPTOCLAW_PROVIDERS_ANTHROPIC_API_KEY"
+                "Warning: No AI provider configured. Set CLAIDE_PROVIDERS_ANTHROPIC_API_KEY"
             );
             eprintln!("or add your API key to {:?}", Config::path());
         } else {
@@ -102,7 +102,7 @@ pub(crate) async fn cmd_agent(
         let streaming = stream || config.agents.defaults.streaming;
 
         if streaming {
-            use zeptoclaw::providers::StreamEvent;
+            use claide::providers::StreamEvent;
             match agent.process_message_streaming(&inbound).await {
                 Ok(mut rx) => {
                     while let Some(event) = rx.recv().await {
@@ -139,7 +139,7 @@ pub(crate) async fn cmd_agent(
         }
     } else {
         // Interactive mode
-        println!("ZeptoClaw Interactive Agent");
+        println!("Claide Interactive Agent");
         println!("Type your message and press Enter. Type 'quit' or 'exit' to stop.");
         println!();
 
@@ -172,7 +172,7 @@ pub(crate) async fn cmd_agent(
                     let streaming = stream || config.agents.defaults.streaming;
 
                     if streaming {
-                        use zeptoclaw::providers::StreamEvent;
+                        use claide::providers::StreamEvent;
                         match agent.process_message_streaming(&inbound).await {
                             Ok(mut rx) => {
                                 println!();
@@ -234,11 +234,11 @@ pub(crate) async fn cmd_agent_stdin() -> Result<()> {
         .read_line(&mut input)
         .with_context(|| "Failed to read from stdin")?;
 
-    let request: zeptoclaw::gateway::AgentRequest =
+    let request: claide::gateway::AgentRequest =
         serde_json::from_str(&input).map_err(|e| anyhow::anyhow!("Invalid request JSON: {}", e))?;
 
     if let Err(e) = request.validate() {
-        let response = zeptoclaw::gateway::AgentResponse::error(
+        let response = claide::gateway::AgentResponse::error(
             &request.request_id,
             &e.to_string(),
             "INVALID_REQUEST",
@@ -248,7 +248,7 @@ pub(crate) async fn cmd_agent_stdin() -> Result<()> {
         return Ok(());
     }
 
-    let zeptoclaw::gateway::AgentRequest {
+    let claide::gateway::AgentRequest {
         request_id,
         message,
         agent_config,
@@ -275,11 +275,11 @@ pub(crate) async fn cmd_agent_stdin() -> Result<()> {
     let response = match agent.process_message(&message).await {
         Ok(content) => {
             let updated_session = agent.session_manager().get(&message.session_key).await?;
-            zeptoclaw::gateway::AgentResponse::success(&request_id, &content, updated_session)
+            claide::gateway::AgentResponse::success(&request_id, &content, updated_session)
                 .with_usage(UsageSnapshot::from_metrics(&usage_metrics))
         }
         Err(e) => {
-            zeptoclaw::gateway::AgentResponse::error(&request_id, &e.to_string(), "PROCESS_ERROR")
+            claide::gateway::AgentResponse::error(&request_id, &e.to_string(), "PROCESS_ERROR")
                 .with_usage(UsageSnapshot::from_metrics(&usage_metrics))
         }
     };
@@ -297,7 +297,7 @@ fn format_cli_error(e: &dyn std::fmt::Display) -> String {
 
     if msg.contains("Authentication error") {
         format!(
-            "{}\n\n  Fix: Check your API key. Run 'zeptoclaw auth status' to verify.\n  Or:  Set ZEPTOCLAW_PROVIDERS_ANTHROPIC_API_KEY=sk-ant-...",
+            "{}\n\n  Fix: Check your API key. Run 'claide auth status' to verify.\n  Or:  Set CLAIDE_PROVIDERS_ANTHROPIC_API_KEY=sk-ant-...",
             msg
         )
     } else if msg.contains("Billing error") {
@@ -312,7 +312,7 @@ fn format_cli_error(e: &dyn std::fmt::Display) -> String {
         )
     } else if msg.contains("Model not found") {
         format!(
-            "{}\n\n  Fix: Check model name in config. Run 'zeptoclaw config check'.",
+            "{}\n\n  Fix: Check model name in config. Run 'claide config check'.",
             msg
         )
     } else if msg.contains("Timeout") {
@@ -322,7 +322,7 @@ fn format_cli_error(e: &dyn std::fmt::Display) -> String {
         )
     } else if msg.contains("No AI provider configured") || msg.contains("provider") {
         format!(
-            "{}\n\n  Fix: Run 'zeptoclaw onboard' to set up an AI provider.",
+            "{}\n\n  Fix: Run 'claide onboard' to set up an AI provider.",
             msg
         )
     } else {

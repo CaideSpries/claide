@@ -1,6 +1,6 @@
 //! Telegram Channel Implementation
 //!
-//! This module provides a Telegram bot channel for ZeptoClaw using the teloxide library.
+//! This module provides a Telegram bot channel for Claide using the teloxide library.
 //! It handles receiving messages from Telegram users and sending responses back.
 //!
 //! # Architecture
@@ -22,9 +22,9 @@
 //!
 //! ```ignore
 //! use std::sync::Arc;
-//! use zeptoclaw::bus::MessageBus;
-//! use zeptoclaw::config::TelegramConfig;
-//! use zeptoclaw::channels::TelegramChannel;
+//! use claide::bus::MessageBus;
+//! use claide::config::TelegramConfig;
+//! use claide::channels::TelegramChannel;
 //!
 //! let config = TelegramConfig {
 //!     enabled: true,
@@ -170,9 +170,9 @@ impl TelegramChannel {
     ///
     /// ```ignore
     /// use std::sync::Arc;
-    /// use zeptoclaw::bus::MessageBus;
-    /// use zeptoclaw::config::TelegramConfig;
-    /// use zeptoclaw::channels::TelegramChannel;
+    /// use claide::bus::MessageBus;
+    /// use claide::config::TelegramConfig;
+    /// use claide::channels::TelegramChannel;
     ///
     /// let config = TelegramConfig {
     ///     enabled: true,

@@ -1,19 +1,19 @@
-//! R8r workflow tool for ZeptoClaw
+//! R8r workflow tool for Claide
 //!
 //! This module provides a tool for executing r8r workflows. R8r is a complementary
 //! workflow engine that provides deterministic, agent-first workflow automation.
 //!
 //! # Integration Pattern
 //!
-//! ZeptoClaw <-> R8r form a symbiotic relationship:
-//! - ZeptoClaw calls r8r for deterministic workflows (HTTP, transform, data pipelines)
-//! - R8r calls ZeptoClaw via `agent` nodes for AI reasoning decisions
+//! Claide <-> R8r form a symbiotic relationship:
+//! - Claide calls r8r for deterministic workflows (HTTP, transform, data pipelines)
+//! - R8r calls Claide via `agent` nodes for AI reasoning decisions
 //!
 //! # Example
 //!
 //! ```rust,ignore
-//! use zeptoclaw::tools::{Tool, ToolContext};
-//! use zeptoclaw::tools::r8r::R8rTool;
+//! use claide::tools::{Tool, ToolContext};
+//! use claide::tools::r8r::R8rTool;
 //! use serde_json::json;
 //!
 //! # tokio_test::block_on(async {
@@ -48,7 +48,7 @@ const DEFAULT_TIMEOUT_SECS: u64 = 300;
 ///
 /// Executes workflows in the r8r workflow engine and returns structured results.
 /// R8r provides deterministic, agent-first workflow automation that complements
-/// ZeptoClaw's AI reasoning capabilities.
+/// Claide's AI reasoning capabilities.
 pub struct R8rTool {
     endpoint: String,
     client: Client,
@@ -468,7 +468,7 @@ impl R8rTool {
         let body = json!({
             "event": event,
             "data": data,
-            "source": "zeptoclaw"
+            "source": "claide"
         });
 
         let response = self

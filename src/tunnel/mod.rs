@@ -8,10 +8,10 @@
 //! # Usage
 //!
 //! ```rust,no_run
-//! use zeptoclaw::tunnel::{create_tunnel, TunnelProvider};
-//! use zeptoclaw::config::TunnelConfig;
+//! use claide::tunnel::{create_tunnel, TunnelProvider};
+//! use claide::config::TunnelConfig;
 //!
-//! # async fn example() -> zeptoclaw::error::Result<()> {
+//! # async fn example() -> claide::error::Result<()> {
 //! let config = TunnelConfig::default();
 //! let mut tunnel = create_tunnel(&config)?;
 //! let url = tunnel.start(8080).await?;
@@ -190,7 +190,7 @@ mod tests {
 
     #[test]
     fn test_which_nonexistent_binary() {
-        assert!(!which("zeptoclaw_nonexistent_binary_12345"));
+        assert!(!which("claide_nonexistent_binary_12345"));
     }
 
     #[test]

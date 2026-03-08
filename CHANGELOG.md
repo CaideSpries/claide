@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to ZeptoClaw will be documented in this file.
+All notable changes to Claide will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## [0.6.1] - 2026-02-27
 
 ### Added
-- **Control panel web UI** — axum API server with REST routes, WebSocket event streaming, JWT auth, CSRF protection; React + Vite + Tailwind frontend with Dashboard, Logs, Sessions, Cron/Routines, Kanban (drag-and-drop), and live Agent Office pages; `zeptoclaw panel` CLI command (#180)
+- **Control panel web UI** — axum API server with REST routes, WebSocket event streaming, JWT auth, CSRF protection; React + Vite + Tailwind frontend with Dashboard, Logs, Sessions, Cron/Routines, Kanban (drag-and-drop), and live Agent Office pages; `claide panel` CLI command (#180)
 - **Google Workspace tools** — Gmail search/read/send/reply + Calendar list/create/freebusy via gogcli-rs; feature-gated behind `--features google` (#162)
 
 ### Fixed
@@ -50,7 +50,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## [0.5.8] - 2026-02-25
 
 ### Added
-- **ZeptoAgent library facade** — `ZeptoAgent::builder().provider(p).tool(t).build()` for embedding ZeptoClaw as a crate in Tauri/Electron/GUI apps; persistent conversation history behind `Mutex` for thread-safe concurrent access (#154)
+- **ZeptoAgent library facade** — `ZeptoAgent::builder().provider(p).tool(t).build()` for embedding Claide as a crate in Tauri/Electron/GUI apps; persistent conversation history behind `Mutex` for thread-safe concurrent access (#154)
 - **Parallel fan-out for multi-agent aggregate** — DelegateTool now supports parallel dispatch to multiple sub-agents with result aggregation (#150)
 - **RPi peripheral parity with ESP32** — Raspberry Pi GPIO + native I2C tools via rppal with board profile pin validation (#152)
 - **Gateway startup guard** — Degrade gracefully after N crashes to prevent crash loops; configurable crash threshold (#147)
@@ -61,7 +61,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - **Natural language tool composition** — `CreateToolTool` with create/list/delete/run actions; `ComposedTool` interpolates `{{param}}` placeholders into action templates (#138)
 - **Soul/persona system** — Per-chat personality switching via `/persona` command (list, set preset, custom text, reset) with long-term memory persistence (#133)
 - **Channel supervisor** — Polling supervisor (15s) detects dead channels via `is_running()`, restarts with 60s cooldown, max 5 restarts, reports to HealthRegistry (#117)
-- **Self-update command** — `zeptoclaw update` downloads latest release from GitHub; supports `--check`, `--version`, `--force` flags (#111)
+- **Self-update command** — `claide update` downloads latest release from GitHub; supports `--check`, `--version`, `--force` flags (#111)
 - **Linux sandbox runtimes** — Landlock LSM (kernel 5.13+), Firejail (namespace + seccomp), Bubblewrap (OCI-compatible `bwrap`) — feature-gated (#104)
 - **Shell allowlist mode** — Off/Warn/Strict modes for command allowlisting alongside existing blocklist
 - **Retry budget** — `retry_budget_ms` wall-clock cap on total retry time (default: 45s) (#135)
@@ -156,15 +156,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - **Memory decay and injection** — Importance-weighted decay scoring for long-term memory; pinned memories auto-injected into system prompt; pre-compaction memory flush
 - **Memory pin action** — `pin` action on longterm_memory tool for always-included context
 - **OpenAI-compatible provider tests** — 13 tests confirming `api_base` works for Ollama, Groq, Together, Fireworks, LM Studio, vLLM
-- **OpenClaw migration** — `zeptoclaw migrate` command to import config and skills from OpenClaw installations
+- **OpenClaw migration** — `claide migrate` command to import config and skills from OpenClaw installations
 - **Binary plugin system** — JSON-RPC 2.0 stdin/stdout protocol for external tool binaries
 - **Reminder tool** — Persistent reminder store with 6 actions; task-manager agent template
 - **Custom tools** — CLI-defined tools via `custom_tools` config with compact descriptions
 - **Tool profiles** — Named tool subsets for different agent configurations
 - **Agent engine resilience** — Structured provider errors, three-tier overflow recovery, circuit breaker on fallback, dynamic tool result budgets, runtime context injection
-- **URL watch command** — `zeptoclaw watch <url>` monitors pages for changes with channel notifications
-- **Tool discovery CLI** — `zeptoclaw tools list` and `zeptoclaw tools info <name>`
-- **Memory CLI** — `zeptoclaw memory list/search/set/delete/stats`
+- **URL watch command** — `claide watch <url>` monitors pages for changes with channel notifications
+- **Tool discovery CLI** — `claide tools list` and `claide tools info <name>`
+- **Memory CLI** — `claide memory list/search/set/delete/stats`
 - **Express onboard** — Streamlined setup as default, full wizard behind `--full` flag
 - **CLI smoke tests** — Integration test suite for CLI command validation
 - **OG meta tags** — Open Graph and Twitter Card meta for landing page
@@ -215,9 +215,9 @@ First public release.
 - Mount allowlist validation
 - Cron job caps and spawn recursion prevention
 
-[0.6.0]: https://github.com/qhkm/zeptoclaw/releases/tag/v0.6.0
-[0.5.9]: https://github.com/qhkm/zeptoclaw/releases/tag/v0.5.9
-[0.5.8]: https://github.com/qhkm/zeptoclaw/releases/tag/v0.5.8
-[0.5.0]: https://github.com/qhkm/zeptoclaw/releases/tag/v0.5.0
-[0.4.0]: https://github.com/qhkm/zeptoclaw/releases/tag/v0.4.0
-[0.2.0]: https://github.com/qhkm/zeptoclaw/releases/tag/v0.2.0
+[0.6.0]: https://github.com/qhkm/claide/releases/tag/v0.6.0
+[0.5.9]: https://github.com/qhkm/claide/releases/tag/v0.5.9
+[0.5.8]: https://github.com/qhkm/claide/releases/tag/v0.5.8
+[0.5.0]: https://github.com/qhkm/claide/releases/tag/v0.5.0
+[0.4.0]: https://github.com/qhkm/claide/releases/tag/v0.4.0
+[0.2.0]: https://github.com/qhkm/claide/releases/tag/v0.2.0

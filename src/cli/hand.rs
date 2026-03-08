@@ -2,8 +2,8 @@
 
 use anyhow::{Context, Result};
 
-use zeptoclaw::config::Config;
-use zeptoclaw::hands::{built_in_hands, load_hands_from_dir, resolve_hand, HandSource};
+use claide::config::Config;
+use claide::hands::{built_in_hands, load_hands_from_dir, resolve_hand, HandSource};
 
 use super::HandAction;
 

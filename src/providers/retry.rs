@@ -6,8 +6,8 @@
 //! # Example
 //!
 //! ```rust,ignore
-//! use zeptoclaw::providers::retry::RetryProvider;
-//! use zeptoclaw::providers::claude::ClaudeProvider;
+//! use claide::providers::retry::RetryProvider;
+//! use claide::providers::claude::ClaudeProvider;
 //!
 //! let inner = ClaudeProvider::new("api-key");
 //! let provider = RetryProvider::new(Box::new(inner))

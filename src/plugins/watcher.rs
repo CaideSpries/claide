@@ -19,9 +19,9 @@ use tracing::{info, warn};
 ///
 /// ```rust,no_run
 /// use std::path::PathBuf;
-/// use zeptoclaw::plugins::PluginWatcher;
+/// use claide::plugins::PluginWatcher;
 ///
-/// let plugin_dirs = vec![PathBuf::from("/home/user/.zeptoclaw/plugins")];
+/// let plugin_dirs = vec![PathBuf::from("/home/user/.claide/plugins")];
 /// let mut watcher = PluginWatcher::new();
 ///
 /// // First scan discovers all plugins.
@@ -149,7 +149,7 @@ impl Default for PluginWatcher {
 ///
 /// ```rust,no_run
 /// use std::path::Path;
-/// use zeptoclaw::plugins::check_binary_health;
+/// use claide::plugins::check_binary_health;
 ///
 /// let healthy = check_binary_health(Path::new("/usr/local/bin/my-plugin"));
 /// assert!(healthy, "plugin binary should be available");

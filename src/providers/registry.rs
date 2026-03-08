@@ -624,7 +624,7 @@ mod tests {
             token_type: "Bearer".to_string(),
             scope: None,
             obtained_at: chrono::Utc::now().timestamp() - 3600,
-            client_id: Some("zeptoclaw".to_string()),
+            client_id: Some("claide".to_string()),
         };
 
         let (_tmp, store) = test_token_store_with_token(token);
@@ -642,7 +642,7 @@ mod tests {
             token_type: "Bearer".to_string(),
             scope: None,
             obtained_at: chrono::Utc::now().timestamp() - 3600,
-            client_id: Some("zeptoclaw".to_string()),
+            client_id: Some("claide".to_string()),
         };
 
         let (_tmp, store) = test_token_store_with_token(token);

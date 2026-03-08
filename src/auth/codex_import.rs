@@ -5,7 +5,7 @@
 //! 2. File: `$CODEX_HOME/auth.json` or `~/.codex/auth.json`
 //!
 //! This module reads from both sources (preferring Keychain on macOS) and converts
-//! them into ZeptoClaw's [`OAuthTokenSet`] for use with the OpenAI provider.
+//! them into Claide's [`OAuthTokenSet`] for use with the OpenAI provider.
 
 use std::path::Path;
 
@@ -169,7 +169,7 @@ fn read_from_auth_file(auth_path: &Path) -> Option<OAuthTokenSet> {
     let refresh_token = tokens.refresh_token.filter(|s| !s.is_empty());
 
     // No reliable expiry info in auth.json (no timestamp field).
-    // Set obtained_at = now and expires_at = None so ZeptoClaw attempts
+    // Set obtained_at = now and expires_at = None so Claide attempts
     // to use the token and handles 401 via the refresh flow if expired.
     let now = chrono::Utc::now().timestamp();
 

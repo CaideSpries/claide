@@ -1,10 +1,11 @@
-//! OpenClaw → ZeptoClaw migration module.
+//! OpenClaw → Claide migration module.
 //!
 //! Handles detection of OpenClaw installations, config conversion,
 //! and skill directory copying.
 
 pub mod config;
 pub mod skills;
+pub mod zeroclaw;
 
 use std::path::{Path, PathBuf};
 
@@ -13,7 +14,7 @@ use anyhow::{Context, Result};
 /// Summary of what was migrated, skipped, or is not portable.
 #[derive(Debug, Default)]
 pub struct MigrationReport {
-    /// Detected OpenClaw installation directory.
+    /// Detected source installation directory (OpenClaw or ZeroClaw).
     pub openclaw_dir: PathBuf,
     /// Config fields that were successfully migrated.
     pub config_migrated: Vec<String>,
@@ -25,7 +26,7 @@ pub struct MigrationReport {
     pub skills_skipped: Vec<(String, String)>,
     /// General warnings.
     pub warnings: Vec<String>,
-    /// OpenClaw features that have no ZeptoClaw equivalent.
+    /// OpenClaw features that have no Claide equivalent.
     pub not_portable: Vec<String>,
 }
 

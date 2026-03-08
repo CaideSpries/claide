@@ -1,4 +1,4 @@
-//! MQTT channel for ZeptoClaw.
+//! MQTT channel for Claide.
 //!
 //! Enables two-way agent communication over MQTT for IoT devices. Inbound messages
 //! arrive on configurable subscribe topics as newline-delimited JSON.
@@ -17,8 +17,8 @@
 //! # Topic Structure
 //!
 //! ```text
-//! zeptoclaw/inbox/{device_id}    # Device → Agent (inbound messages)
-//! zeptoclaw/outbox/{device_id}   # Agent → Device (responses)
+//! claide/inbox/{device_id}    # Device → Agent (inbound messages)
+//! claide/outbox/{device_id}   # Agent → Device (responses)
 //! ```
 //!
 //! # Protocol
@@ -78,7 +78,7 @@ mod inner {
 
     /// Extract the device ID from an MQTT topic.
     ///
-    /// Given `"zeptoclaw/inbox/node-17"`, returns `Some("node-17")`.
+    /// Given `"claide/inbox/node-17"`, returns `Some("node-17")`.
     fn extract_device_id(topic: &str) -> Option<&str> {
         topic.rsplit('/').next()
     }
@@ -447,11 +447,11 @@ mod inner {
         #[test]
         fn test_extract_device_id() {
             assert_eq!(
-                extract_device_id("zeptoclaw/inbox/node-17"),
+                extract_device_id("claide/inbox/node-17"),
                 Some("node-17")
             );
             assert_eq!(
-                extract_device_id("zeptoclaw/inbox/esp32-0"),
+                extract_device_id("claide/inbox/esp32-0"),
                 Some("esp32-0")
             );
             assert_eq!(extract_device_id("single"), Some("single"));
@@ -511,9 +511,9 @@ mod inner {
             let config = MqttChannelConfig::default();
             assert!(!config.enabled);
             assert_eq!(config.broker_url, "mqtt://localhost:1883");
-            assert_eq!(config.client_id, "zeptoclaw-agent");
-            assert_eq!(config.subscribe_topics, vec!["zeptoclaw/inbox/#"]);
-            assert_eq!(config.publish_prefix, "zeptoclaw/outbox");
+            assert_eq!(config.client_id, "claide-agent");
+            assert_eq!(config.subscribe_topics, vec!["claide/inbox/#"]);
+            assert_eq!(config.publish_prefix, "claide/outbox");
             assert_eq!(config.qos, 1);
             assert!(config.username.is_empty());
             assert!(config.password.is_empty());

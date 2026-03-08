@@ -1,4 +1,4 @@
-// Login page — password entry form for the ZeptoClaw panel.
+// Login page — password entry form for the Claide panel.
 //
 // Shown when the user has no valid token in localStorage.
 // On successful login the parent (App.tsx) re-renders with isAuthenticated=true
@@ -29,7 +29,7 @@ export default function Login({ login, error, loading }: LoginProps) {
         {/* Logo / wordmark */}
         <div className="mb-8 text-center">
           <span className="text-2xl font-bold tracking-tight text-zinc-100">
-            ZeptoClaw
+            Claide
           </span>
           <p className="mt-1 text-sm text-zinc-500">Control Panel</p>
         </div>

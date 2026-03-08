@@ -1,6 +1,6 @@
 //! JSON-based registry tracking installed dependency state.
 //!
-//! Persists to `~/.zeptoclaw/deps/registry.json`.
+//! Persists to `~/.claide/deps/registry.json`.
 
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -113,7 +113,7 @@ impl Registry {
     pub fn default_path() -> PathBuf {
         dirs::home_dir()
             .unwrap_or_else(|| PathBuf::from("."))
-            .join(".zeptoclaw/deps/registry.json")
+            .join(".claide/deps/registry.json")
     }
 }
 
@@ -127,7 +127,7 @@ mod tests {
             kind: "binary".to_string(),
             version: "v0.1.0".to_string(),
             installed_at: "2026-02-14T10:00:00Z".to_string(),
-            path: format!("~/.zeptoclaw/deps/bin/{}", name),
+            path: format!("~/.claide/deps/bin/{}", name),
             running: false,
             pid: None,
         }
@@ -219,7 +219,7 @@ mod tests {
 
     #[test]
     fn test_registry_save_and_load() {
-        let dir = std::env::temp_dir().join("zeptoclaw_test_registry");
+        let dir = std::env::temp_dir().join("claide_test_registry");
         let _ = fs::remove_dir_all(&dir);
         fs::create_dir_all(&dir).unwrap();
         let path = dir.join("registry.json");
@@ -236,14 +236,14 @@ mod tests {
 
     #[test]
     fn test_registry_load_nonexistent() {
-        let path = PathBuf::from("/tmp/nonexistent_zeptoclaw_registry.json");
+        let path = PathBuf::from("/tmp/nonexistent_claide_registry.json");
         let reg = Registry::load(&path).unwrap();
         assert!(reg.names().is_empty());
     }
 
     #[test]
     fn test_registry_load_empty_file() {
-        let dir = std::env::temp_dir().join("zeptoclaw_test_registry_empty");
+        let dir = std::env::temp_dir().join("claide_test_registry_empty");
         let _ = fs::remove_dir_all(&dir);
         fs::create_dir_all(&dir).unwrap();
         let path = dir.join("registry.json");
@@ -259,6 +259,6 @@ mod tests {
     fn test_registry_default_path() {
         let path = Registry::default_path();
         let path_str = path.to_string_lossy();
-        assert!(path_str.contains(".zeptoclaw/deps/registry.json"));
+        assert!(path_str.contains(".claide/deps/registry.json"));
     }
 }

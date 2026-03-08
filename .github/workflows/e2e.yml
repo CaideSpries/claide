@@ -22,7 +22,7 @@ jobs:
 
       - name: Run E2E tests with Docker
         env:
-          ZEPTOCLAW_E2E_DOCKER: "1"
+          CLAIDE_E2E_DOCKER: "1"
         run: cargo test --test e2e
 
   e2e-live:
@@ -34,8 +34,8 @@ jobs:
       - uses: Swatinem/rust-cache@779680da715d629ac1d338a641029a2f4372abb5 # v2.8.2
 
       - name: Run E2E tests with live providers
-        if: env.ZEPTOCLAW_PROVIDERS_ANTHROPIC_API_KEY != ''
+        if: env.CLAIDE_PROVIDERS_ANTHROPIC_API_KEY != ''
         env:
-          ZEPTOCLAW_E2E_LIVE: "1"
-          ZEPTOCLAW_PROVIDERS_ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          CLAIDE_E2E_LIVE: "1"
+          CLAIDE_PROVIDERS_ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: cargo test --test e2e

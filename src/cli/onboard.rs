@@ -1,12 +1,12 @@
-//! Interactive onboarding wizard (zeptoclaw onboard).
+//! Interactive onboarding wizard (claide onboard).
 
 use std::io::{self, Write};
 
 use anyhow::{Context, Result};
 
-use zeptoclaw::channels::persona_switch;
-use zeptoclaw::config::{Config, MemoryBackend, MemoryCitationsMode, RuntimeType};
-use zeptoclaw::providers::configured_provider_names;
+use claide::channels::persona_switch;
+use claide::config::{Config, MemoryBackend, MemoryCitationsMode, RuntimeType};
+use claide::providers::configured_provider_names;
 
 use super::common::{memory_backend_label, memory_citations_label, read_line, read_secret};
 
@@ -36,9 +36,9 @@ async fn configure_providers(config: &mut Config) -> Result<()> {
             println!("Skipping API key setup. You can configure later by:");
             println!("  - Editing {:?}", config_path);
             println!("  - Setting environment variables:");
-            println!("    ZEPTOCLAW_PROVIDERS_ANTHROPIC_API_KEY=sk-ant-...");
-            println!("    ZEPTOCLAW_PROVIDERS_OPENAI_API_KEY=sk-...");
-            println!("    ZEPTOCLAW_PROVIDERS_OPENROUTER_API_KEY=sk-or-...");
+            println!("    CLAIDE_PROVIDERS_ANTHROPIC_API_KEY=sk-ant-...");
+            println!("    CLAIDE_PROVIDERS_OPENAI_API_KEY=sk-...");
+            println!("    CLAIDE_PROVIDERS_OPENROUTER_API_KEY=sk-or-...");
             return Ok(());
         }
 
@@ -73,9 +73,9 @@ async fn configure_providers(config: &mut Config) -> Result<()> {
             println!("Skipping API key setup. You can configure later by:");
             println!("  - Editing {:?}", config_path);
             println!("  - Setting environment variables:");
-            println!("    ZEPTOCLAW_PROVIDERS_ANTHROPIC_API_KEY=sk-ant-...");
-            println!("    ZEPTOCLAW_PROVIDERS_OPENAI_API_KEY=sk-...");
-            println!("    ZEPTOCLAW_PROVIDERS_OPENROUTER_API_KEY=sk-or-...");
+            println!("    CLAIDE_PROVIDERS_ANTHROPIC_API_KEY=sk-ant-...");
+            println!("    CLAIDE_PROVIDERS_OPENAI_API_KEY=sk-...");
+            println!("    CLAIDE_PROVIDERS_OPENROUTER_API_KEY=sk-or-...");
             return Ok(());
         }
 
@@ -126,13 +126,13 @@ async fn configure_providers(config: &mut Config) -> Result<()> {
 fn express_next_steps() -> String {
     [
         "",
-        "ZeptoClaw ready!",
+        "Claide ready!",
         "",
-        "Try: zeptoclaw agent -m \"What can you help me with?\"",
-        "Or:  zeptoclaw agent -m \"Summarize https://news.ycombinator.com\"",
+        "Try: claide agent -m \"What can you help me with?\"",
+        "Or:  claide agent -m \"Summarize https://news.ycombinator.com\"",
         "",
-        "Run 'zeptoclaw onboard --full' for advanced setup (channels, heartbeat, runtime).",
-        "Run 'zeptoclaw status' to see your configuration.",
+        "Run 'claide onboard --full' for advanced setup (channels, heartbeat, runtime).",
+        "Run 'claide status' to see your configuration.",
     ]
     .join("\n")
 }
@@ -205,9 +205,9 @@ fn configure_soul(config: &Config) -> Result<()> {
 /// steps.  When `full` is true, runs the full 10-step interactive wizard.
 pub(crate) async fn cmd_onboard(full: bool) -> Result<()> {
     // Check for existing OpenClaw installation
-    if let Some(oc_dir) = zeptoclaw::migrate::detect_openclaw_dir() {
+    if let Some(oc_dir) = claide::migrate::detect_openclaw_dir() {
         println!("Detected OpenClaw installation at: {}", oc_dir.display());
-        println!("Run 'zeptoclaw migrate' to import your config and skills.");
+        println!("Run 'claide migrate' to import your config and skills.");
         println!();
     }
 
@@ -235,7 +235,7 @@ pub(crate) async fn cmd_onboard(full: bool) -> Result<()> {
 
     if full {
         // ---------- full 10-step wizard ----------
-        println!("Initializing ZeptoClaw (full wizard)...");
+        println!("Initializing Claide (full wizard)...");
         println!();
         println!("  Config directory: {:?}", config_dir);
         println!("  Workspace directory: {:?}", workspace_dir);
@@ -278,15 +278,15 @@ pub(crate) async fn cmd_onboard(full: bool) -> Result<()> {
             .with_context(|| "Failed to save configuration")?;
 
         println!();
-        println!("ZeptoClaw initialized successfully!");
+        println!("Claide initialized successfully!");
         println!();
         println!("Next steps:");
-        println!("  1. Run 'zeptoclaw agent' to start the interactive agent");
-        println!("  2. Run 'zeptoclaw gateway' to start the multi-channel gateway");
-        println!("  3. Run 'zeptoclaw status' to check your configuration");
+        println!("  1. Run 'claide agent' to start the interactive agent");
+        println!("  2. Run 'claide gateway' to start the multi-channel gateway");
+        println!("  3. Run 'claide status' to check your configuration");
     } else {
         // ---------- express mode (default) ----------
-        println!("Initializing ZeptoClaw...");
+        println!("Initializing Claide...");
         println!();
 
         configure_providers(&mut config).await?;
@@ -621,7 +621,7 @@ fn configure_anthropic_subscription_token(config: &mut Config) -> Result<()> {
     };
 
     let now = chrono::Utc::now().timestamp();
-    let tokens = zeptoclaw::auth::OAuthTokenSet {
+    let tokens = claide::auth::OAuthTokenSet {
         provider: "anthropic".to_string(),
         access_token,
         refresh_token,
@@ -629,12 +629,12 @@ fn configure_anthropic_subscription_token(config: &mut Config) -> Result<()> {
         token_type: "Bearer".to_string(),
         scope: None,
         obtained_at: now,
-        client_id: Some(zeptoclaw::auth::CLAUDE_CODE_CLIENT_ID.to_string()),
+        client_id: Some(claide::auth::CLAUDE_CODE_CLIENT_ID.to_string()),
     };
 
-    let encryption = zeptoclaw::security::encryption::resolve_master_key(true)
+    let encryption = claide::security::encryption::resolve_master_key(true)
         .map_err(|e| anyhow::anyhow!("Cannot store tokens without encryption key: {}", e))?;
-    let store = zeptoclaw::auth::store::TokenStore::new(encryption);
+    let store = claide::auth::store::TokenStore::new(encryption);
     store
         .save(&tokens)
         .map_err(|e| anyhow::anyhow!("Failed to save tokens: {}", e))?;
@@ -785,7 +785,7 @@ fn configure_telegram(config: &mut Config) -> Result<()> {
         telegram_config.token = token;
         telegram_config.enabled = true;
         println!("  Telegram bot configured.");
-        println!("  Run 'zeptoclaw gateway' to start the bot.");
+        println!("  Run 'claide gateway' to start the bot.");
     } else {
         println!("  Skipped Telegram configuration.");
     }
@@ -836,7 +836,7 @@ fn configure_whatsapp_channel(config: &mut Config) -> Result<()> {
         "  WhatsApp channel configured (bridge: {}).",
         whatsapp_config.bridge_url
     );
-    println!("  Run 'zeptoclaw gateway' to start the WhatsApp channel.");
+    println!("  Run 'claide gateway' to start the WhatsApp channel.");
     Ok(())
 }
 
@@ -927,10 +927,10 @@ mod tests {
     #[test]
     fn test_express_next_steps_message() {
         let msg = express_next_steps();
-        assert!(msg.contains("ZeptoClaw ready!"));
-        assert!(msg.contains("zeptoclaw agent -m"));
-        assert!(msg.contains("zeptoclaw onboard --full"));
-        assert!(msg.contains("zeptoclaw status"));
+        assert!(msg.contains("Claide ready!"));
+        assert!(msg.contains("claide agent -m"));
+        assert!(msg.contains("claide onboard --full"));
+        assert!(msg.contains("claide status"));
         assert!(msg.contains("Summarize https://news.ycombinator.com"));
     }
 }

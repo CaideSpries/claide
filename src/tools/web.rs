@@ -23,7 +23,7 @@ use super::{Tool, ToolCategory, ToolContext, ToolOutput};
 
 const BRAVE_API_URL: &str = "https://api.search.brave.com/res/v1/web/search";
 const DDG_HTML_URL: &str = "https://html.duckduckgo.com/html/";
-const WEB_USER_AGENT: &str = "zeptoclaw/0.1 (+https://github.com/zeptoclaw/zeptoclaw)";
+const WEB_USER_AGENT: &str = "claide/0.1 (+https://github.com/claide/claide)";
 const MAX_WEB_SEARCH_COUNT: usize = 10;
 const DEFAULT_MAX_FETCH_CHARS: usize = 50_000;
 const MAX_FETCH_CHARS: usize = 200_000;

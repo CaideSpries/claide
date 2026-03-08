@@ -1,7 +1,7 @@
 //! Tools CLI command handlers — tool discovery and info.
 
 use anyhow::Result;
-use zeptoclaw::config::Config;
+use claide::config::Config;
 
 use super::ToolsAction;
 
@@ -120,7 +120,7 @@ const TOOLS: &[ToolInfo] = &[
         name: "google",
         description: "Gmail + Calendar (search, read, send, schedule)",
         requires_config: true,
-        config_hint: "Run `zeptoclaw auth login google` or set tools.google.access_token",
+        config_hint: "Run `claide auth login google` or set tools.google.access_token",
     },
     ToolInfo {
         name: "r8r",
@@ -184,7 +184,7 @@ async fn cmd_tools_info(name: String) -> Result<()> {
         }
         None => {
             println!(
-                "Unknown tool '{}'. Run 'zeptoclaw tools list' to see all tools.",
+                "Unknown tool '{}'. Run 'claide tools list' to see all tools.",
                 name
             );
         }

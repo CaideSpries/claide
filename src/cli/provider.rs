@@ -1,12 +1,12 @@
 //! Provider chain status command handler.
 
 use anyhow::Result;
-use zeptoclaw::config::Config;
-use zeptoclaw::providers::{resolve_runtime_providers, QuotaStore};
+use claide::config::Config;
+use claide::providers::{resolve_runtime_providers, QuotaStore};
 
 use super::ProviderSubcommand;
 
-/// Handle `zeptoclaw provider` subcommands.
+/// Handle `claide provider` subcommands.
 pub(crate) fn cmd_provider(action: ProviderSubcommand) -> Result<()> {
     match action {
         ProviderSubcommand::Status => print_provider_status(),
@@ -27,7 +27,7 @@ fn print_provider_status() -> Result<()> {
 
     if selections.is_empty() {
         println!("No providers configured.");
-        println!("Set an API key in ~/.zeptoclaw/config.json or via environment variable.");
+        println!("Set an API key in ~/.claide/config.json or via environment variable.");
         return Ok(());
     }
 

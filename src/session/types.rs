@@ -1,4 +1,4 @@
-//! Session types for ZeptoClaw
+//! Session types for Claide
 //!
 //! This module defines the core types for session and conversation management,
 //! including messages, roles, and tool calls.
@@ -32,7 +32,7 @@ impl Session {
     ///
     /// # Example
     /// ```
-    /// use zeptoclaw::session::Session;
+    /// use claide::session::Session;
     ///
     /// let session = Session::new("telegram:chat123");
     /// assert!(session.messages.is_empty());
@@ -57,7 +57,7 @@ impl Session {
     ///
     /// # Example
     /// ```
-    /// use zeptoclaw::session::{Session, Message};
+    /// use claide::session::{Session, Message};
     ///
     /// let mut session = Session::new("test");
     /// session.add_message(Message::user("Hello!"));
@@ -74,7 +74,7 @@ impl Session {
     ///
     /// # Example
     /// ```
-    /// use zeptoclaw::session::{Session, Message};
+    /// use claide::session::{Session, Message};
     ///
     /// let mut session = Session::new("test");
     /// session.add_message(Message::user("Hello!"));
@@ -173,7 +173,7 @@ impl Message {
     ///
     /// # Example
     /// ```
-    /// use zeptoclaw::session::{Message, Role};
+    /// use claide::session::{Message, Role};
     ///
     /// let msg = Message::user("Hello, assistant!");
     /// assert_eq!(msg.role, Role::User);
@@ -197,7 +197,7 @@ impl Message {
     ///
     /// # Example
     /// ```
-    /// use zeptoclaw::session::{Message, Role};
+    /// use claide::session::{Message, Role};
     ///
     /// let msg = Message::assistant("Hello, user!");
     /// assert_eq!(msg.role, Role::Assistant);
@@ -223,7 +223,7 @@ impl Message {
     ///
     /// # Example
     /// ```
-    /// use zeptoclaw::session::{Message, Role};
+    /// use claide::session::{Message, Role};
     ///
     /// let msg = Message::system("You are a helpful assistant.");
     /// assert_eq!(msg.role, Role::System);
@@ -250,7 +250,7 @@ impl Message {
     ///
     /// # Example
     /// ```
-    /// use zeptoclaw::session::{Message, Role};
+    /// use claide::session::{Message, Role};
     ///
     /// let msg = Message::tool_result("call_123", "Tool executed successfully");
     /// assert_eq!(msg.role, Role::Tool);
@@ -276,7 +276,7 @@ impl Message {
     ///
     /// # Example
     /// ```
-    /// use zeptoclaw::session::{Message, ToolCall, Role};
+    /// use claide::session::{Message, ToolCall, Role};
     ///
     /// let tool_call = ToolCall::new("call_1", "search", r#"{"query": "rust"}"#);
     /// let msg = Message::assistant_with_tools("Let me search for that.", vec![tool_call]);
@@ -391,7 +391,7 @@ impl ToolCall {
     ///
     /// # Example
     /// ```
-    /// use zeptoclaw::session::ToolCall;
+    /// use claide::session::ToolCall;
     ///
     /// let call = ToolCall::new("call_123", "web_search", r#"{"query": "rust programming"}"#);
     /// assert_eq!(call.name, "web_search");

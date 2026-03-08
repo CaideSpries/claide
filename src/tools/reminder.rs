@@ -119,7 +119,7 @@ pub struct ReminderStore {
 }
 
 impl ReminderStore {
-    /// Create a new store at the default path (`~/.zeptoclaw/reminders.json`).
+    /// Create a new store at the default path (`~/.claide/reminders.json`).
     pub fn new() -> Result<Self> {
         let path = Config::dir().join("reminders.json");
         Self::with_path(path)

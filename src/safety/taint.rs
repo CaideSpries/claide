@@ -17,7 +17,7 @@
 //! # Example
 //!
 //! ```
-//! use zeptoclaw::safety::taint::{TaintConfig, TaintEngine, TaintLabel};
+//! use claide::safety::taint::{TaintConfig, TaintEngine, TaintLabel};
 //!
 //! let mut engine = TaintEngine::new(TaintConfig::default());
 //!

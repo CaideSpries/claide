@@ -2,7 +2,7 @@
 
 use anyhow::{Context, Result};
 
-use zeptoclaw::config::Config;
+use claide::config::Config;
 
 use super::ConfigAction;
 
@@ -29,23 +29,23 @@ pub(crate) async fn cmd_config(action: ConfigAction) -> Result<()> {
                 }
             };
 
-            let diagnostics = zeptoclaw::config::validate::validate_config(&raw);
+            let diagnostics = claide::config::validate::validate_config(&raw);
             for diag in &diagnostics {
                 println!("{}", diag);
             }
 
             let errors = diagnostics
                 .iter()
-                .filter(|d| d.level == zeptoclaw::config::validate::DiagnosticLevel::Error)
+                .filter(|d| d.level == claide::config::validate::DiagnosticLevel::Error)
                 .count();
             let mut warnings = diagnostics
                 .iter()
-                .filter(|d| d.level == zeptoclaw::config::validate::DiagnosticLevel::Warn)
+                .filter(|d| d.level == claide::config::validate::DiagnosticLevel::Warn)
                 .count();
 
             // Validate custom tool definitions
             let config = Config::load().unwrap_or_default();
-            let tool_warnings = zeptoclaw::config::validate::validate_custom_tools(&config);
+            let tool_warnings = claide::config::validate::validate_custom_tools(&config);
             for w in &tool_warnings {
                 println!("[WARN] {}", w);
             }

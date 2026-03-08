@@ -7,7 +7,7 @@
 //! # Architecture
 //!
 //! Landlock restrictions are applied in the **child process** via `pre_exec`,
-//! so the parent (ZeptoClaw) process is never restricted. The child inherits
+//! so the parent (Claide) process is never restricted. The child inherits
 //! the Landlock ruleset after fork but before exec.
 //!
 //! When the `sandbox-landlock` feature is not enabled, `execute()` returns
@@ -112,7 +112,7 @@ fn execute_with_landlock_inner(
     }
 
     // Apply Landlock in the child process (after fork, before exec).
-    // This ensures the parent ZeptoClaw process is never restricted.
+    // This ensures the parent Claide process is never restricted.
     let ll_config_clone = ll_config.clone();
     // SAFETY: We only call async-signal-safe operations in the pre_exec closure.
     // `landlock::Ruleset` operations use only synchronous syscalls (landlock_create_ruleset,

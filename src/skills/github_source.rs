@@ -159,7 +159,7 @@ pub async fn search_github(
 
     let response = client
         .get(&url)
-        .header("User-Agent", "zeptoclaw")
+        .header("User-Agent", "claide")
         .header("Accept", "application/vnd.github.v3+json")
         .send()
         .await?;
@@ -198,7 +198,7 @@ mod tests {
                 spdx_id: Some("MIT".into()),
             }),
             updated_at: "2026-02-20T00:00:00Z".into(),
-            topics: vec!["zeptoclaw-skill".into()],
+            topics: vec!["claide-skill".into()],
         };
         let score = compute_quality_score(&result, true);
         assert!(
@@ -250,15 +250,15 @@ mod tests {
 
     #[test]
     fn test_build_search_url() {
-        let url = build_search_url("web scraping", &["zeptoclaw-skill"]);
+        let url = build_search_url("web scraping", &["claide-skill"]);
         assert!(url.contains("web+scraping"));
-        assert!(url.contains("topic:zeptoclaw-skill"));
+        assert!(url.contains("topic:claide-skill"));
     }
 
     #[test]
     fn test_build_search_url_multiple_topics() {
-        let url = build_search_url("test", &["zeptoclaw-skill", "openclaw-skill"]);
-        assert!(url.contains("topic:zeptoclaw-skill"));
+        let url = build_search_url("test", &["claide-skill", "openclaw-skill"]);
+        assert!(url.contains("topic:claide-skill"));
         assert!(url.contains("topic:openclaw-skill"));
     }
 
@@ -274,7 +274,7 @@ mod tests {
                 "stargazers_count": 42,
                 "license": {"spdx_id": "MIT"},
                 "updated_at": "2026-02-20T00:00:00Z",
-                "topics": ["zeptoclaw-skill"]
+                "topics": ["claide-skill"]
             }]
         });
         let response: GitHubSearchResponse = serde_json::from_value(json).unwrap();
@@ -294,7 +294,7 @@ mod tests {
                 spdx_id: Some("MIT".into()),
             }),
             updated_at: "2026-02-20T00:00:00Z".into(),
-            topics: vec!["zeptoclaw-skill".into()],
+            topics: vec!["claide-skill".into()],
         };
         let result = SkillSearchResult::from_github(repo, 0.8);
         assert_eq!(result.source, SkillSource::GitHub);

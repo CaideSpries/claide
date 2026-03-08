@@ -1,4 +1,4 @@
-# Contributing to ZeptoClaw
+# Contributing to Claide
 
 Thanks for your interest in contributing! Here's how to get started.
 
@@ -6,8 +6,8 @@ Thanks for your interest in contributing! Here's how to get started.
 
 ```bash
 # Fork and clone
-git clone https://github.com/YOUR_USERNAME/zeptoclaw.git
-cd zeptoclaw
+git clone https://github.com/YOUR_USERNAME/claide.git
+cd claide
 
 # Build
 cargo build
@@ -26,14 +26,14 @@ cargo fmt --check
 
 ```bash
 # One-time setup: add upstream remote
-git remote add upstream https://github.com/qhkm/zeptoclaw.git
+git remote add upstream https://github.com/qhkm/claide.git
 
 # Start every new feature branch from upstream
 git fetch upstream
 git checkout -b feat/my-feature upstream/main
 # ... work ...
 git push origin feat/my-feature
-# Open PR against qhkm/zeptoclaw main
+# Open PR against qhkm/claide main
 ```
 
 **Do not** merge your feature branches into your fork's `main`. Keep your fork's `main` as a clean mirror of upstream:

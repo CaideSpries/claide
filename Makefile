@@ -1,6 +1,6 @@
-.PHONY: build build-release install clean test lint fmt check all deploy deploy-zeptoclaw deploy-r8r setup
+.PHONY: build build-release install clean test lint fmt check all deploy deploy-claide deploy-r8r setup
 
-BINARY_NAME := zeptoclaw
+BINARY_NAME := claide
 BUILD_DIR := target
 INSTALL_DIR := $(HOME)/.local/bin
 
@@ -78,9 +78,9 @@ run-interactive:
 run-gateway:
 	cargo run -- gateway
 
-# Deploy zeptoclaw landing + docs to Cloudflare Pages
-deploy-zeptoclaw:
-	bash landing/deploy.sh zeptoclaw
+# Deploy claide landing + docs to Cloudflare Pages
+deploy-claide:
+	bash landing/deploy.sh claide
 
 # Deploy r8r landing to Cloudflare Pages
 deploy-r8r:
@@ -92,7 +92,7 @@ deploy:
 
 # Show help
 help:
-	@echo "ZeptoClaw Rust - Build Commands"
+	@echo "Claide Rust - Build Commands"
 	@echo ""
 	@echo "Development:"
 	@echo "  make build          - Debug build"
@@ -114,7 +114,7 @@ help:
 	@echo "  make uninstall      - Remove from ~/.local/bin"
 	@echo ""
 	@echo "Deploy:"
-	@echo "  make deploy-zeptoclaw - Deploy zeptoclaw landing + docs"
+	@echo "  make deploy-claide - Deploy claide landing + docs"
 	@echo "  make deploy-r8r       - Deploy r8r landing"
 	@echo "  make deploy           - Deploy all landing pages"
 	@echo ""

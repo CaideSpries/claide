@@ -4,7 +4,7 @@
 #
 # This file applies rustflags globally so the cfg reaches the getrandom crate.
 # Note: .cargo/config.toml is NOT included in crates.io publishes. Users installing
-# via `cargo install zeptoclaw` on RISC-V must set RUSTFLAGS manually:
-#   RUSTFLAGS='--cfg getrandom_backend="linux_raw"' cargo install zeptoclaw
+# via `cargo install claide` on RISC-V must set RUSTFLAGS manually:
+#   RUSTFLAGS='--cfg getrandom_backend="linux_raw"' cargo install claide
 [target.riscv64gc-unknown-linux-musl]
 rustflags = ['--cfg', 'getrandom_backend="linux_raw"']

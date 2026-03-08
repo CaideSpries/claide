@@ -1,29 +1,29 @@
-# ZeptoClaw on DigitalOcean App Platform
+# Claide on DigitalOcean App Platform
 #
 # Deploy:
 #   1. Install doctl:    brew install doctl   (or https://docs.digitalocean.com/reference/doctl/how-to/install/)
 #   2. Login:            doctl auth init
 #   3. Create app:       doctl apps create --spec deploy/digitalocean.yaml
 #   4. Set secrets in dashboard:
-#        ZEPTOCLAW_PROVIDERS_ANTHROPIC_API_KEY
-#        ZEPTOCLAW_CHANNELS_TELEGRAM_BOT_TOKEN
+#        CLAIDE_PROVIDERS_ANTHROPIC_API_KEY
+#        CLAIDE_CHANNELS_TELEGRAM_BOT_TOKEN
 #   5. Redeploy:         doctl apps create-deployment <app-id>
 #
 # Docs: https://docs.digitalocean.com/products/app-platform/reference/app-spec/
 # Pricing: https://docs.digitalocean.com/products/app-platform/details/pricing/
 
 spec:
-  name: zeptoclaw
+  name: claide
   region: sgp
 
   workers:
-    - name: zeptoclaw-worker
+    - name: claide-worker
       github:
-        repo: qhkm/zeptoclaw
+        repo: qhkm/claide
         branch: main
         deploy_on_push: true
       dockerfile_path: Dockerfile
-      run_command: zeptoclaw gateway
+      run_command: claide gateway
       instance_size_slug: apps-s-1vcpu-0.5gb
       instance_count: 1
       health_check:
@@ -36,14 +36,14 @@ spec:
         failure_threshold: 3
       envs:
         - key: RUST_LOG
-          value: "zeptoclaw=info"
+          value: "claide=info"
           scope: RUN_TIME
         - key: RUST_LOG_FORMAT
           value: "json"
           scope: RUN_TIME
-        - key: ZEPTOCLAW_PROVIDERS_ANTHROPIC_API_KEY
+        - key: CLAIDE_PROVIDERS_ANTHROPIC_API_KEY
           type: SECRET
           scope: RUN_TIME
-        - key: ZEPTOCLAW_CHANNELS_TELEGRAM_BOT_TOKEN
+        - key: CLAIDE_CHANNELS_TELEGRAM_BOT_TOKEN
           type: SECRET
           scope: RUN_TIME

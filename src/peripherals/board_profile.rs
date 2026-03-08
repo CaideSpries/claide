@@ -8,7 +8,7 @@
 //! # Example
 //!
 //! ```
-//! use zeptoclaw::peripherals::board_profile::{profile_for, ESP32_PROFILE};
+//! use claide::peripherals::board_profile::{profile_for, ESP32_PROFILE};
 //!
 //! let profile = profile_for("esp32").unwrap();
 //! assert!(profile.is_valid_gpio(21));

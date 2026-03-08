@@ -271,7 +271,7 @@ mod tests {
         let dir = tempdir().unwrap();
         fs::write(
             dir.path().join("MEMORY.md"),
-            "User preference: concise answers\nProject: ZeptoClaw\n",
+            "User preference: concise answers\nProject: Claide\n",
         )
         .unwrap();
 

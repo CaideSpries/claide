@@ -1,4 +1,4 @@
-//! OpenClaw config → ZeptoClaw config conversion.
+//! OpenClaw config → Claide config conversion.
 
 use serde_json::Value;
 
@@ -13,7 +13,7 @@ pub struct MigrationConfigResult {
     pub not_portable: Vec<String>,
 }
 
-/// Convert an OpenClaw config (parsed JSON `Value`) into a ZeptoClaw `Config`,
+/// Convert an OpenClaw config (parsed JSON `Value`) into a Claide `Config`,
 /// merging into `existing`. Returns what was migrated, skipped, and not portable.
 pub fn convert_config(openclaw: &Value, existing: &mut Config) -> MigrationConfigResult {
     let mut migrated = Vec::new();
@@ -81,7 +81,7 @@ pub fn convert_config(openclaw: &Value, existing: &mut Config) -> MigrationConfi
         migrated.push("channels.discord.token".into());
     }
 
-    // Slack — OpenClaw uses "token", ZeptoClaw uses "bot_token"
+    // Slack — OpenClaw uses "token", Claide uses "bot_token"
     if let Some(token) = str_at(openclaw, &["channels", "slack", "token"]) {
         let sl = existing
             .channels
@@ -216,7 +216,7 @@ fn check_not_portable(
     // session.scope / dmScope
     if pointer(oc, &["session", "scope"]).is_some() {
         not_portable
-            .push("session.scope — ZeptoClaw uses container-per-request isolation instead".into());
+            .push("session.scope — Claide uses container-per-request isolation instead".into());
     }
     if pointer(oc, &["session", "dmScope"]).is_some() {
         not_portable.push("session.dmScope — use allow_from allowlists per channel".into());
@@ -224,7 +224,7 @@ fn check_not_portable(
 
     // tools.profile
     if pointer(oc, &["tools", "profile"]).is_some() {
-        not_portable.push("tools.profile — use ZeptoClaw's approval gate instead".into());
+        not_portable.push("tools.profile — use Claide's approval gate instead".into());
     }
 
     // tools.exec.host: "sandbox"
@@ -237,7 +237,7 @@ fn check_not_portable(
         if provider != "brave" {
             skipped.push((
                 format!("tools.web.search.provider: {}", provider),
-                "ZeptoClaw supports Brave Search only".into(),
+                "Claide supports Brave Search only".into(),
             ));
         }
     }
@@ -249,7 +249,7 @@ fn check_not_portable(
 
     // auth.profiles (OAuth)
     if pointer(oc, &["auth", "profiles"]).is_some() {
-        not_portable.push("auth.profiles — ZeptoClaw uses API key authentication only".into());
+        not_portable.push("auth.profiles — Claide uses API key authentication only".into());
     }
 
     // browser.*
@@ -280,7 +280,7 @@ fn check_not_portable(
 
     // plugins.installs
     if pointer(oc, &["plugins", "installs"]).is_some() {
-        not_portable.push("plugins.installs — ZeptoClaw uses a different plugin system".into());
+        not_portable.push("plugins.installs — Claide uses a different plugin system".into());
     }
 }
 

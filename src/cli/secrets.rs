@@ -1,14 +1,14 @@
 //! Secret encryption CLI commands.
 //!
-//! Provides `zeptoclaw secrets encrypt|decrypt|rotate` to manage
-//! encrypted secrets in `~/.zeptoclaw/config.json`.
+//! Provides `claide secrets encrypt|decrypt|rotate` to manage
+//! encrypted secrets in `~/.claide/config.json`.
 
 use anyhow::Result;
 use serde_json::Value;
 
 use super::SecretsAction;
-use zeptoclaw::config::Config;
-use zeptoclaw::security::encryption::{is_secret_field, resolve_master_key, SecretEncryption};
+use claide::config::Config;
+use claide::security::encryption::{is_secret_field, resolve_master_key, SecretEncryption};
 
 /// Dispatch secrets subcommands.
 pub(crate) async fn cmd_secrets(action: SecretsAction) -> Result<()> {
@@ -241,7 +241,7 @@ mod tests {
             "agents": {
                 "defaults": {
                     "model": "gpt-4",
-                    "workspace": "~/.zeptoclaw/workspace"
+                    "workspace": "~/.claide/workspace"
                 }
             }
         });

@@ -4,7 +4,7 @@
     "dockerfilePath": "../Dockerfile"
   },
   "deploy": {
-    "startCommand": "zeptoclaw gateway",
+    "startCommand": "claide gateway",
     "healthcheckPath": "/healthz",
     "healthcheckTimeout": 5,
     "restartPolicyType": "ON_FAILURE",

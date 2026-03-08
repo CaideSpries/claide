@@ -1,4 +1,4 @@
-//! HTTP health server for ZeptoClaw.
+//! HTTP health server for Claide.
 //!
 //! Exposes `/health` (liveness) and `/ready` (readiness) endpoints.
 //! Components register named checks via [`HealthRegistry`].
@@ -194,7 +194,7 @@ impl Default for HealthCheck {
 ///
 /// # Example
 /// ```
-/// use zeptoclaw::health::{HealthRegistry, HealthCheck, HealthStatus};
+/// use claide::health::{HealthRegistry, HealthCheck, HealthStatus};
 /// let registry = HealthRegistry::new();
 /// registry.register(HealthCheck { name: "provider".into(), status: HealthStatus::Ok, ..Default::default() });
 /// assert!(registry.is_ready());
@@ -650,10 +650,10 @@ pub fn start_periodic_usage_flush(
 // Legacy port helper
 // ============================================================================
 
-/// Resolve the health server port from `ZEPTOCLAW_HEALTH_PORT` env var,
+/// Resolve the health server port from `CLAIDE_HEALTH_PORT` env var,
 /// falling back to the compiled-in default (9090).
 pub fn health_port() -> u16 {
-    std::env::var("ZEPTOCLAW_HEALTH_PORT")
+    std::env::var("CLAIDE_HEALTH_PORT")
         .ok()
         .and_then(|v| v.parse().ok())
         .unwrap_or(DEFAULT_HEALTH_PORT)
@@ -836,7 +836,7 @@ mod tests {
 
     #[test]
     fn test_health_port_default() {
-        std::env::remove_var("ZEPTOCLAW_HEALTH_PORT");
+        std::env::remove_var("CLAIDE_HEALTH_PORT");
         assert_eq!(health_port(), DEFAULT_HEALTH_PORT);
     }
 

@@ -490,10 +490,10 @@ impl Channel for EmailChannel {
                         msg.content[pos + 1..].to_string(),
                     )
                 } else {
-                    ("ZeptoClaw Message".to_string(), msg.content.clone())
+                    ("Claide Message".to_string(), msg.content.clone())
                 }
             } else {
-                ("ZeptoClaw Message".to_string(), msg.content.clone())
+                ("Claide Message".to_string(), msg.content.clone())
             };
 
             let from_addr = if let Some(ref name) = self.config.display_name {

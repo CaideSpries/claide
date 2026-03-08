@@ -6170,7 +6170,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "zeptoclaw"
+name = "claide"
 version = "0.7.0"
 dependencies = [
  "aho-corasick",

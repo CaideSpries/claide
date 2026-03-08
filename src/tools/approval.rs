@@ -1,4 +1,4 @@
-//! Tool approval system for ZeptoClaw
+//! Tool approval system for Claide
 //!
 //! This module provides a configurable approval gate that can require user
 //! confirmation before certain tools are executed. When enabled, the approval
@@ -29,7 +29,7 @@
 //! # Example
 //!
 //! ```rust
-//! use zeptoclaw::tools::approval::{ApprovalConfig, ApprovalGate};
+//! use claide::tools::approval::{ApprovalConfig, ApprovalGate};
 //!
 //! let config = ApprovalConfig::default();
 //! let gate = ApprovalGate::new(config);
@@ -206,7 +206,7 @@ pub enum ApprovalResponse {
 /// # Example
 ///
 /// ```rust
-/// use zeptoclaw::tools::approval::{ApprovalConfig, ApprovalPolicyConfig, ApprovalGate};
+/// use claide::tools::approval::{ApprovalConfig, ApprovalPolicyConfig, ApprovalGate};
 ///
 /// let config = ApprovalConfig {
 ///     enabled: true,

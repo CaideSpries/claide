@@ -1,6 +1,6 @@
 //! Hardware discovery -- USB device enumeration, board registry, and introspection.
 //!
-//! This module provides hardware discovery capabilities for ZeptoClaw:
+//! This module provides hardware discovery capabilities for Claide:
 //!
 //! - **Board registry** (`registry`): Static VID/PID to board name mapping (always compiled)
 //! - **USB discovery** (`discover`): Enumerate connected USB devices (feature-gated: `hardware`)

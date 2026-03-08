@@ -169,7 +169,7 @@ mod tests {
     #[test]
     fn test_engine_from_empty_store() {
         let path = std::env::temp_dir().join(format!(
-            "zeptoclaw_engine_test_empty_{}.json",
+            "claide_engine_test_empty_{}.json",
             std::process::id()
         ));
         let _ = std::fs::remove_file(&path);
@@ -186,7 +186,7 @@ mod tests {
     #[test]
     fn test_event_trigger_match() {
         let path = std::env::temp_dir().join(format!(
-            "zeptoclaw_engine_test_event_match_{}.json",
+            "claide_engine_test_event_match_{}.json",
             std::process::id()
         ));
         let _ = std::fs::remove_file(&path);
@@ -216,7 +216,7 @@ mod tests {
     #[test]
     fn test_event_trigger_no_match() {
         let path = std::env::temp_dir().join(format!(
-            "zeptoclaw_engine_test_event_nomatch_{}.json",
+            "claide_engine_test_event_nomatch_{}.json",
             std::process::id()
         ));
         let _ = std::fs::remove_file(&path);
@@ -244,7 +244,7 @@ mod tests {
     #[test]
     fn test_event_trigger_channel_filter() {
         let path = std::env::temp_dir().join(format!(
-            "zeptoclaw_engine_test_chan_filter_{}.json",
+            "claide_engine_test_chan_filter_{}.json",
             std::process::id()
         ));
         let _ = std::fs::remove_file(&path);
@@ -273,7 +273,7 @@ mod tests {
     #[test]
     fn test_event_trigger_channel_filter_pass() {
         let path = std::env::temp_dir().join(format!(
-            "zeptoclaw_engine_test_chan_pass_{}.json",
+            "claide_engine_test_chan_pass_{}.json",
             std::process::id()
         ));
         let _ = std::fs::remove_file(&path);
@@ -303,7 +303,7 @@ mod tests {
     #[test]
     fn test_webhook_trigger_match() {
         let path = std::env::temp_dir().join(format!(
-            "zeptoclaw_engine_test_webhook_match_{}.json",
+            "claide_engine_test_webhook_match_{}.json",
             std::process::id()
         ));
         let _ = std::fs::remove_file(&path);
@@ -333,7 +333,7 @@ mod tests {
     #[test]
     fn test_webhook_trigger_no_match() {
         let path = std::env::temp_dir().join(format!(
-            "zeptoclaw_engine_test_webhook_nomatch_{}.json",
+            "claide_engine_test_webhook_nomatch_{}.json",
             std::process::id()
         ));
         let _ = std::fs::remove_file(&path);
@@ -360,7 +360,7 @@ mod tests {
     #[test]
     fn test_cron_routines() {
         let path = std::env::temp_dir().join(format!(
-            "zeptoclaw_engine_test_cron_{}.json",
+            "claide_engine_test_cron_{}.json",
             std::process::id()
         ));
         let _ = std::fs::remove_file(&path);
@@ -401,7 +401,7 @@ mod tests {
     #[test]
     fn test_disabled_routines_ignored() {
         let path = std::env::temp_dir().join(format!(
-            "zeptoclaw_engine_test_disabled_{}.json",
+            "claide_engine_test_disabled_{}.json",
             std::process::id()
         ));
         let _ = std::fs::remove_file(&path);
@@ -466,7 +466,7 @@ mod tests {
     #[test]
     fn test_concurrent_check_allows() {
         let path = std::env::temp_dir().join(format!(
-            "zeptoclaw_engine_test_conc_allow_{}.json",
+            "claide_engine_test_conc_allow_{}.json",
             std::process::id()
         ));
         let _ = std::fs::remove_file(&path);
@@ -492,7 +492,7 @@ mod tests {
     #[test]
     fn test_concurrent_check_blocks() {
         let path = std::env::temp_dir().join(format!(
-            "zeptoclaw_engine_test_conc_block_{}.json",
+            "claide_engine_test_conc_block_{}.json",
             std::process::id()
         ));
         let _ = std::fs::remove_file(&path);
@@ -515,7 +515,7 @@ mod tests {
     #[test]
     fn test_start_finish_execution() {
         let path = std::env::temp_dir().join(format!(
-            "zeptoclaw_engine_test_start_finish_{}.json",
+            "claide_engine_test_start_finish_{}.json",
             std::process::id()
         ));
         let _ = std::fs::remove_file(&path);
@@ -546,7 +546,7 @@ mod tests {
     #[test]
     fn test_invalid_regex_skipped() {
         let path = std::env::temp_dir().join(format!(
-            "zeptoclaw_engine_test_invalid_regex_{}.json",
+            "claide_engine_test_invalid_regex_{}.json",
             std::process::id()
         ));
         let _ = std::fs::remove_file(&path);

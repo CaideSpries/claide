@@ -1,0 +1,67 @@
+{
+  // Claide configuration — copy to ~/.claide/config.json and fill in your keys
+  // JSON5 format: comments OK, trailing commas OK
+
+  // --- Agent defaults ---
+  "agents": {
+    "workspace": "~/.claide/workspace",
+    // Set your preferred model here (provider-specific model name)
+    "model": "",
+    "max_tokens": 8192,
+    "temperature": 0.7,
+    "max_tool_iterations": 10
+  },
+
+  // --- Providers (configure at least one) ---
+  // Circuit breaker: tries providers in order, falls back on failure
+  "providers": {
+    // "gemini": { "api_key": "", "model": "gemini-2.5-flash" },
+    // "groq":   { "api_key": "", "model": "llama-3.3-70b-versatile" },
+    // "openai": { "api_key": "", "model": "gpt-4o" },
+    // "ollama": { "api_base": "http://localhost:11434", "model": "qwen2.5:3b" }
+  },
+
+  // --- Channels ---
+  "channels": {
+    "discord": {
+      "enabled": false,
+      "token": "",
+      "allow_from": []
+    },
+    "whatsapp": {
+      "enabled": false,
+      "bridge_url": "ws://localhost:3001"
+    }
+  },
+
+  // --- Transcription (voice notes → text) ---
+  "transcription": {
+    "enabled": true,
+    "model": "whisper-large-v3-turbo"
+    // Uses first OpenAI-compatible provider with API key (Groq, OpenAI, etc.)
+  },
+
+  // --- Memory ---
+  "memory": {
+    "backend": "builtin",
+    "auto_recall": false,
+    "auto_capture": false
+  },
+
+  // --- Cost tracking ---
+  "cost": {
+    "enabled": true,
+    "daily_limit_usd": 1.0,
+    "monthly_limit_usd": 10.0,
+    "warn_at_percent": 80
+  },
+
+  // --- Safety (all ON by default) ---
+  "safety": {
+    "prompt_injection": true,
+    "secret_scanning": true,
+    "ssrf_prevention": true,
+    "shell_blocklist": true,
+    "chain_alerting": true
+  }
+}

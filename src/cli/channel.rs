@@ -1,4 +1,4 @@
-//! CLI channel management commands (zeptoclaw channel list|setup|test).
+//! CLI channel management commands (claide channel list|setup|test).
 
 use std::io::{self, Write};
 use std::time::Duration;
@@ -6,7 +6,7 @@ use std::time::Duration;
 use anyhow::{Context, Result};
 use tokio_tungstenite::connect_async;
 
-use zeptoclaw::config::Config;
+use claide::config::Config;
 
 use super::common::read_line;
 use super::ChannelAction;
@@ -114,19 +114,19 @@ async fn cmd_channel_setup(channel_name: &str) -> Result<()> {
     match channel_name {
         "whatsapp" => setup_whatsapp(&mut config)?,
         "telegram" => {
-            println!("Use 'zeptoclaw onboard' to configure Telegram.");
+            println!("Use 'claide onboard' to configure Telegram.");
             return Ok(());
         }
         "discord" => {
-            println!("Use 'zeptoclaw onboard' to configure Discord.");
+            println!("Use 'claide onboard' to configure Discord.");
             return Ok(());
         }
         "slack" => {
-            println!("Use 'zeptoclaw onboard' to configure Slack.");
+            println!("Use 'claide onboard' to configure Slack.");
             return Ok(());
         }
         "webhook" => {
-            println!("Use 'zeptoclaw onboard' to configure Webhook.");
+            println!("Use 'claide onboard' to configure Webhook.");
             return Ok(());
         }
         _ => unreachable!(),
@@ -236,12 +236,12 @@ async fn test_whatsapp(config: &Config) -> Result<()> {
         }
         Some(_) => {
             anyhow::bail!(
-                "WhatsApp channel is not enabled. Run 'zeptoclaw channel setup whatsapp' first."
+                "WhatsApp channel is not enabled. Run 'claide channel setup whatsapp' first."
             );
         }
         None => {
             anyhow::bail!(
-                "WhatsApp channel not configured. Run 'zeptoclaw channel setup whatsapp' first."
+                "WhatsApp channel not configured. Run 'claide channel setup whatsapp' first."
             );
         }
     };
@@ -327,7 +327,7 @@ mod tests {
     #[tokio::test]
     async fn test_channel_test_whatsapp_disabled() {
         let mut config = Config::default();
-        config.channels.whatsapp = Some(zeptoclaw::config::WhatsAppConfig {
+        config.channels.whatsapp = Some(claide::config::WhatsAppConfig {
             enabled: false,
             bridge_url: "ws://localhost:3001".to_string(),
             bridge_token: None,
@@ -344,7 +344,7 @@ mod tests {
     #[tokio::test]
     async fn test_channel_test_whatsapp_empty_url() {
         let mut config = Config::default();
-        config.channels.whatsapp = Some(zeptoclaw::config::WhatsAppConfig {
+        config.channels.whatsapp = Some(claide::config::WhatsAppConfig {
             enabled: true,
             bridge_url: String::new(),
             bridge_token: None,

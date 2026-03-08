@@ -1,4 +1,4 @@
-//! Security module for ZeptoClaw
+//! Security module for Claide
 //!
 //! This module provides security utilities including path validation
 //! and command filtering to prevent malicious tool execution.

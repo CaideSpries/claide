@@ -4,19 +4,19 @@
 # Usage:
 #   ./scripts/backup-tenants.sh [backup-dir]
 #
-# Default backup dir: /backups/zeptoclaw/YYYY-MM-DD
-# Schedule with cron: 0 3 * * * /opt/zeptoclaw/scripts/backup-tenants.sh
+# Default backup dir: /backups/claide/YYYY-MM-DD
+# Schedule with cron: 0 3 * * * /opt/claide/scripts/backup-tenants.sh
 
 set -e
 
-BACKUP_DIR="${1:-/backups/zeptoclaw/$(date +%Y-%m-%d)}"
+BACKUP_DIR="${1:-/backups/claide/$(date +%Y-%m-%d)}"
 mkdir -p "$BACKUP_DIR"
 
 echo "Backing up tenant volumes to $BACKUP_DIR"
 
 count=0
 for volume in $(docker volume ls -q | grep -E ".*-data$"); do
-    # Check if it's a zeptoclaw tenant volume
+    # Check if it's a claide tenant volume
     container=$(docker ps --filter "volume=$volume" --format "{{.Names}}" | grep "^zc-" | head -1)
     [ -z "$container" ] && continue
 

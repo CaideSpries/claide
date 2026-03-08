@@ -1,4 +1,4 @@
-//! ZeptoClaw CLI — Ultra-lightweight personal AI assistant
+//! Claide CLI — Ultra-lightweight personal AI assistant
 //!
 //! All CLI logic lives in the `cli` module. This file is just the entry point.
 

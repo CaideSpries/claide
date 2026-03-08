@@ -5,20 +5,20 @@
 
 use std::process::Command;
 
-/// Helper: run zeptoclaw with given args and return (exit_code, stdout, stderr).
+/// Helper: run claide with given args and return (exit_code, stdout, stderr).
 fn run_cli(args: &[&str]) -> (i32, String, String) {
-    let bin = env!("CARGO_BIN_EXE_zeptoclaw");
+    let bin = env!("CARGO_BIN_EXE_claide");
     let output = Command::new(bin)
         .args(args)
         .env("RUST_LOG", "") // suppress tracing noise
         // Ensure tests run non-interactively: provide a dummy 32-byte hex master key
         // so commands that attempt to resolve the master key won't prompt.
         .env(
-            "ZEPTOCLAW_MASTER_KEY",
+            "CLAIDE_MASTER_KEY",
             "0000000000000000000000000000000000000000000000000000000000000000",
         )
         .output()
-        .expect("failed to execute zeptoclaw binary");
+        .expect("failed to execute claide binary");
     let code = output.status.code().unwrap_or(-1);
     let stdout = String::from_utf8_lossy(&output.stdout).to_string();
     let stderr = String::from_utf8_lossy(&output.stderr).to_string();
@@ -34,7 +34,7 @@ fn cli_no_args_shows_help() {
     let (code, stdout, _stderr) = run_cli(&[]);
     assert_eq!(code, 0);
     assert!(stdout.contains("Usage:"));
-    assert!(stdout.contains("zeptoclaw"));
+    assert!(stdout.contains("claide"));
 }
 
 #[test]
@@ -49,7 +49,7 @@ fn cli_help_flag() {
 fn cli_version_command() {
     let (code, stdout, _stderr) = run_cli(&["version"]);
     assert_eq!(code, 0);
-    assert!(stdout.contains("zeptoclaw"));
+    assert!(stdout.contains("claide"));
     // Should contain a semver-like version string
     assert!(stdout.contains('.'));
 }
@@ -218,8 +218,8 @@ fn cli_status() {
     assert_eq!(code, 0);
     // Status should include version info
     assert!(
-        stdout.contains("zeptoclaw")
-            || stdout.contains("ZeptoClaw")
+        stdout.contains("claide")
+            || stdout.contains("Claide")
             || stdout.contains("version")
             || stdout.contains("Version"),
         "Expected status output with version info, got: {}",

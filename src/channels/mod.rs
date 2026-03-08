@@ -1,7 +1,7 @@
 //! Channels module - Communication channels (Telegram, Discord, etc.)
 //!
 //! This module provides the infrastructure for managing communication channels
-//! in ZeptoClaw. Channels are responsible for receiving messages from users
+//! in Claide. Channels are responsible for receiving messages from users
 //! and sending responses back.
 //!
 //! # Architecture
@@ -33,9 +33,9 @@
 //!
 //! ```ignore
 //! use async_trait::async_trait;
-//! use zeptoclaw::channels::{Channel, BaseChannelConfig};
-//! use zeptoclaw::bus::{MessageBus, OutboundMessage};
-//! use zeptoclaw::error::Result;
+//! use claide::channels::{Channel, BaseChannelConfig};
+//! use claide::bus::{MessageBus, OutboundMessage};
+//! use claide::error::Result;
 //! use std::sync::Arc;
 //!
 //! pub struct MyChannel {
@@ -90,9 +90,9 @@
 //!
 //! ```
 //! use std::sync::Arc;
-//! use zeptoclaw::bus::MessageBus;
-//! use zeptoclaw::config::Config;
-//! use zeptoclaw::channels::ChannelManager;
+//! use claide::bus::MessageBus;
+//! use claide::config::Config;
+//! use claide::channels::ChannelManager;
 //!
 //! # tokio_test::block_on(async {
 //! let bus = Arc::new(MessageBus::new());

@@ -1,4 +1,4 @@
-//! Binary plugin tool adapter for ZeptoClaw.
+//! Binary plugin tool adapter for Claide.
 //!
 //! Executes standalone plugin binaries via JSON-RPC 2.0 over stdin/stdout.
 //! Each tool call spawns the binary, writes a request to stdin, reads the

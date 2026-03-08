@@ -1,4 +1,4 @@
-//! Custom CLI-defined tool adapter for ZeptoClaw.
+//! Custom CLI-defined tool adapter for Claide.
 //!
 //! Wraps a [`CustomToolDef`] from config and implements the [`Tool`] trait.
 //! Commands execute via `sh -c` with shell-escaped parameter interpolation.

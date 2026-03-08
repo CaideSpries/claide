@@ -230,7 +230,7 @@ impl Default for CostTracker {
 }
 
 /// Configuration for cost tracking, suitable for embedding in the main
-/// ZeptoClaw config file.
+/// Claide config file.
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct CostConfig {

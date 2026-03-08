@@ -6,8 +6,8 @@
 //! # Example
 //!
 //! ```rust,ignore
-//! use zeptoclaw::providers::{openai::OpenAIProvider, ChatOptions, LLMProvider};
-//! use zeptoclaw::session::Message;
+//! use claide::providers::{openai::OpenAIProvider, ChatOptions, LLMProvider};
+//! use claide::session::Message;
 //!
 //! async fn example() {
 //!     let provider = OpenAIProvider::new("your-api-key");
@@ -44,8 +44,8 @@ use super::{
 const OPENAI_API_URL: &str = "https://api.openai.com/v1";
 
 /// The default OpenAI model to use.
-/// Can be overridden at compile time with `ZEPTOCLAW_OPENAI_DEFAULT_MODEL` env var.
-const DEFAULT_MODEL: &str = match option_env!("ZEPTOCLAW_OPENAI_DEFAULT_MODEL") {
+/// Can be overridden at compile time with `CLAIDE_OPENAI_DEFAULT_MODEL` env var.
+const DEFAULT_MODEL: &str = match option_env!("CLAIDE_OPENAI_DEFAULT_MODEL") {
     Some(v) => v,
     None => "gpt-5.1",
 };
@@ -363,8 +363,8 @@ impl OpenAIProvider {
     ///
     /// # Example
     /// ```
-    /// use zeptoclaw::providers::openai::OpenAIProvider;
-    /// use zeptoclaw::providers::LLMProvider;
+    /// use claide::providers::openai::OpenAIProvider;
+    /// use claide::providers::LLMProvider;
     ///
     /// let provider = OpenAIProvider::new("sk-xxx");
     /// assert_eq!(provider.name(), "openai");
@@ -393,7 +393,7 @@ impl OpenAIProvider {
     ///
     /// # Example
     /// ```
-    /// use zeptoclaw::providers::openai::OpenAIProvider;
+    /// use claide::providers::openai::OpenAIProvider;
     ///
     /// let provider = OpenAIProvider::with_base_url("sk-xxx", "https://my-api.com/v1/");
     /// ```
@@ -444,7 +444,7 @@ impl OpenAIProvider {
     ///
     /// # Example
     /// ```
-    /// use zeptoclaw::providers::openai::OpenAIProvider;
+    /// use claide::providers::openai::OpenAIProvider;
     ///
     /// let provider = OpenAIProvider::with_config(
     ///     "my-azure-key",
@@ -515,7 +515,7 @@ impl OpenAIProvider {
 // Conversion Functions
 // ============================================================================
 
-/// Convert ZeptoClaw messages to OpenAI API format.
+/// Convert Claide messages to OpenAI API format.
 fn convert_messages(messages: Vec<Message>) -> Vec<OpenAIMessage> {
     messages
         .into_iter()
@@ -587,7 +587,7 @@ fn convert_messages(messages: Vec<Message>) -> Vec<OpenAIMessage> {
         .collect()
 }
 
-/// Convert ZeptoClaw tool definitions to OpenAI API format.
+/// Convert Claide tool definitions to OpenAI API format.
 fn convert_tools(tools: Vec<ToolDefinition>) -> Vec<OpenAITool> {
     tools
         .into_iter()
@@ -602,7 +602,7 @@ fn convert_tools(tools: Vec<ToolDefinition>) -> Vec<OpenAITool> {
         .collect()
 }
 
-/// Convert OpenAI API response to ZeptoClaw LLMResponse.
+/// Convert OpenAI API response to Claide LLMResponse.
 fn convert_response(response: OpenAIResponse) -> LLMResponse {
     let choice = response.choices.into_iter().next();
 

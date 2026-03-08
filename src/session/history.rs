@@ -1,4 +1,4 @@
-//! CLI conversation history management for ZeptoClaw.
+//! CLI conversation history management for Claide.
 //!
 //! This module provides discovery, listing, and cleanup of CLI conversation
 //! sessions stored on disk. It operates as a read-only layer on top of the
@@ -41,7 +41,7 @@ pub struct ConversationHistory {
 impl ConversationHistory {
     /// Create a new `ConversationHistory` using the default sessions directory.
     ///
-    /// The default path is `~/.zeptoclaw/sessions/`.
+    /// The default path is `~/.claide/sessions/`.
     ///
     /// # Errors
     ///

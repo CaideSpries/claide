@@ -45,7 +45,7 @@ pub const SUPPORTED_TYPES: &[&str] = &["image/jpeg", "image/png", "image/gif", "
 /// # Example
 ///
 /// ```no_run
-/// use zeptoclaw::session::media::MediaStore;
+/// use claide::session::media::MediaStore;
 /// use std::path::PathBuf;
 ///
 /// #[tokio::main]

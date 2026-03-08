@@ -1,10 +1,10 @@
-//! Doctor — system diagnostics for ZeptoClaw.
+//! Doctor — system diagnostics for Claide.
 
 use std::path::Path;
 use std::process::Command;
 
 use anyhow::Result;
-use zeptoclaw::config::Config;
+use claide::config::Config;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Severity {
@@ -77,7 +77,7 @@ fn check_workspace_writable(workspace: &Path, diags: &mut Vec<DiagItem>) {
         return;
     }
 
-    let probe = workspace.join(".zeptoclaw_doctor_probe");
+    let probe = workspace.join(".claide_doctor_probe");
     match std::fs::write(&probe, b"probe") {
         Ok(_) => {
             let _ = std::fs::remove_file(&probe);
@@ -263,14 +263,14 @@ pub(crate) async fn cmd_doctor(online: bool) -> Result<()> {
         Err(e) => {
             println!("[ERR] config    Failed to load config: {}", e);
             println!();
-            println!("Run `zeptoclaw onboard` to create a configuration.");
+            println!("Run `claide onboard` to create a configuration.");
             return Ok(());
         }
     };
 
     let diags = run_diagnostics(&config, online);
 
-    println!("ZeptoClaw Doctor");
+    println!("Claide Doctor");
     println!("================");
     println!();
 
@@ -301,7 +301,7 @@ pub(crate) async fn cmd_doctor(online: bool) -> Result<()> {
 
     if errors > 0 {
         println!();
-        println!("Fix the errors above to ensure ZeptoClaw works correctly.");
+        println!("Fix the errors above to ensure Claide works correctly.");
     }
 
     Ok(())
@@ -354,7 +354,7 @@ mod tests {
         // Use a long random-looking name to avoid collisions with binaries
         // that might exist in unusual Docker/CI environments.
         let mut diags = Vec::new();
-        check_binary("zeptoclaw_nonexistent_a8f3e2d1b9c7", &mut diags);
+        check_binary("claide_nonexistent_a8f3e2d1b9c7", &mut diags);
         assert!(
             diags.iter().any(|d| d.severity == Severity::Warn),
             "expected Warn for missing binary, got: {:?}",

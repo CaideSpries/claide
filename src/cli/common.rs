@@ -7,19 +7,19 @@ use std::sync::Arc;
 use anyhow::{Context, Result};
 use tracing::{info, warn};
 
-use zeptoclaw::agent::{AgentLoop, ContextBuilder, RuntimeContext};
-use zeptoclaw::bus::MessageBus;
-use zeptoclaw::config::templates::{AgentTemplate, TemplateRegistry};
-use zeptoclaw::config::{Config, MemoryBackend, MemoryCitationsMode};
-use zeptoclaw::hands::resolve_hand;
-use zeptoclaw::providers::{
+use claide::agent::{AgentLoop, ContextBuilder, RuntimeContext};
+use claide::bus::MessageBus;
+use claide::config::templates::{AgentTemplate, TemplateRegistry};
+use claide::config::{Config, MemoryBackend, MemoryCitationsMode};
+use claide::hands::resolve_hand;
+use claide::providers::{
     resolve_runtime_providers, FallbackProvider, LLMProvider, ProviderPlugin,
 };
-use zeptoclaw::session::SessionManager;
-use zeptoclaw::skills::SkillsLoader;
-use zeptoclaw::tools::approval::ApprovalPolicyConfig;
-use zeptoclaw::tools::delegate::DelegateTool;
-use zeptoclaw::tools::spawn::SpawnTool;
+use claide::session::SessionManager;
+use claide::skills::SkillsLoader;
+use claide::tools::approval::ApprovalPolicyConfig;
+use claide::tools::delegate::DelegateTool;
+use claide::tools::spawn::SpawnTool;
 
 /// Read a line from stdin, trimming whitespace.
 pub(crate) fn read_line() -> Result<String> {
@@ -110,9 +110,9 @@ pub(crate) fn resolve_template(name: &str) -> Result<AgentTemplate> {
     );
 }
 
-// Provider functions extracted to zeptoclaw::kernel::provider.
+// Provider functions extracted to claide::kernel::provider.
 // Re-import for use within this module.
-use zeptoclaw::kernel::provider::{apply_retry_wrapper, provider_from_runtime_selection};
+use claide::kernel::provider::{apply_retry_wrapper, provider_from_runtime_selection};
 
 fn build_skills_prompt(config: &Config) -> String {
     if !config.skills.enabled {
@@ -243,7 +243,7 @@ pub(crate) async fn create_agent_with_template(
     }
 
     // --- Kernel boot: assemble shared subsystems ---
-    let kernel = zeptoclaw::kernel::ZeptoKernel::boot(
+    let kernel = claide::kernel::ZeptoKernel::boot(
         config.clone(),
         bus.clone(),
         template.as_ref(),
@@ -314,7 +314,7 @@ pub(crate) async fn create_agent_with_template(
         .await;
 
     // Register per-session tools that need Weak<AgentLoop>
-    let filter = zeptoclaw::kernel::ToolFilter::from_config(
+    let filter = claide::kernel::ToolFilter::from_config(
         &config,
         template.as_ref(),
         active_hand.as_ref().map(|h| &h.manifest),
@@ -335,7 +335,7 @@ pub(crate) async fn create_agent_with_template(
         let google_token = resolve_google_token(&config).await;
         if let Some(token) = google_token {
             agent
-                .register_tool(Box::new(zeptoclaw::tools::GoogleTool::new(
+                .register_tool(Box::new(claide::tools::GoogleTool::new(
                     &token,
                     &config.tools.google.default_calendar,
                     config.tools.google.max_search_results,
@@ -416,7 +416,7 @@ pub(crate) async fn create_agent_with_template(
         }
     }
 
-    let unsupported = zeptoclaw::providers::configured_unsupported_provider_names(&config);
+    let unsupported = claide::providers::configured_unsupported_provider_names(&config);
     if !unsupported.is_empty() {
         warn!(
             "Configured provider(s) not yet supported by runtime: {}",
@@ -580,7 +580,7 @@ async fn resolve_google_token(config: &Config) -> Option<String> {
     // 1. Try stored OAuth token
     let token_path = Config::dir().join("tokens").join("google.json");
     if let Ok(data) = tokio::fs::read_to_string(&token_path).await {
-        if let Ok(token_set) = serde_json::from_str::<zeptoclaw::auth::OAuthTokenSet>(&data) {
+        if let Ok(token_set) = serde_json::from_str::<claide::auth::OAuthTokenSet>(&data) {
             if !token_set.is_expired() {
                 return Some(token_set.access_token.clone());
             }
@@ -645,5 +645,5 @@ mod tests {
         assert!(msg.contains("HTTP 500"));
     }
 
-    // Provider chain tests moved to zeptoclaw::kernel::provider::tests
+    // Provider chain tests moved to claide::kernel::provider::tests
 }

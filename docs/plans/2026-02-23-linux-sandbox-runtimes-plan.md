@@ -13,7 +13,7 @@
 ## Worktree Setup
 
 ```bash
-cd /Users/dr.noranizaahmad/ios/zeptoclaw
+cd /Users/dr.noranizaahmad/ios/claide
 git pull origin main
 git worktree add .worktrees/linux-sandbox -b feat/linux-sandbox
 cd .worktrees/linux-sandbox
@@ -1359,7 +1359,7 @@ sandbox-bubblewrap = []                 # Bubblewrap (bwrap) sandbox (requires b
 
 In the `## Configuration` section add env vars:
 ```
-- `ZEPTOCLAW_RUNTIME_RUNTIME_TYPE` — runtime type: native, docker, apple, landlock, firejail, bubblewrap
+- `CLAIDE_RUNTIME_RUNTIME_TYPE` — runtime type: native, docker, apple, landlock, firejail, bubblewrap
 ```
 
 **Step 4: Commit**
@@ -1387,7 +1387,7 @@ All must pass before continuing.
 **Step 2: Create GitHub issue**
 
 ```bash
-gh issue create --repo qhkm/zeptoclaw \
+gh issue create --repo qhkm/claide \
   --title "feat: Linux sandbox runtimes (Landlock, Firejail, Bubblewrap) + shell allowlist" \
   --label "feat,area:tools,P2-high" \
   --body "Add Landlock, Firejail, and Bubblewrap as optional, feature-gated RuntimeType variants for Linux shell sandboxing. Add ShellAllowlistMode (off/warn/strict) to ShellSecurityConfig.
@@ -1405,7 +1405,7 @@ git push -u origin feat/linux-sandbox
 
 ```bash
 gh pr create \
-  --repo qhkm/zeptoclaw \
+  --repo qhkm/claide \
   --title "feat: Linux sandbox runtimes (Landlock, Firejail, Bubblewrap) + shell allowlist" \
   --base main \
   --body "$(cat <<'EOF'
@@ -1450,7 +1450,7 @@ EOF
 cargo build --release --features "sandbox-landlock,sandbox-firejail,sandbox-bubblewrap"
 
 # Run agent with Landlock sandbox
-ZEPTOCLAW_RUNTIME_RUNTIME_TYPE=landlock ./target/release/zeptoclaw agent -m "Hello"
+CLAIDE_RUNTIME_RUNTIME_TYPE=landlock ./target/release/claide agent -m "Hello"
 
 # Use strict allowlist + Landlock in config
 # runtime.runtime_type = "landlock"

@@ -1,4 +1,4 @@
-# ZeptoClaw on Render
+# Claide on Render
 #
 # Deploy:
 #   1. Push to GitHub
@@ -12,22 +12,22 @@
 
 services:
   - type: web
-    name: zeptoclaw
+    name: claide
     runtime: docker
     dockerfilePath: ../Dockerfile
-    dockerCommand: zeptoclaw gateway
+    dockerCommand: claide gateway
     healthCheckPath: /healthz
     envVars:
       - key: RUST_LOG
-        value: zeptoclaw=info
+        value: claide=info
       - key: RUST_LOG_FORMAT
         value: json
-      - key: ZEPTOCLAW_PROVIDERS_ANTHROPIC_API_KEY
+      - key: CLAIDE_PROVIDERS_ANTHROPIC_API_KEY
         sync: false
-      - key: ZEPTOCLAW_CHANNELS_TELEGRAM_BOT_TOKEN
+      - key: CLAIDE_CHANNELS_TELEGRAM_BOT_TOKEN
         sync: false
     disk:
-      name: zeptoclaw-data
+      name: claide-data
       mountPath: /data
       sizeGB: 1
     plan: starter

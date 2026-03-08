@@ -16,8 +16,8 @@ pub fn format_message_envelope() -> String {
     format!("[{}]", Local::now().format("%a %Y-%m-%d %H:%M %:z"))
 }
 
-/// Default system prompt for ZeptoClaw agent
-const DEFAULT_SYSTEM_PROMPT: &str = r#"You are ZeptoClaw, an ultra-lightweight personal AI assistant.
+/// Default system prompt for Claide agent
+const DEFAULT_SYSTEM_PROMPT: &str = r#"You are Claide, an ultra-lightweight personal AI assistant.
 
 You have access to tools to help accomplish tasks. Use them when needed.
 
@@ -65,7 +65,7 @@ After the user responds, save their preference using longterm_memory with key "p
 /// # Example
 ///
 /// ```rust
-/// use zeptoclaw::agent::RuntimeContext;
+/// use claide::agent::RuntimeContext;
 ///
 /// let ctx = RuntimeContext::new()
 ///     .with_channel("telegram")
@@ -98,7 +98,7 @@ impl RuntimeContext {
     ///
     /// # Example
     /// ```rust
-    /// use zeptoclaw::agent::RuntimeContext;
+    /// use claide::agent::RuntimeContext;
     ///
     /// let ctx = RuntimeContext::new();
     /// assert!(ctx.is_empty());
@@ -170,7 +170,7 @@ impl RuntimeContext {
     ///
     /// # Example
     /// ```rust
-    /// use zeptoclaw::agent::RuntimeContext;
+    /// use claide::agent::RuntimeContext;
     ///
     /// assert!(RuntimeContext::new().is_empty());
     /// assert!(!RuntimeContext::new().with_channel("cli").is_empty());
@@ -189,7 +189,7 @@ impl RuntimeContext {
     ///
     /// # Example
     /// ```rust
-    /// use zeptoclaw::agent::RuntimeContext;
+    /// use claide::agent::RuntimeContext;
     ///
     /// let ctx = RuntimeContext::new().with_channel("cli");
     /// let rendered = ctx.render().unwrap();
@@ -241,8 +241,8 @@ impl RuntimeContext {
 /// # Example
 ///
 /// ```rust
-/// use zeptoclaw::agent::ContextBuilder;
-/// use zeptoclaw::session::Message;
+/// use claide::agent::ContextBuilder;
+/// use claide::session::Message;
 ///
 /// let builder = ContextBuilder::new()
 ///     .with_skills("- /help: Show help information");
@@ -268,11 +268,11 @@ impl ContextBuilder {
     ///
     /// # Example
     /// ```rust
-    /// use zeptoclaw::agent::ContextBuilder;
+    /// use claide::agent::ContextBuilder;
     ///
     /// let builder = ContextBuilder::new();
     /// let system = builder.build_system_message();
-    /// assert!(system.content.contains("ZeptoClaw"));
+    /// assert!(system.content.contains("Claide"));
     /// ```
     pub fn new() -> Self {
         Self {
@@ -291,7 +291,7 @@ impl ContextBuilder {
     ///
     /// # Example
     /// ```rust
-    /// use zeptoclaw::agent::ContextBuilder;
+    /// use claide::agent::ContextBuilder;
     ///
     /// let builder = ContextBuilder::new()
     ///     .with_system_prompt("You are a helpful assistant.");
@@ -314,7 +314,7 @@ impl ContextBuilder {
     ///
     /// # Example
     /// ```rust
-    /// use zeptoclaw::agent::ContextBuilder;
+    /// use claide::agent::ContextBuilder;
     ///
     /// let builder = ContextBuilder::new()
     ///     .with_soul("You are kind and empathetic.");
@@ -336,7 +336,7 @@ impl ContextBuilder {
     ///
     /// # Example
     /// ```rust
-    /// use zeptoclaw::agent::ContextBuilder;
+    /// use claide::agent::ContextBuilder;
     ///
     /// let builder = ContextBuilder::new()
     ///     .with_skills("- /search: Search the web\n- /help: Show help");
@@ -362,7 +362,7 @@ impl ContextBuilder {
     ///
     /// # Example
     /// ```rust
-    /// use zeptoclaw::agent::{ContextBuilder, RuntimeContext};
+    /// use claide::agent::{ContextBuilder, RuntimeContext};
     ///
     /// let ctx = RuntimeContext::new()
     ///     .with_channel("discord")
@@ -389,7 +389,7 @@ impl ContextBuilder {
     ///
     /// # Example
     /// ```rust
-    /// use zeptoclaw::agent::ContextBuilder;
+    /// use claide::agent::ContextBuilder;
     ///
     /// let builder = ContextBuilder::new()
     ///     .with_memory_context("## Memory\n\n### Pinned\n- user:name: Alice".to_string());
@@ -418,8 +418,8 @@ impl ContextBuilder {
     ///
     /// # Example
     /// ```rust
-    /// use zeptoclaw::agent::ContextBuilder;
-    /// use zeptoclaw::session::Role;
+    /// use claide::agent::ContextBuilder;
+    /// use claide::session::Role;
     ///
     /// let builder = ContextBuilder::new();
     /// let system = builder.build_system_message();
@@ -500,8 +500,8 @@ impl ContextBuilder {
     ///
     /// # Example
     /// ```rust
-    /// use zeptoclaw::agent::ContextBuilder;
-    /// use zeptoclaw::session::Message;
+    /// use claide::agent::ContextBuilder;
+    /// use claide::session::Message;
     ///
     /// let builder = ContextBuilder::new();
     /// let history = vec![
@@ -590,14 +590,14 @@ mod tests {
     #[test]
     fn test_context_builder_new() {
         let builder = ContextBuilder::new();
-        assert!(builder.system_prompt().contains("ZeptoClaw"));
+        assert!(builder.system_prompt().contains("Claide"));
         assert!(!builder.has_skills());
     }
 
     #[test]
     fn test_context_builder_default() {
         let builder = ContextBuilder::default();
-        assert!(builder.system_prompt().contains("ZeptoClaw"));
+        assert!(builder.system_prompt().contains("Claide"));
     }
 
     #[test]
@@ -622,7 +622,7 @@ mod tests {
         let system = builder.build_system_message();
 
         assert_eq!(system.role, Role::System);
-        assert!(system.content.contains("ZeptoClaw"));
+        assert!(system.content.contains("Claide"));
     }
 
     #[test]
@@ -690,7 +690,7 @@ mod tests {
 
         let system = builder.build_system_message();
         assert!(system.content.starts_with("You are a pirate captain."));
-        assert!(system.content.contains("ZeptoClaw"));
+        assert!(system.content.contains("Claide"));
     }
 
     #[test]
@@ -713,7 +713,7 @@ mod tests {
         let system = builder.build_system_message();
 
         assert!(system.content.starts_with("Identity: helper"));
-        assert!(system.content.contains("ZeptoClaw"));
+        assert!(system.content.contains("Claide"));
         assert!(system.content.contains("Available Skills"));
         assert!(system.content.contains("/test"));
     }
@@ -724,7 +724,7 @@ mod tests {
         assert!(!builder.has_soul());
 
         let system = builder.build_system_message();
-        assert!(system.content.starts_with("You are ZeptoClaw"));
+        assert!(system.content.starts_with("You are Claide"));
     }
 
     #[test]
@@ -987,7 +987,7 @@ mod tests {
             .with_skills("- /help: Show help")
             .with_runtime_context(ctx);
         let system = builder.build_system_message();
-        assert!(system.content.contains("ZeptoClaw"));
+        assert!(system.content.contains("Claide"));
         assert!(system.content.contains("Available Skills"));
         assert!(system.content.contains("## Runtime Context"));
         assert!(system.content.contains("cli"));
@@ -1053,10 +1053,10 @@ mod tests {
         let builder = ContextBuilder::new()
             .with_memory_context("## Memory\n\n### Pinned\n- old: data".to_string());
         let override_ctx =
-            "## Memory\n\n### Pinned\n- user:name: Alice\n\n### Relevant\n- fact:project: ZeptoClaw";
+            "## Memory\n\n### Pinned\n- user:name: Alice\n\n### Relevant\n- fact:project: Claide";
         let messages =
             builder.build_messages_with_memory_override(&[], "Hello", Some(override_ctx));
-        assert!(messages[0].content.contains("fact:project: ZeptoClaw"));
+        assert!(messages[0].content.contains("fact:project: Claide"));
         assert!(!messages[0].content.contains("old: data"));
         assert_eq!(messages.len(), 2);
     }
@@ -1133,7 +1133,7 @@ mod tests {
     fn test_with_system_prompt_suffix() {
         let builder = ContextBuilder::new().with_system_prompt_suffix("\n\nExtra instructions.");
         let system = builder.build_system_message();
-        assert!(system.content.contains("ZeptoClaw"));
+        assert!(system.content.contains("Claide"));
         assert!(system.content.contains("Extra instructions."));
     }
 

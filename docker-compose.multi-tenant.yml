@@ -1,10 +1,10 @@
-# ZeptoClaw Multi-Tenant Deployment
+# Claide Multi-Tenant Deployment
 #
 # Each tenant runs in their own container with complete isolation.
-# ZeptoClaw is ~4MB binary, ~6MB RSS - hundreds of tenants on a single VPS.
+# Claide is ~4MB binary, ~6MB RSS - hundreds of tenants on a single VPS.
 #
 # Setup:
-#   1. Build the image:        docker build -t zeptoclaw .
+#   1. Build the image:        docker build -t claide .
 #   2. Create tenant configs:  ./scripts/add-tenant.sh tenant-name BOT_TOKEN API_KEY
 #   3. Start all tenants:      docker compose -f docker-compose.multi-tenant.yml up -d
 #   4. Add more tenants:       Run add-tenant.sh again, then docker compose up -d
@@ -15,8 +15,8 @@
 #   - Own persistent volume (sessions, memory, workspace)
 #   - Own resource limits (CPU, memory)
 
-x-zeptoclaw-defaults: &defaults
-  image: zeptoclaw:latest
+x-claide-defaults: &defaults
+  image: claide:latest
   restart: unless-stopped
   logging:
     driver: json-file
@@ -44,20 +44,20 @@ services:
       - shop-ahmad-data:/data
       - ./tenants/shop-ahmad/config.json:/data/config.json:ro
     environment:
-      - RUST_LOG=zeptoclaw=info
+      - RUST_LOG=claide=info
       - RUST_LOG_FORMAT=json
-      - ZEPTOCLAW_HEALTH_PORT=9090
+      - CLAIDE_HEALTH_PORT=9090
     labels:
-      com.zeptoclaw.tenant: shop-ahmad
-      com.zeptoclaw.version: "0.1.0"
-      com.zeptoclaw.env: production
+      com.claide.tenant: shop-ahmad
+      com.claide.version: "0.1.0"
+      com.claide.env: production
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://localhost:9090/healthz || exit 1"]
       interval: 30s
       timeout: 5s
       retries: 3
       start_period: 10s
-    command: ["zeptoclaw", "gateway"]
+    command: ["claide", "gateway"]
 
   # =========================================================================
   # Tenant: shop-fatimah
@@ -70,20 +70,20 @@ services:
       - shop-fatimah-data:/data
       - ./tenants/shop-fatimah/config.json:/data/config.json:ro
     environment:
-      - RUST_LOG=zeptoclaw=info
+      - RUST_LOG=claide=info
       - RUST_LOG_FORMAT=json
-      - ZEPTOCLAW_HEALTH_PORT=9090
+      - CLAIDE_HEALTH_PORT=9090
     labels:
-      com.zeptoclaw.tenant: shop-fatimah
-      com.zeptoclaw.version: "0.1.0"
-      com.zeptoclaw.env: production
+      com.claide.tenant: shop-fatimah
+      com.claide.version: "0.1.0"
+      com.claide.env: production
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://localhost:9090/healthz || exit 1"]
       interval: 30s
       timeout: 5s
       retries: 3
       start_period: 10s
-    command: ["zeptoclaw", "gateway"]
+    command: ["claide", "gateway"]
 
   # =========================================================================
   # Tenant: shop-ali
@@ -96,20 +96,20 @@ services:
       - shop-ali-data:/data
       - ./tenants/shop-ali/config.json:/data/config.json:ro
     environment:
-      - RUST_LOG=zeptoclaw=info
+      - RUST_LOG=claide=info
       - RUST_LOG_FORMAT=json
-      - ZEPTOCLAW_HEALTH_PORT=9090
+      - CLAIDE_HEALTH_PORT=9090
     labels:
-      com.zeptoclaw.tenant: shop-ali
-      com.zeptoclaw.version: "0.1.0"
-      com.zeptoclaw.env: production
+      com.claide.tenant: shop-ali
+      com.claide.version: "0.1.0"
+      com.claide.env: production
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://localhost:9090/healthz || exit 1"]
       interval: 30s
       timeout: 5s
       retries: 3
       start_period: 10s
-    command: ["zeptoclaw", "gateway"]
+    command: ["claide", "gateway"]
 
   # =========================================================================
   # Add more tenants by copying a block above and changing:
@@ -117,7 +117,7 @@ services:
   #   2. Container name:   zc-<name>
   #   3. Volume names:     <name>-data
   #   4. Config path:      ./tenants/<name>/config.json
-  #   5. Labels:           com.zeptoclaw.tenant: <name>
+  #   5. Labels:           com.claide.tenant: <name>
   #
   # Then add the volume to the volumes section below.
   # =========================================================================

@@ -1,4 +1,4 @@
-//! Channel Plugin Adapter for ZeptoClaw
+//! Channel Plugin Adapter for Claide
 //!
 //! This module provides a `ChannelPluginAdapter` that implements the `Channel`
 //! trait by spawning an external binary and communicating via JSON-RPC 2.0 over
@@ -9,7 +9,7 @@
 //! # Plugin Directory Layout
 //!
 //! ```text
-//! ~/.zeptoclaw/channels/
+//! ~/.claide/channels/
 //! +-- my-channel/
 //! |   +-- manifest.json
 //! |   +-- my-channel-binary
@@ -81,7 +81,7 @@ struct ChannelJsonRpcError {
 /// Manifest describing a channel plugin binary.
 ///
 /// Parsed from `manifest.json` in each plugin subdirectory under the
-/// channel plugins directory (`~/.zeptoclaw/channels/` by default).
+/// channel plugins directory (`~/.claide/channels/` by default).
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ChannelPluginManifest {
     /// Unique name for this channel plugin.
@@ -350,7 +350,7 @@ impl Channel for ChannelPluginAdapter {
 ///
 /// # Arguments
 ///
-/// * `plugin_dir` - The directory to scan (e.g., `~/.zeptoclaw/channels/`)
+/// * `plugin_dir` - The directory to scan (e.g., `~/.claide/channels/`)
 ///
 /// # Returns
 ///
@@ -450,9 +450,9 @@ pub fn discover_channel_plugins(plugin_dir: &Path) -> Vec<(ChannelPluginManifest
     plugins
 }
 
-/// Returns the default channel plugins directory (`~/.zeptoclaw/channels/`).
+/// Returns the default channel plugins directory (`~/.claide/channels/`).
 pub fn default_channel_plugins_dir() -> Option<PathBuf> {
-    dirs::home_dir().map(|home| home.join(".zeptoclaw").join("channels"))
+    dirs::home_dir().map(|home| home.join(".claide").join("channels"))
 }
 
 #[cfg(test)]
@@ -861,7 +861,7 @@ mod tests {
         // Should return Some on systems with a home directory
         if let Some(d) = dir {
             assert!(d.ends_with("channels"));
-            assert!(d.to_string_lossy().contains(".zeptoclaw"));
+            assert!(d.to_string_lossy().contains(".claide"));
         }
     }
 

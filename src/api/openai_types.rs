@@ -1,6 +1,6 @@
 //! OpenAI-compatible request/response types for the `/v1/chat/completions` API.
 //!
-//! These types allow any OpenAI SDK to target ZeptoClaw as a drop-in backend.
+//! These types allow any OpenAI SDK to target Claide as a drop-in backend.
 //! Only the subset needed for chat completions is implemented; tool-calling,
 //! function-calling, and logprobs are intentionally omitted.
 
@@ -55,7 +55,7 @@ pub struct ChatCompletionResponse {
     pub created: u64,
     /// Model that generated the response.
     pub model: String,
-    /// Completion choices (always exactly one for ZeptoClaw).
+    /// Completion choices (always exactly one for Claide).
     pub choices: Vec<Choice>,
     /// Token usage statistics.
     pub usage: UsageResponse,
@@ -149,7 +149,7 @@ pub struct ModelObject {
 // Conversion helpers
 // ---------------------------------------------------------------------------
 
-/// Convert OpenAI-format messages into ZeptoClaw `Message` values.
+/// Convert OpenAI-format messages into Claide `Message` values.
 ///
 /// Returns an error if any message has an unrecognized role.
 pub fn messages_from_openai(msgs: &[ChatMessage]) -> Result<Vec<Message>, String> {
@@ -490,7 +490,7 @@ mod tests {
                 id: "gpt-4o".into(),
                 object: "model",
                 created: 1000,
-                owned_by: "zeptoclaw".into(),
+                owned_by: "claide".into(),
             }],
         };
         let json = serde_json::to_string(&resp).unwrap();

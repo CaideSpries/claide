@@ -1,4 +1,4 @@
-//! Logging initialization for ZeptoClaw.
+//! Logging initialization for Claide.
 //!
 //! Supports three formats:
 //! - `pretty`: default tracing pretty-print (human-readable, coloured)
@@ -56,7 +56,7 @@ pub fn init_logging(cfg: &LoggingConfig) {
 /// The `component` field makes it easy to grep logs by subsystem:
 ///
 /// ```
-/// # use zeptoclaw::log_component;
+/// # use claide::log_component;
 /// log_component!(info, "telegram", "message received");
 /// log_component!(warn, "agent", "token budget low", used = 8000u64, limit = 10000u64);
 /// ```
@@ -107,13 +107,13 @@ mod tests {
     fn test_logging_config_roundtrip() {
         let cfg = LoggingConfig {
             format: LogFormat::Json,
-            file: Some("/tmp/zeptoclaw.log".to_string()),
+            file: Some("/tmp/claide.log".to_string()),
             level: "debug".to_string(),
         };
         let json = serde_json::to_string(&cfg).unwrap();
         let restored: LoggingConfig = serde_json::from_str(&json).unwrap();
         assert_eq!(restored.format, LogFormat::Json);
-        assert_eq!(restored.file.as_deref(), Some("/tmp/zeptoclaw.log"));
+        assert_eq!(restored.file.as_deref(), Some("/tmp/claide.log"));
         assert_eq!(restored.level, "debug");
     }
 

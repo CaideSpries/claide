@@ -1,7 +1,7 @@
-//! Configuration management for ZeptoClaw
+//! Configuration management for Claide
 //!
 //! This module provides configuration loading, saving, and global state management.
-//! Configuration is loaded from `~/.zeptoclaw/config.json` with environment variable overrides.
+//! Configuration is loaded from `~/.claide/config.json` with environment variable overrides.
 
 pub mod templates;
 mod types;
@@ -20,14 +20,14 @@ use std::sync::RwLock;
 static CONFIG: OnceCell<RwLock<Config>> = OnceCell::new();
 
 impl Config {
-    /// Returns the ZeptoClaw configuration directory path (~/.zeptoclaw)
+    /// Returns the Claide configuration directory path (~/.claide)
     pub fn dir() -> PathBuf {
         dirs::home_dir()
             .unwrap_or_else(|| PathBuf::from("."))
-            .join(".zeptoclaw")
+            .join(".claide")
     }
 
-    /// Returns the path to the config file (~/.zeptoclaw/config.json)
+    /// Returns the path to the config file (~/.claide/config.json)
     pub fn path() -> PathBuf {
         Self::dir().join("config.json")
     }
@@ -36,7 +36,7 @@ impl Config {
     ///
     /// If the config file doesn't exist, returns default configuration.
     /// Environment variables can override config values using the pattern:
-    /// `ZEPTOCLAW_SECTION_SUBSECTION_KEY`
+    /// `CLAIDE_SECTION_SUBSECTION_KEY`
     pub fn load() -> Result<Self> {
         Self::load_from_path(&Self::path())
     }
@@ -45,7 +45,7 @@ impl Config {
     ///
     /// If the config file contains `ENC[...]` encrypted values, they are
     /// transparently decrypted before the JSON is deserialized into `Config`.
-    /// The master key is resolved via `ZEPTOCLAW_MASTER_KEY` env var or, when
+    /// The master key is resolved via `CLAIDE_MASTER_KEY` env var or, when
     /// running in an interactive terminal, an interactive passphrase prompt.
     pub fn load_from_path(path: &PathBuf) -> Result<Self> {
         let mut config = if path.exists() {
@@ -84,148 +84,148 @@ impl Config {
 
     /// Apply environment variable overrides to the configuration.
     ///
-    /// Environment variables follow the pattern: ZEPTOCLAW_SECTION_SUBSECTION_KEY
+    /// Environment variables follow the pattern: CLAIDE_SECTION_SUBSECTION_KEY
     fn apply_env_overrides(&mut self) {
         // Agent defaults
-        if let Ok(val) = std::env::var("ZEPTOCLAW_AGENTS_DEFAULTS_WORKSPACE") {
+        if let Ok(val) = std::env::var("CLAIDE_AGENTS_DEFAULTS_WORKSPACE") {
             self.agents.defaults.workspace = val;
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_AGENTS_DEFAULTS_MODEL") {
+        if let Ok(val) = std::env::var("CLAIDE_AGENTS_DEFAULTS_MODEL") {
             self.agents.defaults.model = val;
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_AGENTS_DEFAULTS_MAX_TOKENS") {
+        if let Ok(val) = std::env::var("CLAIDE_AGENTS_DEFAULTS_MAX_TOKENS") {
             if let Ok(v) = val.parse() {
                 self.agents.defaults.max_tokens = v;
             }
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_AGENTS_DEFAULTS_TEMPERATURE") {
+        if let Ok(val) = std::env::var("CLAIDE_AGENTS_DEFAULTS_TEMPERATURE") {
             if let Ok(v) = val.parse() {
                 self.agents.defaults.temperature = v;
             }
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_AGENTS_DEFAULTS_MAX_TOOL_ITERATIONS") {
+        if let Ok(val) = std::env::var("CLAIDE_AGENTS_DEFAULTS_MAX_TOOL_ITERATIONS") {
             if let Ok(v) = val.parse() {
                 self.agents.defaults.max_tool_iterations = v;
             }
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_AGENTS_DEFAULTS_AGENT_TIMEOUT_SECS") {
+        if let Ok(val) = std::env::var("CLAIDE_AGENTS_DEFAULTS_AGENT_TIMEOUT_SECS") {
             if let Ok(v) = val.parse() {
                 self.agents.defaults.agent_timeout_secs = v;
             }
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_AGENTS_DEFAULTS_TOOL_TIMEOUT_SECS") {
+        if let Ok(val) = std::env::var("CLAIDE_AGENTS_DEFAULTS_TOOL_TIMEOUT_SECS") {
             if let Ok(v) = val.parse() {
                 self.agents.defaults.tool_timeout_secs = v;
             }
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_AGENTS_DEFAULTS_TOKEN_BUDGET") {
+        if let Ok(val) = std::env::var("CLAIDE_AGENTS_DEFAULTS_TOKEN_BUDGET") {
             if let Ok(v) = val.parse() {
                 self.agents.defaults.token_budget = v;
             }
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_AGENTS_DEFAULTS_MESSAGE_QUEUE_MODE") {
+        if let Ok(val) = std::env::var("CLAIDE_AGENTS_DEFAULTS_MESSAGE_QUEUE_MODE") {
             match val.trim().to_ascii_lowercase().as_str() {
                 "collect" => self.agents.defaults.message_queue_mode = MessageQueueMode::Collect,
                 "followup" => self.agents.defaults.message_queue_mode = MessageQueueMode::Followup,
                 _ => {}
             }
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_AGENTS_DEFAULTS_COMPACT_TOOLS") {
+        if let Ok(val) = std::env::var("CLAIDE_AGENTS_DEFAULTS_COMPACT_TOOLS") {
             self.agents.defaults.compact_tools = val == "true" || val == "1";
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_AGENTS_DEFAULTS_TOOL_PROFILE") {
+        if let Ok(val) = std::env::var("CLAIDE_AGENTS_DEFAULTS_TOOL_PROFILE") {
             self.agents.defaults.tool_profile = if val.is_empty() { None } else { Some(val) };
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_AGENTS_DEFAULTS_ACTIVE_HAND") {
+        if let Ok(val) = std::env::var("CLAIDE_AGENTS_DEFAULTS_ACTIVE_HAND") {
             self.agents.defaults.active_hand = if val.is_empty() { None } else { Some(val) };
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_AGENTS_DEFAULTS_TIMEZONE") {
+        if let Ok(val) = std::env::var("CLAIDE_AGENTS_DEFAULTS_TIMEZONE") {
             self.agents.defaults.timezone = val;
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_AGENTS_DEFAULTS_LOOP_GUARD_ENABLED") {
+        if let Ok(val) = std::env::var("CLAIDE_AGENTS_DEFAULTS_LOOP_GUARD_ENABLED") {
             self.agents.defaults.loop_guard.enabled = val == "true" || val == "1";
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_AGENTS_DEFAULTS_LOOP_GUARD_WARN_THRESHOLD") {
+        if let Ok(val) = std::env::var("CLAIDE_AGENTS_DEFAULTS_LOOP_GUARD_WARN_THRESHOLD") {
             if let Ok(v) = val.parse() {
                 self.agents.defaults.loop_guard.warn_threshold = v;
             }
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_AGENTS_DEFAULTS_LOOP_GUARD_BLOCK_THRESHOLD") {
+        if let Ok(val) = std::env::var("CLAIDE_AGENTS_DEFAULTS_LOOP_GUARD_BLOCK_THRESHOLD") {
             if let Ok(v) = val.parse() {
                 self.agents.defaults.loop_guard.block_threshold = v;
             }
         }
         if let Ok(val) =
-            std::env::var("ZEPTOCLAW_AGENTS_DEFAULTS_LOOP_GUARD_GLOBAL_CIRCUIT_BREAKER")
+            std::env::var("CLAIDE_AGENTS_DEFAULTS_LOOP_GUARD_GLOBAL_CIRCUIT_BREAKER")
         {
             if let Ok(v) = val.parse() {
                 self.agents.defaults.loop_guard.global_circuit_breaker = v;
             }
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_AGENTS_DEFAULTS_LOOP_GUARD_PING_PONG_MIN_REPEATS")
+        if let Ok(val) = std::env::var("CLAIDE_AGENTS_DEFAULTS_LOOP_GUARD_PING_PONG_MIN_REPEATS")
         {
             if let Ok(v) = val.parse() {
                 self.agents.defaults.loop_guard.ping_pong_min_repeats = v;
             }
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_AGENTS_DEFAULTS_LOOP_GUARD_POLL_MULTIPLIER") {
+        if let Ok(val) = std::env::var("CLAIDE_AGENTS_DEFAULTS_LOOP_GUARD_POLL_MULTIPLIER") {
             if let Ok(v) = val.parse() {
                 self.agents.defaults.loop_guard.poll_multiplier = v;
             }
         }
         if let Ok(val) =
-            std::env::var("ZEPTOCLAW_AGENTS_DEFAULTS_LOOP_GUARD_OUTCOME_WARN_THRESHOLD")
+            std::env::var("CLAIDE_AGENTS_DEFAULTS_LOOP_GUARD_OUTCOME_WARN_THRESHOLD")
         {
             if let Ok(v) = val.parse() {
                 self.agents.defaults.loop_guard.outcome_warn_threshold = v;
             }
         }
         if let Ok(val) =
-            std::env::var("ZEPTOCLAW_AGENTS_DEFAULTS_LOOP_GUARD_OUTCOME_BLOCK_THRESHOLD")
+            std::env::var("CLAIDE_AGENTS_DEFAULTS_LOOP_GUARD_OUTCOME_BLOCK_THRESHOLD")
         {
             if let Ok(v) = val.parse() {
                 self.agents.defaults.loop_guard.outcome_block_threshold = v;
             }
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_AGENTS_DEFAULTS_LOOP_GUARD_WINDOW_SIZE") {
+        if let Ok(val) = std::env::var("CLAIDE_AGENTS_DEFAULTS_LOOP_GUARD_WINDOW_SIZE") {
             if let Ok(v) = val.parse() {
                 self.agents.defaults.loop_guard.window_size = v;
             }
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_AGENTS_DEFAULTS_MAX_TOOL_RESULT_BYTES") {
+        if let Ok(val) = std::env::var("CLAIDE_AGENTS_DEFAULTS_MAX_TOOL_RESULT_BYTES") {
             if let Ok(v) = val.parse() {
                 self.agents.defaults.max_tool_result_bytes = v;
             }
         }
 
         // Gateway
-        if let Ok(val) = std::env::var("ZEPTOCLAW_GATEWAY_HOST") {
+        if let Ok(val) = std::env::var("CLAIDE_GATEWAY_HOST") {
             self.gateway.host = val;
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_GATEWAY_PORT") {
+        if let Ok(val) = std::env::var("CLAIDE_GATEWAY_PORT") {
             if let Ok(v) = val.parse() {
                 self.gateway.port = v;
             }
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_GATEWAY_RATE_LIMIT_PAIR_PER_MIN") {
+        if let Ok(val) = std::env::var("CLAIDE_GATEWAY_RATE_LIMIT_PAIR_PER_MIN") {
             if let Ok(n) = val.parse() {
                 self.gateway.rate_limit.pair_per_min = n;
             }
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_GATEWAY_RATE_LIMIT_WEBHOOK_PER_MIN") {
+        if let Ok(val) = std::env::var("CLAIDE_GATEWAY_RATE_LIMIT_WEBHOOK_PER_MIN") {
             if let Ok(n) = val.parse() {
                 self.gateway.rate_limit.webhook_per_min = n;
             }
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_GATEWAY_STARTUP_GUARD_ENABLED") {
+        if let Ok(val) = std::env::var("CLAIDE_GATEWAY_STARTUP_GUARD_ENABLED") {
             self.gateway.startup_guard.enabled = val.parse().unwrap_or(true);
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_GATEWAY_STARTUP_GUARD_CRASH_THRESHOLD") {
+        if let Ok(val) = std::env::var("CLAIDE_GATEWAY_STARTUP_GUARD_CRASH_THRESHOLD") {
             if let Ok(n) = val.parse() {
                 self.gateway.startup_guard.crash_threshold = n;
             }
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_GATEWAY_STARTUP_GUARD_WINDOW_SECS") {
+        if let Ok(val) = std::env::var("CLAIDE_GATEWAY_STARTUP_GUARD_WINDOW_SECS") {
             if let Ok(n) = val.parse() {
                 self.gateway.startup_guard.window_secs = n;
             }
@@ -250,7 +250,7 @@ impl Config {
         self.apply_tool_env_overrides();
 
         // Hooks
-        if let Ok(val) = std::env::var("ZEPTOCLAW_HOOKS_ENABLED") {
+        if let Ok(val) = std::env::var("CLAIDE_HOOKS_ENABLED") {
             self.hooks.enabled = val.eq_ignore_ascii_case("true") || val == "1";
         }
 
@@ -273,7 +273,7 @@ impl Config {
         self.apply_cache_env_overrides();
 
         // Agent mode
-        if let Ok(val) = std::env::var("ZEPTOCLAW_SECURITY_AGENT_MODE") {
+        if let Ok(val) = std::env::var("CLAIDE_SECURITY_AGENT_MODE") {
             self.agent_mode.mode = val;
         }
 
@@ -281,33 +281,33 @@ impl Config {
         self.apply_pairing_env_overrides();
 
         // Session
-        if let Ok(val) = std::env::var("ZEPTOCLAW_SESSION_AUTO_REPAIR") {
+        if let Ok(val) = std::env::var("CLAIDE_SESSION_AUTO_REPAIR") {
             self.session.auto_repair = val.eq_ignore_ascii_case("true") || val == "1";
         }
 
         // Transcription
-        if let Ok(val) = std::env::var("ZEPTOCLAW_TRANSCRIPTION_MODEL") {
+        if let Ok(val) = std::env::var("CLAIDE_TRANSCRIPTION_MODEL") {
             self.transcription.model = val;
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_TRANSCRIPTION_ENABLED") {
+        if let Ok(val) = std::env::var("CLAIDE_TRANSCRIPTION_ENABLED") {
             self.transcription.enabled = val == "true" || val == "1";
         }
 
         // Panel (env overrides always applied — PanelConfig is always present in Config)
-        if let Ok(val) = std::env::var("ZEPTOCLAW_PANEL_ENABLED") {
+        if let Ok(val) = std::env::var("CLAIDE_PANEL_ENABLED") {
             self.panel.enabled = val.eq_ignore_ascii_case("true") || val == "1";
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_PANEL_PORT") {
+        if let Ok(val) = std::env::var("CLAIDE_PANEL_PORT") {
             if let Ok(v) = val.parse() {
                 self.panel.port = v;
             }
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_PANEL_API_PORT") {
+        if let Ok(val) = std::env::var("CLAIDE_PANEL_API_PORT") {
             if let Ok(v) = val.parse() {
                 self.panel.api_port = v;
             }
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_PANEL_BIND") {
+        if let Ok(val) = std::env::var("CLAIDE_PANEL_BIND") {
             self.panel.bind = val;
         }
     }
@@ -315,14 +315,14 @@ impl Config {
     /// Apply provider-specific environment variable overrides
     fn apply_provider_env_overrides(&mut self) {
         // Anthropic
-        if let Ok(val) = std::env::var("ZEPTOCLAW_PROVIDERS_ANTHROPIC_API_KEY") {
+        if let Ok(val) = std::env::var("CLAIDE_PROVIDERS_ANTHROPIC_API_KEY") {
             let provider = self
                 .providers
                 .anthropic
                 .get_or_insert_with(ProviderConfig::default);
             provider.api_key = Some(val);
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_PROVIDERS_ANTHROPIC_API_BASE") {
+        if let Ok(val) = std::env::var("CLAIDE_PROVIDERS_ANTHROPIC_API_BASE") {
             let provider = self
                 .providers
                 .anthropic
@@ -331,14 +331,14 @@ impl Config {
         }
 
         // OpenAI
-        if let Ok(val) = std::env::var("ZEPTOCLAW_PROVIDERS_OPENAI_API_KEY") {
+        if let Ok(val) = std::env::var("CLAIDE_PROVIDERS_OPENAI_API_KEY") {
             let provider = self
                 .providers
                 .openai
                 .get_or_insert_with(ProviderConfig::default);
             provider.api_key = Some(val);
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_PROVIDERS_OPENAI_API_BASE") {
+        if let Ok(val) = std::env::var("CLAIDE_PROVIDERS_OPENAI_API_BASE") {
             let provider = self
                 .providers
                 .openai
@@ -347,14 +347,14 @@ impl Config {
         }
 
         // OpenRouter
-        if let Ok(val) = std::env::var("ZEPTOCLAW_PROVIDERS_OPENROUTER_API_KEY") {
+        if let Ok(val) = std::env::var("CLAIDE_PROVIDERS_OPENROUTER_API_KEY") {
             let provider = self
                 .providers
                 .openrouter
                 .get_or_insert_with(ProviderConfig::default);
             provider.api_key = Some(val);
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_PROVIDERS_OPENROUTER_API_BASE") {
+        if let Ok(val) = std::env::var("CLAIDE_PROVIDERS_OPENROUTER_API_BASE") {
             let provider = self
                 .providers
                 .openrouter
@@ -363,7 +363,7 @@ impl Config {
         }
 
         // Groq
-        if let Ok(val) = std::env::var("ZEPTOCLAW_PROVIDERS_GROQ_API_KEY") {
+        if let Ok(val) = std::env::var("CLAIDE_PROVIDERS_GROQ_API_KEY") {
             let provider = self
                 .providers
                 .groq
@@ -372,14 +372,14 @@ impl Config {
         }
 
         // Zhipu
-        if let Ok(val) = std::env::var("ZEPTOCLAW_PROVIDERS_ZHIPU_API_KEY") {
+        if let Ok(val) = std::env::var("CLAIDE_PROVIDERS_ZHIPU_API_KEY") {
             let provider = self
                 .providers
                 .zhipu
                 .get_or_insert_with(ProviderConfig::default);
             provider.api_key = Some(val);
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_PROVIDERS_ZHIPU_API_BASE") {
+        if let Ok(val) = std::env::var("CLAIDE_PROVIDERS_ZHIPU_API_BASE") {
             let provider = self
                 .providers
                 .zhipu
@@ -388,7 +388,7 @@ impl Config {
         }
 
         // Groq api_base override
-        if let Ok(val) = std::env::var("ZEPTOCLAW_PROVIDERS_GROQ_API_BASE") {
+        if let Ok(val) = std::env::var("CLAIDE_PROVIDERS_GROQ_API_BASE") {
             let provider = self
                 .providers
                 .groq
@@ -397,14 +397,14 @@ impl Config {
         }
 
         // Gemini
-        if let Ok(val) = std::env::var("ZEPTOCLAW_PROVIDERS_GEMINI_API_KEY") {
+        if let Ok(val) = std::env::var("CLAIDE_PROVIDERS_GEMINI_API_KEY") {
             let provider = self
                 .providers
                 .gemini
                 .get_or_insert_with(ProviderConfig::default);
             provider.api_key = Some(val);
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_PROVIDERS_GEMINI_API_BASE") {
+        if let Ok(val) = std::env::var("CLAIDE_PROVIDERS_GEMINI_API_BASE") {
             let provider = self
                 .providers
                 .gemini
@@ -413,14 +413,14 @@ impl Config {
         }
 
         // vLLM
-        if let Ok(val) = std::env::var("ZEPTOCLAW_PROVIDERS_VLLM_API_KEY") {
+        if let Ok(val) = std::env::var("CLAIDE_PROVIDERS_VLLM_API_KEY") {
             let provider = self
                 .providers
                 .vllm
                 .get_or_insert_with(ProviderConfig::default);
             provider.api_key = Some(val);
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_PROVIDERS_VLLM_API_BASE") {
+        if let Ok(val) = std::env::var("CLAIDE_PROVIDERS_VLLM_API_BASE") {
             let provider = self
                 .providers
                 .vllm
@@ -429,14 +429,14 @@ impl Config {
         }
 
         // Ollama (local models)
-        if let Ok(val) = std::env::var("ZEPTOCLAW_PROVIDERS_OLLAMA_API_KEY") {
+        if let Ok(val) = std::env::var("CLAIDE_PROVIDERS_OLLAMA_API_KEY") {
             let provider = self
                 .providers
                 .ollama
                 .get_or_insert_with(ProviderConfig::default);
             provider.api_key = Some(val);
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_PROVIDERS_OLLAMA_API_BASE") {
+        if let Ok(val) = std::env::var("CLAIDE_PROVIDERS_OLLAMA_API_BASE") {
             let provider = self
                 .providers
                 .ollama
@@ -445,14 +445,14 @@ impl Config {
         }
 
         // Nvidia NIM
-        if let Ok(val) = std::env::var("ZEPTOCLAW_PROVIDERS_NVIDIA_API_KEY") {
+        if let Ok(val) = std::env::var("CLAIDE_PROVIDERS_NVIDIA_API_KEY") {
             let provider = self
                 .providers
                 .nvidia
                 .get_or_insert_with(ProviderConfig::default);
             provider.api_key = Some(val);
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_PROVIDERS_NVIDIA_API_BASE") {
+        if let Ok(val) = std::env::var("CLAIDE_PROVIDERS_NVIDIA_API_BASE") {
             let provider = self
                 .providers
                 .nvidia
@@ -461,14 +461,14 @@ impl Config {
         }
 
         // DeepSeek
-        if let Ok(val) = std::env::var("ZEPTOCLAW_PROVIDERS_DEEPSEEK_API_KEY") {
+        if let Ok(val) = std::env::var("CLAIDE_PROVIDERS_DEEPSEEK_API_KEY") {
             let provider = self
                 .providers
                 .deepseek
                 .get_or_insert_with(ProviderConfig::default);
             provider.api_key = Some(val);
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_PROVIDERS_DEEPSEEK_API_BASE") {
+        if let Ok(val) = std::env::var("CLAIDE_PROVIDERS_DEEPSEEK_API_BASE") {
             let provider = self
                 .providers
                 .deepseek
@@ -477,14 +477,14 @@ impl Config {
         }
 
         // Kimi (Moonshot AI)
-        if let Ok(val) = std::env::var("ZEPTOCLAW_PROVIDERS_KIMI_API_KEY") {
+        if let Ok(val) = std::env::var("CLAIDE_PROVIDERS_KIMI_API_KEY") {
             let provider = self
                 .providers
                 .kimi
                 .get_or_insert_with(ProviderConfig::default);
             provider.api_key = Some(val);
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_PROVIDERS_KIMI_API_BASE") {
+        if let Ok(val) = std::env::var("CLAIDE_PROVIDERS_KIMI_API_BASE") {
             let provider = self
                 .providers
                 .kimi
@@ -493,7 +493,7 @@ impl Config {
         }
 
         // Azure OpenAI
-        if let Ok(v) = std::env::var("ZEPTOCLAW_PROVIDERS_AZURE_API_KEY")
+        if let Ok(v) = std::env::var("CLAIDE_PROVIDERS_AZURE_API_KEY")
             .or_else(|_| std::env::var("AZURE_OPENAI_API_KEY"))
         {
             self.providers
@@ -501,7 +501,7 @@ impl Config {
                 .get_or_insert_with(ProviderConfig::default)
                 .api_key = Some(v);
         }
-        if let Ok(v) = std::env::var("ZEPTOCLAW_PROVIDERS_AZURE_API_BASE")
+        if let Ok(v) = std::env::var("CLAIDE_PROVIDERS_AZURE_API_BASE")
             .or_else(|_| std::env::var("AZURE_OPENAI_ENDPOINT"))
         {
             self.providers
@@ -509,7 +509,7 @@ impl Config {
                 .get_or_insert_with(ProviderConfig::default)
                 .api_base = Some(v);
         }
-        if let Ok(v) = std::env::var("ZEPTOCLAW_PROVIDERS_AZURE_API_VERSION") {
+        if let Ok(v) = std::env::var("CLAIDE_PROVIDERS_AZURE_API_VERSION") {
             self.providers
                 .azure
                 .get_or_insert_with(ProviderConfig::default)
@@ -517,7 +517,7 @@ impl Config {
         }
 
         // Amazon Bedrock
-        if let Ok(v) = std::env::var("ZEPTOCLAW_PROVIDERS_BEDROCK_API_KEY") {
+        if let Ok(v) = std::env::var("CLAIDE_PROVIDERS_BEDROCK_API_KEY") {
             self.providers
                 .bedrock
                 .get_or_insert_with(ProviderConfig::default)
@@ -531,7 +531,7 @@ impl Config {
                     .api_key = Some(v);
             }
         }
-        if let Ok(v) = std::env::var("ZEPTOCLAW_PROVIDERS_BEDROCK_API_BASE") {
+        if let Ok(v) = std::env::var("CLAIDE_PROVIDERS_BEDROCK_API_BASE") {
             self.providers
                 .bedrock
                 .get_or_insert_with(ProviderConfig::default)
@@ -539,7 +539,7 @@ impl Config {
         }
 
         // xAI (Grok)
-        if let Ok(val) = std::env::var("ZEPTOCLAW_PROVIDERS_XAI_API_KEY") {
+        if let Ok(val) = std::env::var("CLAIDE_PROVIDERS_XAI_API_KEY") {
             self.providers
                 .xai
                 .get_or_insert_with(ProviderConfig::default)
@@ -550,7 +550,7 @@ impl Config {
                 .get_or_insert_with(ProviderConfig::default)
                 .api_key = Some(val);
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_PROVIDERS_XAI_API_BASE") {
+        if let Ok(val) = std::env::var("CLAIDE_PROVIDERS_XAI_API_BASE") {
             self.providers
                 .xai
                 .get_or_insert_with(ProviderConfig::default)
@@ -558,7 +558,7 @@ impl Config {
         }
 
         // Baidu Qianfan
-        if let Ok(val) = std::env::var("ZEPTOCLAW_PROVIDERS_QIANFAN_API_KEY") {
+        if let Ok(val) = std::env::var("CLAIDE_PROVIDERS_QIANFAN_API_KEY") {
             self.providers
                 .qianfan
                 .get_or_insert_with(ProviderConfig::default)
@@ -569,7 +569,7 @@ impl Config {
                 .get_or_insert_with(ProviderConfig::default)
                 .api_key = Some(val);
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_PROVIDERS_QIANFAN_API_BASE") {
+        if let Ok(val) = std::env::var("CLAIDE_PROVIDERS_QIANFAN_API_BASE") {
             self.providers
                 .qianfan
                 .get_or_insert_with(ProviderConfig::default)
@@ -577,79 +577,79 @@ impl Config {
         }
 
         // Per-provider model overrides
-        if let Ok(val) = std::env::var("ZEPTOCLAW_PROVIDERS_ANTHROPIC_MODEL") {
+        if let Ok(val) = std::env::var("CLAIDE_PROVIDERS_ANTHROPIC_MODEL") {
             self.providers
                 .anthropic
                 .get_or_insert_with(ProviderConfig::default)
                 .model = Some(val);
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_PROVIDERS_OPENAI_MODEL") {
+        if let Ok(val) = std::env::var("CLAIDE_PROVIDERS_OPENAI_MODEL") {
             self.providers
                 .openai
                 .get_or_insert_with(ProviderConfig::default)
                 .model = Some(val);
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_PROVIDERS_GEMINI_MODEL") {
+        if let Ok(val) = std::env::var("CLAIDE_PROVIDERS_GEMINI_MODEL") {
             self.providers
                 .gemini
                 .get_or_insert_with(ProviderConfig::default)
                 .model = Some(val);
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_PROVIDERS_NVIDIA_MODEL") {
+        if let Ok(val) = std::env::var("CLAIDE_PROVIDERS_NVIDIA_MODEL") {
             self.providers
                 .nvidia
                 .get_or_insert_with(ProviderConfig::default)
                 .model = Some(val);
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_PROVIDERS_OPENROUTER_MODEL") {
+        if let Ok(val) = std::env::var("CLAIDE_PROVIDERS_OPENROUTER_MODEL") {
             self.providers
                 .openrouter
                 .get_or_insert_with(ProviderConfig::default)
                 .model = Some(val);
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_PROVIDERS_GROQ_MODEL") {
+        if let Ok(val) = std::env::var("CLAIDE_PROVIDERS_GROQ_MODEL") {
             self.providers
                 .groq
                 .get_or_insert_with(ProviderConfig::default)
                 .model = Some(val);
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_PROVIDERS_OLLAMA_MODEL") {
+        if let Ok(val) = std::env::var("CLAIDE_PROVIDERS_OLLAMA_MODEL") {
             self.providers
                 .ollama
                 .get_or_insert_with(ProviderConfig::default)
                 .model = Some(val);
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_PROVIDERS_VLLM_MODEL") {
+        if let Ok(val) = std::env::var("CLAIDE_PROVIDERS_VLLM_MODEL") {
             self.providers
                 .vllm
                 .get_or_insert_with(ProviderConfig::default)
                 .model = Some(val);
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_PROVIDERS_ZHIPU_MODEL") {
+        if let Ok(val) = std::env::var("CLAIDE_PROVIDERS_ZHIPU_MODEL") {
             self.providers
                 .zhipu
                 .get_or_insert_with(ProviderConfig::default)
                 .model = Some(val);
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_PROVIDERS_DEEPSEEK_MODEL") {
+        if let Ok(val) = std::env::var("CLAIDE_PROVIDERS_DEEPSEEK_MODEL") {
             self.providers
                 .deepseek
                 .get_or_insert_with(ProviderConfig::default)
                 .model = Some(val);
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_PROVIDERS_KIMI_MODEL") {
+        if let Ok(val) = std::env::var("CLAIDE_PROVIDERS_KIMI_MODEL") {
             self.providers
                 .kimi
                 .get_or_insert_with(ProviderConfig::default)
                 .model = Some(val);
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_PROVIDERS_XAI_MODEL") {
+        if let Ok(val) = std::env::var("CLAIDE_PROVIDERS_XAI_MODEL") {
             self.providers
                 .xai
                 .get_or_insert_with(ProviderConfig::default)
                 .model = Some(val);
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_PROVIDERS_QIANFAN_MODEL") {
+        if let Ok(val) = std::env::var("CLAIDE_PROVIDERS_QIANFAN_MODEL") {
             self.providers
                 .qianfan
                 .get_or_insert_with(ProviderConfig::default)
@@ -657,48 +657,48 @@ impl Config {
         }
 
         // Provider retry behavior
-        if let Ok(val) = std::env::var("ZEPTOCLAW_PROVIDERS_RETRY_ENABLED") {
+        if let Ok(val) = std::env::var("CLAIDE_PROVIDERS_RETRY_ENABLED") {
             if let Ok(enabled) = val.parse() {
                 self.providers.retry.enabled = enabled;
             }
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_PROVIDERS_RETRY_MAX_RETRIES") {
+        if let Ok(val) = std::env::var("CLAIDE_PROVIDERS_RETRY_MAX_RETRIES") {
             if let Ok(v) = val.parse() {
                 self.providers.retry.max_retries = v;
             }
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_PROVIDERS_RETRY_BASE_DELAY_MS") {
+        if let Ok(val) = std::env::var("CLAIDE_PROVIDERS_RETRY_BASE_DELAY_MS") {
             if let Ok(v) = val.parse() {
                 self.providers.retry.base_delay_ms = v;
             }
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_PROVIDERS_RETRY_MAX_DELAY_MS") {
+        if let Ok(val) = std::env::var("CLAIDE_PROVIDERS_RETRY_MAX_DELAY_MS") {
             if let Ok(v) = val.parse() {
                 self.providers.retry.max_delay_ms = v;
             }
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_PROVIDERS_RETRY_BUDGET_MS") {
+        if let Ok(val) = std::env::var("CLAIDE_PROVIDERS_RETRY_BUDGET_MS") {
             if let Ok(v) = val.parse() {
                 self.providers.retry.retry_budget_ms = v;
             }
         }
 
         // Provider fallback behavior
-        if let Ok(val) = std::env::var("ZEPTOCLAW_PROVIDERS_FALLBACK_ENABLED") {
+        if let Ok(val) = std::env::var("CLAIDE_PROVIDERS_FALLBACK_ENABLED") {
             if let Ok(enabled) = val.parse() {
                 self.providers.fallback.enabled = enabled;
             }
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_PROVIDERS_FALLBACK_PROVIDER") {
+        if let Ok(val) = std::env::var("CLAIDE_PROVIDERS_FALLBACK_PROVIDER") {
             let value = val.trim().to_string();
             self.providers.fallback.provider = if value.is_empty() { None } else { Some(value) };
         }
 
         // Provider rotation behavior
-        if let Ok(val) = std::env::var("ZEPTOCLAW_PROVIDERS_ROTATION_ENABLED") {
+        if let Ok(val) = std::env::var("CLAIDE_PROVIDERS_ROTATION_ENABLED") {
             self.providers.rotation.enabled = val.eq_ignore_ascii_case("true") || val == "1";
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_PROVIDERS_ROTATION_STRATEGY") {
+        if let Ok(val) = std::env::var("CLAIDE_PROVIDERS_ROTATION_STRATEGY") {
             match val.trim().to_ascii_lowercase().as_str() {
                 "priority" => {
                     self.providers.rotation.strategy =
@@ -713,7 +713,7 @@ impl Config {
         }
 
         // Per-provider quota overrides — Anthropic
-        if let Ok(val) = std::env::var("ZEPTOCLAW_PROVIDERS_ANTHROPIC_QUOTA_MAX_COST_USD") {
+        if let Ok(val) = std::env::var("CLAIDE_PROVIDERS_ANTHROPIC_QUOTA_MAX_COST_USD") {
             if let Ok(v) = val.parse::<f64>() {
                 let provider = self
                     .providers
@@ -725,7 +725,7 @@ impl Config {
                     .max_cost_usd = Some(v);
             }
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_PROVIDERS_ANTHROPIC_QUOTA_MAX_TOKENS") {
+        if let Ok(val) = std::env::var("CLAIDE_PROVIDERS_ANTHROPIC_QUOTA_MAX_TOKENS") {
             if let Ok(v) = val.parse::<u64>() {
                 let provider = self
                     .providers
@@ -737,7 +737,7 @@ impl Config {
                     .max_tokens = Some(v);
             }
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_PROVIDERS_ANTHROPIC_QUOTA_PERIOD") {
+        if let Ok(val) = std::env::var("CLAIDE_PROVIDERS_ANTHROPIC_QUOTA_PERIOD") {
             use crate::providers::quota::QuotaPeriod;
             let maybe_period = match val.trim().to_ascii_lowercase().as_str() {
                 "daily" => Some(QuotaPeriod::Daily),
@@ -755,7 +755,7 @@ impl Config {
                     .period = period;
             }
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_PROVIDERS_ANTHROPIC_QUOTA_ACTION") {
+        if let Ok(val) = std::env::var("CLAIDE_PROVIDERS_ANTHROPIC_QUOTA_ACTION") {
             use crate::providers::quota::QuotaAction;
             let maybe_action = match val.trim().to_ascii_lowercase().as_str() {
                 "fallback" => Some(QuotaAction::Fallback),
@@ -776,7 +776,7 @@ impl Config {
         }
 
         // Per-provider quota overrides — OpenAI
-        if let Ok(val) = std::env::var("ZEPTOCLAW_PROVIDERS_OPENAI_QUOTA_MAX_COST_USD") {
+        if let Ok(val) = std::env::var("CLAIDE_PROVIDERS_OPENAI_QUOTA_MAX_COST_USD") {
             if let Ok(v) = val.parse::<f64>() {
                 let provider = self
                     .providers
@@ -788,7 +788,7 @@ impl Config {
                     .max_cost_usd = Some(v);
             }
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_PROVIDERS_OPENAI_QUOTA_MAX_TOKENS") {
+        if let Ok(val) = std::env::var("CLAIDE_PROVIDERS_OPENAI_QUOTA_MAX_TOKENS") {
             if let Ok(v) = val.parse::<u64>() {
                 let provider = self
                     .providers
@@ -800,7 +800,7 @@ impl Config {
                     .max_tokens = Some(v);
             }
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_PROVIDERS_OPENAI_QUOTA_PERIOD") {
+        if let Ok(val) = std::env::var("CLAIDE_PROVIDERS_OPENAI_QUOTA_PERIOD") {
             use crate::providers::quota::QuotaPeriod;
             let maybe_period = match val.trim().to_ascii_lowercase().as_str() {
                 "daily" => Some(QuotaPeriod::Daily),
@@ -818,7 +818,7 @@ impl Config {
                     .period = period;
             }
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_PROVIDERS_OPENAI_QUOTA_ACTION") {
+        if let Ok(val) = std::env::var("CLAIDE_PROVIDERS_OPENAI_QUOTA_ACTION") {
             use crate::providers::quota::QuotaAction;
             let maybe_action = match val.trim().to_ascii_lowercase().as_str() {
                 "fallback" => Some(QuotaAction::Fallback),
@@ -842,8 +842,8 @@ impl Config {
     /// Apply channel-specific environment variable overrides
     fn apply_channel_env_overrides(&mut self) {
         // Telegram
-        if let Ok(val) = std::env::var("ZEPTOCLAW_CHANNELS_TELEGRAM_TOKEN")
-            .or_else(|_| std::env::var("ZEPTOCLAW_CHANNELS_TELEGRAM_BOT_TOKEN"))
+        if let Ok(val) = std::env::var("CLAIDE_CHANNELS_TELEGRAM_TOKEN")
+            .or_else(|_| std::env::var("CLAIDE_CHANNELS_TELEGRAM_BOT_TOKEN"))
         {
             let channel = self
                 .channels
@@ -851,7 +851,7 @@ impl Config {
                 .get_or_insert_with(TelegramConfig::default);
             channel.token = val;
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_CHANNELS_TELEGRAM_ENABLED") {
+        if let Ok(val) = std::env::var("CLAIDE_CHANNELS_TELEGRAM_ENABLED") {
             if let Ok(enabled) = val.parse() {
                 let channel = self
                     .channels
@@ -862,14 +862,14 @@ impl Config {
         }
 
         // Discord
-        if let Ok(val) = std::env::var("ZEPTOCLAW_CHANNELS_DISCORD_TOKEN") {
+        if let Ok(val) = std::env::var("CLAIDE_CHANNELS_DISCORD_TOKEN") {
             let channel = self
                 .channels
                 .discord
                 .get_or_insert_with(DiscordConfig::default);
             channel.token = val;
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_CHANNELS_DISCORD_ENABLED") {
+        if let Ok(val) = std::env::var("CLAIDE_CHANNELS_DISCORD_ENABLED") {
             if let Ok(enabled) = val.parse() {
                 let channel = self
                     .channels
@@ -880,15 +880,15 @@ impl Config {
         }
 
         // Slack
-        if let Ok(val) = std::env::var("ZEPTOCLAW_CHANNELS_SLACK_BOT_TOKEN") {
+        if let Ok(val) = std::env::var("CLAIDE_CHANNELS_SLACK_BOT_TOKEN") {
             let channel = self.channels.slack.get_or_insert_with(SlackConfig::default);
             channel.bot_token = val;
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_CHANNELS_SLACK_APP_TOKEN") {
+        if let Ok(val) = std::env::var("CLAIDE_CHANNELS_SLACK_APP_TOKEN") {
             let channel = self.channels.slack.get_or_insert_with(SlackConfig::default);
             channel.app_token = val;
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_CHANNELS_SLACK_ENABLED") {
+        if let Ok(val) = std::env::var("CLAIDE_CHANNELS_SLACK_ENABLED") {
             if let Ok(enabled) = val.parse() {
                 let channel = self.channels.slack.get_or_insert_with(SlackConfig::default);
                 channel.enabled = enabled;
@@ -896,21 +896,21 @@ impl Config {
         }
 
         // WhatsApp
-        if let Ok(val) = std::env::var("ZEPTOCLAW_CHANNELS_WHATSAPP_BRIDGE_URL") {
+        if let Ok(val) = std::env::var("CLAIDE_CHANNELS_WHATSAPP_BRIDGE_URL") {
             let channel = self
                 .channels
                 .whatsapp
                 .get_or_insert_with(WhatsAppConfig::default);
             channel.bridge_url = val;
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_CHANNELS_WHATSAPP_BRIDGE_TOKEN") {
+        if let Ok(val) = std::env::var("CLAIDE_CHANNELS_WHATSAPP_BRIDGE_TOKEN") {
             let channel = self
                 .channels
                 .whatsapp
                 .get_or_insert_with(WhatsAppConfig::default);
             channel.bridge_token = Some(val);
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_CHANNELS_WHATSAPP_ENABLED") {
+        if let Ok(val) = std::env::var("CLAIDE_CHANNELS_WHATSAPP_ENABLED") {
             if let Ok(enabled) = val.parse() {
                 let channel = self
                     .channels
@@ -921,19 +921,19 @@ impl Config {
         }
 
         // Runtime: Apple Container
-        if let Ok(val) = std::env::var("ZEPTOCLAW_RUNTIME_APPLE_ALLOW_EXPERIMENTAL") {
+        if let Ok(val) = std::env::var("CLAIDE_RUNTIME_APPLE_ALLOW_EXPERIMENTAL") {
             if let Ok(v) = val.parse() {
                 self.runtime.apple.allow_experimental = v;
             }
         }
 
         // Runtime: Docker
-        if let Ok(v) = std::env::var("ZEPTOCLAW_RUNTIME_DOCKER_PIDS_LIMIT") {
+        if let Ok(v) = std::env::var("CLAIDE_RUNTIME_DOCKER_PIDS_LIMIT") {
             if let Ok(n) = v.parse::<u32>() {
                 self.runtime.docker.pids_limit = Some(n);
             }
         }
-        if let Ok(v) = std::env::var("ZEPTOCLAW_RUNTIME_DOCKER_STOP_TIMEOUT_SECS") {
+        if let Ok(v) = std::env::var("CLAIDE_RUNTIME_DOCKER_STOP_TIMEOUT_SECS") {
             if let Ok(n) = v.parse::<u64>() {
                 self.runtime.docker.stop_timeout_secs = n;
             }
@@ -943,83 +943,83 @@ impl Config {
     /// Apply tool-specific environment variable overrides
     fn apply_tool_env_overrides(&mut self) {
         // Web search API key (prefer explicit tool-scoped variable).
-        if let Ok(val) = std::env::var("ZEPTOCLAW_TOOLS_WEB_SEARCH_API_KEY") {
+        if let Ok(val) = std::env::var("CLAIDE_TOOLS_WEB_SEARCH_API_KEY") {
             self.tools.web.search.api_key = Some(val);
-        } else if let Ok(val) = std::env::var("ZEPTOCLAW_INTEGRATIONS_BRAVE_API_KEY") {
+        } else if let Ok(val) = std::env::var("CLAIDE_INTEGRATIONS_BRAVE_API_KEY") {
             self.tools.web.search.api_key = Some(val);
         } else if let Ok(val) = std::env::var("BRAVE_API_KEY") {
             self.tools.web.search.api_key = Some(val);
         }
 
-        if let Ok(val) = std::env::var("ZEPTOCLAW_TOOLS_WEB_SEARCH_MAX_RESULTS") {
+        if let Ok(val) = std::env::var("CLAIDE_TOOLS_WEB_SEARCH_MAX_RESULTS") {
             if let Ok(v) = val.parse::<u32>() {
                 self.tools.web.search.max_results = v.clamp(1, 10);
             }
         }
 
-        if let Ok(val) = std::env::var("ZEPTOCLAW_TOOLS_WEB_SEARCH_PROVIDER") {
+        if let Ok(val) = std::env::var("CLAIDE_TOOLS_WEB_SEARCH_PROVIDER") {
             self.tools.web.search.provider = Some(val);
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_TOOLS_WEB_SEARCH_API_URL") {
+        if let Ok(val) = std::env::var("CLAIDE_TOOLS_WEB_SEARCH_API_URL") {
             self.tools.web.search.api_url = Some(val);
         }
 
         // WhatsApp tool configuration
-        if let Ok(val) = std::env::var("ZEPTOCLAW_TOOLS_WHATSAPP_PHONE_NUMBER_ID") {
+        if let Ok(val) = std::env::var("CLAIDE_TOOLS_WHATSAPP_PHONE_NUMBER_ID") {
             self.tools.whatsapp.phone_number_id = Some(val);
-        } else if let Ok(val) = std::env::var("ZEPTOCLAW_INTEGRATIONS_WHATSAPP_PHONE_NUMBER_ID") {
+        } else if let Ok(val) = std::env::var("CLAIDE_INTEGRATIONS_WHATSAPP_PHONE_NUMBER_ID") {
             self.tools.whatsapp.phone_number_id = Some(val);
         }
 
-        if let Ok(val) = std::env::var("ZEPTOCLAW_TOOLS_WHATSAPP_ACCESS_TOKEN") {
+        if let Ok(val) = std::env::var("CLAIDE_TOOLS_WHATSAPP_ACCESS_TOKEN") {
             self.tools.whatsapp.access_token = Some(val);
-        } else if let Ok(val) = std::env::var("ZEPTOCLAW_INTEGRATIONS_WHATSAPP_ACCESS_TOKEN") {
+        } else if let Ok(val) = std::env::var("CLAIDE_INTEGRATIONS_WHATSAPP_ACCESS_TOKEN") {
             self.tools.whatsapp.access_token = Some(val);
         }
 
-        if let Ok(val) = std::env::var("ZEPTOCLAW_TOOLS_WHATSAPP_DEFAULT_LANGUAGE") {
+        if let Ok(val) = std::env::var("CLAIDE_TOOLS_WHATSAPP_DEFAULT_LANGUAGE") {
             if !val.trim().is_empty() {
                 self.tools.whatsapp.default_language = val;
             }
         }
 
         // Google Sheets tool configuration
-        if let Ok(val) = std::env::var("ZEPTOCLAW_TOOLS_GOOGLE_SHEETS_ACCESS_TOKEN") {
+        if let Ok(val) = std::env::var("CLAIDE_TOOLS_GOOGLE_SHEETS_ACCESS_TOKEN") {
             self.tools.google_sheets.access_token = Some(val);
-        } else if let Ok(val) = std::env::var("ZEPTOCLAW_INTEGRATIONS_GOOGLE_SHEETS_ACCESS_TOKEN") {
+        } else if let Ok(val) = std::env::var("CLAIDE_INTEGRATIONS_GOOGLE_SHEETS_ACCESS_TOKEN") {
             self.tools.google_sheets.access_token = Some(val);
         }
 
-        if let Ok(val) = std::env::var("ZEPTOCLAW_TOOLS_GOOGLE_SHEETS_SERVICE_ACCOUNT_BASE64") {
+        if let Ok(val) = std::env::var("CLAIDE_TOOLS_GOOGLE_SHEETS_SERVICE_ACCOUNT_BASE64") {
             self.tools.google_sheets.service_account_base64 = Some(val);
         } else if let Ok(val) =
-            std::env::var("ZEPTOCLAW_INTEGRATIONS_GOOGLE_SHEETS_SERVICE_ACCOUNT_BASE64")
+            std::env::var("CLAIDE_INTEGRATIONS_GOOGLE_SHEETS_SERVICE_ACCOUNT_BASE64")
         {
             self.tools.google_sheets.service_account_base64 = Some(val);
         }
 
         // Google Workspace tool
-        if let Ok(val) = std::env::var("ZEPTOCLAW_TOOLS_GOOGLE_ACCESS_TOKEN") {
+        if let Ok(val) = std::env::var("CLAIDE_TOOLS_GOOGLE_ACCESS_TOKEN") {
             self.tools.google.access_token = Some(val);
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_TOOLS_GOOGLE_CLIENT_ID") {
+        if let Ok(val) = std::env::var("CLAIDE_TOOLS_GOOGLE_CLIENT_ID") {
             self.tools.google.client_id = Some(val);
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_TOOLS_GOOGLE_CLIENT_SECRET") {
+        if let Ok(val) = std::env::var("CLAIDE_TOOLS_GOOGLE_CLIENT_SECRET") {
             self.tools.google.client_secret = Some(val);
         }
 
-        if let Ok(v) = std::env::var("ZEPTOCLAW_TOOLS_TRANSCRIBE_GROQ_API_KEY") {
+        if let Ok(v) = std::env::var("CLAIDE_TOOLS_TRANSCRIBE_GROQ_API_KEY") {
             self.tools.transcribe.groq_api_key = Some(v);
         }
-        if let Ok(v) = std::env::var("ZEPTOCLAW_TOOLS_TRANSCRIBE_ENABLED") {
+        if let Ok(v) = std::env::var("CLAIDE_TOOLS_TRANSCRIBE_ENABLED") {
             self.tools.transcribe.enabled = v == "true" || v == "1";
         }
     }
 
     /// Apply memory-specific environment variable overrides.
     fn apply_memory_env_overrides(&mut self) {
-        if let Ok(val) = std::env::var("ZEPTOCLAW_MEMORY_BACKEND") {
+        if let Ok(val) = std::env::var("CLAIDE_MEMORY_BACKEND") {
             let normalized = val.trim().to_ascii_lowercase();
             if let Some(parsed) = match normalized.as_str() {
                 "none" | "disabled" => Some(MemoryBackend::Disabled),
@@ -1035,7 +1035,7 @@ impl Config {
             }
         }
 
-        if let Ok(val) = std::env::var("ZEPTOCLAW_MEMORY_CITATIONS") {
+        if let Ok(val) = std::env::var("CLAIDE_MEMORY_CITATIONS") {
             let normalized = val.trim().to_ascii_lowercase();
             if let Some(parsed) = match normalized.as_str() {
                 "on" | "true" => Some(MemoryCitationsMode::On),
@@ -1047,31 +1047,31 @@ impl Config {
             }
         }
 
-        if let Ok(val) = std::env::var("ZEPTOCLAW_MEMORY_MAX_RESULTS") {
+        if let Ok(val) = std::env::var("CLAIDE_MEMORY_MAX_RESULTS") {
             if let Ok(v) = val.parse::<u32>() {
                 self.memory.max_results = v.clamp(1, 50);
             }
         }
 
-        if let Ok(val) = std::env::var("ZEPTOCLAW_MEMORY_MIN_SCORE") {
+        if let Ok(val) = std::env::var("CLAIDE_MEMORY_MIN_SCORE") {
             if let Ok(v) = val.parse::<f32>() {
                 self.memory.min_score = v.clamp(0.0, 1.0);
             }
         }
 
-        if let Ok(val) = std::env::var("ZEPTOCLAW_MEMORY_MAX_SNIPPET_CHARS") {
+        if let Ok(val) = std::env::var("CLAIDE_MEMORY_MAX_SNIPPET_CHARS") {
             if let Ok(v) = val.parse::<u32>() {
                 self.memory.max_snippet_chars = v.clamp(64, 10_000);
             }
         }
 
-        if let Ok(val) = std::env::var("ZEPTOCLAW_MEMORY_INCLUDE_DEFAULT_MEMORY") {
+        if let Ok(val) = std::env::var("CLAIDE_MEMORY_INCLUDE_DEFAULT_MEMORY") {
             if let Ok(v) = val.parse::<bool>() {
                 self.memory.include_default_memory = v;
             }
         }
 
-        if let Ok(val) = std::env::var("ZEPTOCLAW_MEMORY_EXTRA_PATHS") {
+        if let Ok(val) = std::env::var("CLAIDE_MEMORY_EXTRA_PATHS") {
             self.memory.extra_paths = val
                 .split(',')
                 .map(str::trim)
@@ -1079,21 +1079,21 @@ impl Config {
                 .map(str::to_string)
                 .collect();
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_MEMORY_EMBEDDING_PROVIDER") {
+        if let Ok(val) = std::env::var("CLAIDE_MEMORY_EMBEDDING_PROVIDER") {
             self.memory.embedding_provider = Some(val);
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_MEMORY_EMBEDDING_MODEL") {
+        if let Ok(val) = std::env::var("CLAIDE_MEMORY_EMBEDDING_MODEL") {
             self.memory.embedding_model = Some(val);
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_MEMORY_HYGIENE_ENABLED") {
+        if let Ok(val) = std::env::var("CLAIDE_MEMORY_HYGIENE_ENABLED") {
             self.memory.hygiene.enabled = val.parse().unwrap_or(true);
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_MEMORY_HYGIENE_INTERVAL_HOURS") {
+        if let Ok(val) = std::env::var("CLAIDE_MEMORY_HYGIENE_INTERVAL_HOURS") {
             if let Ok(n) = val.parse::<u64>() {
                 self.memory.hygiene.interval_hours = n;
             }
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_MEMORY_HYGIENE_MAX_ENTRIES") {
+        if let Ok(val) = std::env::var("CLAIDE_MEMORY_HYGIENE_MAX_ENTRIES") {
             if let Ok(n) = val.parse::<usize>() {
                 self.memory.hygiene.max_entries = n;
             }
@@ -1102,44 +1102,44 @@ impl Config {
 
     /// Apply heartbeat-specific environment variable overrides.
     fn apply_heartbeat_env_overrides(&mut self) {
-        if let Ok(val) = std::env::var("ZEPTOCLAW_HEARTBEAT_ENABLED") {
+        if let Ok(val) = std::env::var("CLAIDE_HEARTBEAT_ENABLED") {
             if let Ok(v) = val.parse::<bool>() {
                 self.heartbeat.enabled = v;
             }
         }
 
-        if let Ok(val) = std::env::var("ZEPTOCLAW_HEARTBEAT_INTERVAL_SECS") {
+        if let Ok(val) = std::env::var("CLAIDE_HEARTBEAT_INTERVAL_SECS") {
             if let Ok(v) = val.parse::<u64>() {
                 self.heartbeat.interval_secs = v.clamp(30, 24 * 60 * 60);
             }
         }
 
-        if let Ok(val) = std::env::var("ZEPTOCLAW_HEARTBEAT_FILE_PATH") {
+        if let Ok(val) = std::env::var("CLAIDE_HEARTBEAT_FILE_PATH") {
             if !val.trim().is_empty() {
                 self.heartbeat.file_path = Some(val);
             }
         }
 
-        if let Ok(v) = std::env::var("ZEPTOCLAW_HEARTBEAT_DELIVER_TO") {
+        if let Ok(v) = std::env::var("CLAIDE_HEARTBEAT_DELIVER_TO") {
             self.heartbeat.deliver_to = if v.is_empty() { None } else { Some(v) };
         }
     }
 
     /// Apply skills-specific environment variable overrides.
     fn apply_skills_env_overrides(&mut self) {
-        if let Ok(val) = std::env::var("ZEPTOCLAW_SKILLS_ENABLED") {
+        if let Ok(val) = std::env::var("CLAIDE_SKILLS_ENABLED") {
             if let Ok(v) = val.parse::<bool>() {
                 self.skills.enabled = v;
             }
         }
 
-        if let Ok(val) = std::env::var("ZEPTOCLAW_SKILLS_WORKSPACE_DIR") {
+        if let Ok(val) = std::env::var("CLAIDE_SKILLS_WORKSPACE_DIR") {
             if !val.trim().is_empty() {
                 self.skills.workspace_dir = Some(val);
             }
         }
 
-        if let Ok(val) = std::env::var("ZEPTOCLAW_SKILLS_ALWAYS_LOAD") {
+        if let Ok(val) = std::env::var("CLAIDE_SKILLS_ALWAYS_LOAD") {
             self.skills.always_load = val
                 .split(',')
                 .map(str::trim)
@@ -1148,7 +1148,7 @@ impl Config {
                 .collect();
         }
 
-        if let Ok(val) = std::env::var("ZEPTOCLAW_SKILLS_DISABLED") {
+        if let Ok(val) = std::env::var("CLAIDE_SKILLS_DISABLED") {
             self.skills.disabled = val
                 .split(',')
                 .map(str::trim)
@@ -1160,49 +1160,49 @@ impl Config {
 
     /// Apply safety-layer environment variable overrides.
     fn apply_safety_env_overrides(&mut self) {
-        if let Ok(val) = std::env::var("ZEPTOCLAW_SAFETY_ENABLED") {
+        if let Ok(val) = std::env::var("CLAIDE_SAFETY_ENABLED") {
             self.safety.enabled = val.eq_ignore_ascii_case("true") || val == "1";
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_SAFETY_INJECTION_CHECK_ENABLED") {
+        if let Ok(val) = std::env::var("CLAIDE_SAFETY_INJECTION_CHECK_ENABLED") {
             self.safety.injection_check_enabled = val.eq_ignore_ascii_case("true") || val == "1";
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_SAFETY_LEAK_DETECTION_ENABLED") {
+        if let Ok(val) = std::env::var("CLAIDE_SAFETY_LEAK_DETECTION_ENABLED") {
             self.safety.leak_detection_enabled = val.eq_ignore_ascii_case("true") || val == "1";
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_SAFETY_MAX_OUTPUT_LENGTH") {
+        if let Ok(val) = std::env::var("CLAIDE_SAFETY_MAX_OUTPUT_LENGTH") {
             if let Ok(v) = val.parse::<usize>() {
                 self.safety.max_output_length = v.clamp(1_000, 10_000_000);
             }
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_SAFETY_TAINT_ENABLED") {
+        if let Ok(val) = std::env::var("CLAIDE_SAFETY_TAINT_ENABLED") {
             self.safety.taint.enabled = val.eq_ignore_ascii_case("true") || val == "1";
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_SAFETY_TAINT_BLOCK_ON_VIOLATION") {
+        if let Ok(val) = std::env::var("CLAIDE_SAFETY_TAINT_BLOCK_ON_VIOLATION") {
             self.safety.taint.block_on_violation = val.eq_ignore_ascii_case("true") || val == "1";
         }
     }
 
     /// Apply context-compaction environment variable overrides.
     fn apply_compaction_env_overrides(&mut self) {
-        if let Ok(val) = std::env::var("ZEPTOCLAW_COMPACTION_ENABLED") {
+        if let Ok(val) = std::env::var("CLAIDE_COMPACTION_ENABLED") {
             self.compaction.enabled = val.eq_ignore_ascii_case("true") || val == "1";
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_COMPACTION_CONTEXT_LIMIT") {
+        if let Ok(val) = std::env::var("CLAIDE_COMPACTION_CONTEXT_LIMIT") {
             if let Ok(v) = val.parse::<usize>() {
                 self.compaction.context_limit = v.clamp(1_000, 1_000_000);
             }
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_COMPACTION_THRESHOLD") {
+        if let Ok(val) = std::env::var("CLAIDE_COMPACTION_THRESHOLD") {
             if let Ok(v) = val.parse::<f64>() {
                 self.compaction.threshold = v.clamp(0.1, 1.0);
             }
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_COMPACTION_EMERGENCY_THRESHOLD") {
+        if let Ok(val) = std::env::var("CLAIDE_COMPACTION_EMERGENCY_THRESHOLD") {
             if let Ok(v) = val.parse::<f64>() {
                 self.compaction.emergency_threshold = v.clamp(0.1, 1.0);
             }
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_COMPACTION_CRITICAL_THRESHOLD") {
+        if let Ok(val) = std::env::var("CLAIDE_COMPACTION_CRITICAL_THRESHOLD") {
             if let Ok(v) = val.parse::<f64>() {
                 self.compaction.critical_threshold = v.clamp(0.1, 1.0);
             }
@@ -1211,7 +1211,7 @@ impl Config {
 
     /// Apply project management tool environment variable overrides.
     fn apply_project_env_overrides(&mut self) {
-        if let Ok(val) = std::env::var("ZEPTOCLAW_PROJECT_BACKEND") {
+        if let Ok(val) = std::env::var("CLAIDE_PROJECT_BACKEND") {
             match val.trim().to_ascii_lowercase().as_str() {
                 "github" => self.project.backend = ProjectBackend::Github,
                 "jira" => self.project.backend = ProjectBackend::Jira,
@@ -1219,21 +1219,21 @@ impl Config {
                 _ => {}
             }
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_PROJECT_DEFAULT_PROJECT") {
+        if let Ok(val) = std::env::var("CLAIDE_PROJECT_DEFAULT_PROJECT") {
             self.project.default_project = val;
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_PROJECT_GITHUB_TOKEN") {
+        if let Ok(val) = std::env::var("CLAIDE_PROJECT_GITHUB_TOKEN") {
             let val = val.trim().to_string();
             self.project.github_token = if val.is_empty() { None } else { Some(val) };
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_PROJECT_JIRA_URL") {
+        if let Ok(val) = std::env::var("CLAIDE_PROJECT_JIRA_URL") {
             self.project.jira_url = val;
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_PROJECT_JIRA_TOKEN") {
+        if let Ok(val) = std::env::var("CLAIDE_PROJECT_JIRA_TOKEN") {
             let val = val.trim().to_string();
             self.project.jira_token = if val.is_empty() { None } else { Some(val) };
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_PROJECT_LINEAR_API_KEY") {
+        if let Ok(val) = std::env::var("CLAIDE_PROJECT_LINEAR_API_KEY") {
             let val = val.trim().to_string();
             self.project.linear_api_key = if val.is_empty() { None } else { Some(val) };
         }
@@ -1241,38 +1241,38 @@ impl Config {
 
     /// Apply routines environment variable overrides.
     fn apply_routines_env_overrides(&mut self) {
-        if let Ok(val) = std::env::var("ZEPTOCLAW_ROUTINES_ENABLED") {
+        if let Ok(val) = std::env::var("CLAIDE_ROUTINES_ENABLED") {
             self.routines.enabled = val.eq_ignore_ascii_case("true") || val == "1";
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_ROUTINES_CRON_INTERVAL_SECS") {
+        if let Ok(val) = std::env::var("CLAIDE_ROUTINES_CRON_INTERVAL_SECS") {
             if let Ok(v) = val.parse::<u64>() {
                 self.routines.cron_interval_secs = v.clamp(1, 3600);
             }
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_ROUTINES_MAX_CONCURRENT") {
+        if let Ok(val) = std::env::var("CLAIDE_ROUTINES_MAX_CONCURRENT") {
             if let Ok(v) = val.parse::<usize>() {
                 self.routines.max_concurrent = v.clamp(1, 100);
             }
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_ROUTINES_JITTER_MS") {
+        if let Ok(val) = std::env::var("CLAIDE_ROUTINES_JITTER_MS") {
             if let Ok(v) = val.parse::<u64>() {
                 self.routines.jitter_ms = v;
             }
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_ROUTINES_ON_MISS") {
+        if let Ok(val) = std::env::var("CLAIDE_ROUTINES_ON_MISS") {
             match val.to_lowercase().as_str() {
                 "skip" => self.routines.on_miss = crate::cron::OnMiss::Skip,
                 "run_once" => self.routines.on_miss = crate::cron::OnMiss::RunOnce,
                 _ => {}
             }
         }
-        if let Ok(v) = std::env::var("ZEPTOCLAW_HEALTH_ENABLED") {
+        if let Ok(v) = std::env::var("CLAIDE_HEALTH_ENABLED") {
             self.health.enabled = v == "true" || v == "1";
         }
-        if let Ok(v) = std::env::var("ZEPTOCLAW_HEALTH_HOST") {
+        if let Ok(v) = std::env::var("CLAIDE_HEALTH_HOST") {
             self.health.host = v;
         }
-        if let Ok(v) = std::env::var("ZEPTOCLAW_HEALTH_PORT") {
+        if let Ok(v) = std::env::var("CLAIDE_HEALTH_PORT") {
             if let Ok(port) = v.parse::<u16>() {
                 self.health.port = port;
             }
@@ -1281,17 +1281,17 @@ impl Config {
 
     /// Apply Stripe environment variable overrides.
     fn apply_stripe_env_overrides(&mut self) {
-        if let Ok(val) = std::env::var("ZEPTOCLAW_STRIPE_SECRET_KEY") {
+        if let Ok(val) = std::env::var("CLAIDE_STRIPE_SECRET_KEY") {
             let val = val.trim().to_string();
             self.stripe.secret_key = if val.is_empty() { None } else { Some(val) };
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_STRIPE_DEFAULT_CURRENCY") {
+        if let Ok(val) = std::env::var("CLAIDE_STRIPE_DEFAULT_CURRENCY") {
             let val = val.trim().to_ascii_lowercase();
             if !val.is_empty() {
                 self.stripe.default_currency = val;
             }
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_STRIPE_WEBHOOK_SECRET") {
+        if let Ok(val) = std::env::var("CLAIDE_STRIPE_WEBHOOK_SECRET") {
             let val = val.trim().to_string();
             self.stripe.webhook_secret = if val.is_empty() { None } else { Some(val) };
         }
@@ -1299,15 +1299,15 @@ impl Config {
 
     /// Apply cache environment variable overrides.
     fn apply_cache_env_overrides(&mut self) {
-        if let Ok(val) = std::env::var("ZEPTOCLAW_CACHE_ENABLED") {
+        if let Ok(val) = std::env::var("CLAIDE_CACHE_ENABLED") {
             self.cache.enabled = val.eq_ignore_ascii_case("true") || val == "1";
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_CACHE_TTL_SECS") {
+        if let Ok(val) = std::env::var("CLAIDE_CACHE_TTL_SECS") {
             if let Ok(n) = val.parse::<u64>() {
                 self.cache.ttl_secs = n;
             }
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_CACHE_MAX_ENTRIES") {
+        if let Ok(val) = std::env::var("CLAIDE_CACHE_MAX_ENTRIES") {
             if let Ok(n) = val.parse::<usize>() {
                 self.cache.max_entries = n;
             }
@@ -1316,15 +1316,15 @@ impl Config {
 
     /// Apply device pairing environment variable overrides.
     fn apply_pairing_env_overrides(&mut self) {
-        if let Ok(val) = std::env::var("ZEPTOCLAW_SECURITY_PAIRING_ENABLED") {
+        if let Ok(val) = std::env::var("CLAIDE_SECURITY_PAIRING_ENABLED") {
             self.pairing.enabled = val.eq_ignore_ascii_case("true") || val == "1";
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_SECURITY_PAIRING_MAX_ATTEMPTS") {
+        if let Ok(val) = std::env::var("CLAIDE_SECURITY_PAIRING_MAX_ATTEMPTS") {
             if let Ok(n) = val.parse::<u32>() {
                 self.pairing.max_attempts = n.clamp(1, 100);
             }
         }
-        if let Ok(val) = std::env::var("ZEPTOCLAW_SECURITY_PAIRING_LOCKOUT_SECS") {
+        if let Ok(val) = std::env::var("CLAIDE_SECURITY_PAIRING_LOCKOUT_SECS") {
             if let Ok(n) = val.parse::<u64>() {
                 self.pairing.lockout_secs = n.clamp(10, 86400);
             }
@@ -1538,7 +1538,7 @@ mod tests {
         assert_eq!(config.agents.defaults.max_tokens, 8192);
         assert_eq!(config.agents.defaults.temperature, 0.7);
         assert_eq!(config.agents.defaults.max_tool_iterations, 20);
-        assert_eq!(config.agents.defaults.workspace, "~/.zeptoclaw/workspace");
+        assert_eq!(config.agents.defaults.workspace, "~/.claide/workspace");
         assert_eq!(config.gateway.host, "0.0.0.0");
         assert_eq!(config.gateway.port, 8080);
         assert_eq!(config.memory.backend, MemoryBackend::Builtin);
@@ -1586,8 +1586,8 @@ mod tests {
         let home = dirs::home_dir().unwrap();
 
         // Test ~ expansion
-        let expanded = expand_home("~/.zeptoclaw");
-        assert_eq!(expanded, home.join(".zeptoclaw"));
+        let expanded = expand_home("~/.claide");
+        assert_eq!(expanded, home.join(".claide"));
 
         // Test ~/path expansion
         let expanded = expand_home("~/some/path");
@@ -1611,21 +1611,21 @@ mod tests {
         let config = Config::default();
         let workspace = config.workspace_path();
         let home = dirs::home_dir().unwrap();
-        assert_eq!(workspace, home.join(".zeptoclaw/workspace"));
+        assert_eq!(workspace, home.join(".claide/workspace"));
     }
 
     #[test]
     fn test_config_dir() {
         let dir = Config::dir();
         let home = dirs::home_dir().unwrap();
-        assert_eq!(dir, home.join(".zeptoclaw"));
+        assert_eq!(dir, home.join(".claide"));
     }
 
     #[test]
     fn test_config_path() {
         let path = Config::path();
         let home = dirs::home_dir().unwrap();
-        assert_eq!(path, home.join(".zeptoclaw/config.json"));
+        assert_eq!(path, home.join(".claide/config.json"));
     }
 
     #[test]
@@ -1706,25 +1706,25 @@ mod tests {
     #[test]
     fn test_env_override() {
         // Set env var
-        env::set_var("ZEPTOCLAW_AGENTS_DEFAULTS_MODEL", "test-model");
-        env::set_var("ZEPTOCLAW_AGENTS_DEFAULTS_MAX_TOKENS", "1000");
+        env::set_var("CLAIDE_AGENTS_DEFAULTS_MODEL", "test-model");
+        env::set_var("CLAIDE_AGENTS_DEFAULTS_MAX_TOKENS", "1000");
         env::set_var("BRAVE_API_KEY", "test-brave-key");
-        env::set_var("ZEPTOCLAW_TOOLS_WEB_SEARCH_MAX_RESULTS", "9");
-        env::set_var("ZEPTOCLAW_MEMORY_BACKEND", "none");
-        env::set_var("ZEPTOCLAW_MEMORY_CITATIONS", "on");
-        env::set_var("ZEPTOCLAW_MEMORY_MAX_RESULTS", "12");
-        env::set_var("ZEPTOCLAW_MEMORY_MIN_SCORE", "0.55");
-        env::set_var("ZEPTOCLAW_MEMORY_INCLUDE_DEFAULT_MEMORY", "false");
-        env::set_var("ZEPTOCLAW_MEMORY_EXTRA_PATHS", "notes,archives/2026");
-        env::set_var("ZEPTOCLAW_HEARTBEAT_ENABLED", "true");
-        env::set_var("ZEPTOCLAW_HEARTBEAT_INTERVAL_SECS", "900");
-        env::set_var("ZEPTOCLAW_HEARTBEAT_FILE_PATH", "/tmp/heartbeat.md");
-        env::set_var("ZEPTOCLAW_SKILLS_ENABLED", "false");
-        env::set_var("ZEPTOCLAW_SKILLS_ALWAYS_LOAD", "github,weather");
-        env::set_var("ZEPTOCLAW_SKILLS_DISABLED", "experimental");
-        env::set_var("ZEPTOCLAW_TOOLS_WHATSAPP_PHONE_NUMBER_ID", "123456");
-        env::set_var("ZEPTOCLAW_TOOLS_WHATSAPP_ACCESS_TOKEN", "wa-token");
-        env::set_var("ZEPTOCLAW_TOOLS_GOOGLE_SHEETS_ACCESS_TOKEN", "gs-token");
+        env::set_var("CLAIDE_TOOLS_WEB_SEARCH_MAX_RESULTS", "9");
+        env::set_var("CLAIDE_MEMORY_BACKEND", "none");
+        env::set_var("CLAIDE_MEMORY_CITATIONS", "on");
+        env::set_var("CLAIDE_MEMORY_MAX_RESULTS", "12");
+        env::set_var("CLAIDE_MEMORY_MIN_SCORE", "0.55");
+        env::set_var("CLAIDE_MEMORY_INCLUDE_DEFAULT_MEMORY", "false");
+        env::set_var("CLAIDE_MEMORY_EXTRA_PATHS", "notes,archives/2026");
+        env::set_var("CLAIDE_HEARTBEAT_ENABLED", "true");
+        env::set_var("CLAIDE_HEARTBEAT_INTERVAL_SECS", "900");
+        env::set_var("CLAIDE_HEARTBEAT_FILE_PATH", "/tmp/heartbeat.md");
+        env::set_var("CLAIDE_SKILLS_ENABLED", "false");
+        env::set_var("CLAIDE_SKILLS_ALWAYS_LOAD", "github,weather");
+        env::set_var("CLAIDE_SKILLS_DISABLED", "experimental");
+        env::set_var("CLAIDE_TOOLS_WHATSAPP_PHONE_NUMBER_ID", "123456");
+        env::set_var("CLAIDE_TOOLS_WHATSAPP_ACCESS_TOKEN", "wa-token");
+        env::set_var("CLAIDE_TOOLS_GOOGLE_SHEETS_ACCESS_TOKEN", "gs-token");
 
         let mut config = Config::default();
         config.apply_env_overrides();
@@ -1771,25 +1771,25 @@ mod tests {
         );
 
         // Clean up
-        env::remove_var("ZEPTOCLAW_AGENTS_DEFAULTS_MODEL");
-        env::remove_var("ZEPTOCLAW_AGENTS_DEFAULTS_MAX_TOKENS");
+        env::remove_var("CLAIDE_AGENTS_DEFAULTS_MODEL");
+        env::remove_var("CLAIDE_AGENTS_DEFAULTS_MAX_TOKENS");
         env::remove_var("BRAVE_API_KEY");
-        env::remove_var("ZEPTOCLAW_TOOLS_WEB_SEARCH_MAX_RESULTS");
-        env::remove_var("ZEPTOCLAW_MEMORY_BACKEND");
-        env::remove_var("ZEPTOCLAW_MEMORY_CITATIONS");
-        env::remove_var("ZEPTOCLAW_MEMORY_MAX_RESULTS");
-        env::remove_var("ZEPTOCLAW_MEMORY_MIN_SCORE");
-        env::remove_var("ZEPTOCLAW_MEMORY_INCLUDE_DEFAULT_MEMORY");
-        env::remove_var("ZEPTOCLAW_MEMORY_EXTRA_PATHS");
-        env::remove_var("ZEPTOCLAW_HEARTBEAT_ENABLED");
-        env::remove_var("ZEPTOCLAW_HEARTBEAT_INTERVAL_SECS");
-        env::remove_var("ZEPTOCLAW_HEARTBEAT_FILE_PATH");
-        env::remove_var("ZEPTOCLAW_SKILLS_ENABLED");
-        env::remove_var("ZEPTOCLAW_SKILLS_ALWAYS_LOAD");
-        env::remove_var("ZEPTOCLAW_SKILLS_DISABLED");
-        env::remove_var("ZEPTOCLAW_TOOLS_WHATSAPP_PHONE_NUMBER_ID");
-        env::remove_var("ZEPTOCLAW_TOOLS_WHATSAPP_ACCESS_TOKEN");
-        env::remove_var("ZEPTOCLAW_TOOLS_GOOGLE_SHEETS_ACCESS_TOKEN");
+        env::remove_var("CLAIDE_TOOLS_WEB_SEARCH_MAX_RESULTS");
+        env::remove_var("CLAIDE_MEMORY_BACKEND");
+        env::remove_var("CLAIDE_MEMORY_CITATIONS");
+        env::remove_var("CLAIDE_MEMORY_MAX_RESULTS");
+        env::remove_var("CLAIDE_MEMORY_MIN_SCORE");
+        env::remove_var("CLAIDE_MEMORY_INCLUDE_DEFAULT_MEMORY");
+        env::remove_var("CLAIDE_MEMORY_EXTRA_PATHS");
+        env::remove_var("CLAIDE_HEARTBEAT_ENABLED");
+        env::remove_var("CLAIDE_HEARTBEAT_INTERVAL_SECS");
+        env::remove_var("CLAIDE_HEARTBEAT_FILE_PATH");
+        env::remove_var("CLAIDE_SKILLS_ENABLED");
+        env::remove_var("CLAIDE_SKILLS_ALWAYS_LOAD");
+        env::remove_var("CLAIDE_SKILLS_DISABLED");
+        env::remove_var("CLAIDE_TOOLS_WHATSAPP_PHONE_NUMBER_ID");
+        env::remove_var("CLAIDE_TOOLS_WHATSAPP_ACCESS_TOKEN");
+        env::remove_var("CLAIDE_TOOLS_GOOGLE_SHEETS_ACCESS_TOKEN");
     }
 
     #[test]
@@ -1881,7 +1881,7 @@ mod tests {
         use std::fs;
 
         // Create a temp directory
-        let temp_dir = std::env::temp_dir().join("zeptoclaw_test");
+        let temp_dir = std::env::temp_dir().join("claide_test");
         fs::create_dir_all(&temp_dir).unwrap();
         let config_path = temp_dir.join("config.json");
 
@@ -1945,11 +1945,11 @@ mod tests {
 
     #[test]
     fn test_env_override_compact_tools() {
-        std::env::set_var("ZEPTOCLAW_AGENTS_DEFAULTS_COMPACT_TOOLS", "true");
+        std::env::set_var("CLAIDE_AGENTS_DEFAULTS_COMPACT_TOOLS", "true");
         let mut config = Config::default();
         config.apply_env_overrides();
         assert!(config.agents.defaults.compact_tools);
-        std::env::remove_var("ZEPTOCLAW_AGENTS_DEFAULTS_COMPACT_TOOLS");
+        std::env::remove_var("CLAIDE_AGENTS_DEFAULTS_COMPACT_TOOLS");
     }
 
     #[test]
@@ -1957,22 +1957,22 @@ mod tests {
         // Use all provider model env vars to verify they are wired correctly
         let vars = [
             (
-                "ZEPTOCLAW_PROVIDERS_ANTHROPIC_MODEL",
+                "CLAIDE_PROVIDERS_ANTHROPIC_MODEL",
                 "claude-opus-4-20250514",
             ),
-            ("ZEPTOCLAW_PROVIDERS_OPENAI_MODEL", "gpt-5.1"),
-            ("ZEPTOCLAW_PROVIDERS_GEMINI_MODEL", "gemini-2.0-flash"),
-            ("ZEPTOCLAW_PROVIDERS_NVIDIA_MODEL", "meta/llama-3.3-70b"),
+            ("CLAIDE_PROVIDERS_OPENAI_MODEL", "gpt-5.1"),
+            ("CLAIDE_PROVIDERS_GEMINI_MODEL", "gemini-2.0-flash"),
+            ("CLAIDE_PROVIDERS_NVIDIA_MODEL", "meta/llama-3.3-70b"),
             (
-                "ZEPTOCLAW_PROVIDERS_OPENROUTER_MODEL",
+                "CLAIDE_PROVIDERS_OPENROUTER_MODEL",
                 "anthropic/claude-opus-4-20250514",
             ),
-            ("ZEPTOCLAW_PROVIDERS_GROQ_MODEL", "llama-3.3-70b"),
-            ("ZEPTOCLAW_PROVIDERS_OLLAMA_MODEL", "mistral:latest"),
-            ("ZEPTOCLAW_PROVIDERS_VLLM_MODEL", "meta-llama/Llama-3"),
-            ("ZEPTOCLAW_PROVIDERS_ZHIPU_MODEL", "glm-4"),
-            ("ZEPTOCLAW_PROVIDERS_DEEPSEEK_MODEL", "deepseek-chat"),
-            ("ZEPTOCLAW_PROVIDERS_KIMI_MODEL", "moonshot-v1-128k"),
+            ("CLAIDE_PROVIDERS_GROQ_MODEL", "llama-3.3-70b"),
+            ("CLAIDE_PROVIDERS_OLLAMA_MODEL", "mistral:latest"),
+            ("CLAIDE_PROVIDERS_VLLM_MODEL", "meta-llama/Llama-3"),
+            ("CLAIDE_PROVIDERS_ZHIPU_MODEL", "glm-4"),
+            ("CLAIDE_PROVIDERS_DEEPSEEK_MODEL", "deepseek-chat"),
+            ("CLAIDE_PROVIDERS_KIMI_MODEL", "moonshot-v1-128k"),
         ];
 
         for (key, val) in &vars {
@@ -2035,7 +2035,7 @@ mod tests {
 
     #[test]
     fn test_env_override_anthropic_quota_max_cost() {
-        std::env::set_var("ZEPTOCLAW_PROVIDERS_ANTHROPIC_QUOTA_MAX_COST_USD", "5.5");
+        std::env::set_var("CLAIDE_PROVIDERS_ANTHROPIC_QUOTA_MAX_COST_USD", "5.5");
         let mut config = Config::default();
         config.apply_env_overrides();
         let quota = config
@@ -2047,13 +2047,13 @@ mod tests {
             .as_ref()
             .expect("quota should be set");
         assert_eq!(quota.max_cost_usd, Some(5.5));
-        std::env::remove_var("ZEPTOCLAW_PROVIDERS_ANTHROPIC_QUOTA_MAX_COST_USD");
+        std::env::remove_var("CLAIDE_PROVIDERS_ANTHROPIC_QUOTA_MAX_COST_USD");
     }
 
     #[test]
     fn test_env_override_anthropic_quota_action_fallback() {
         use crate::providers::quota::QuotaAction;
-        std::env::set_var("ZEPTOCLAW_PROVIDERS_ANTHROPIC_QUOTA_ACTION", "fallback");
+        std::env::set_var("CLAIDE_PROVIDERS_ANTHROPIC_QUOTA_ACTION", "fallback");
         let mut config = Config::default();
         config.apply_env_overrides();
         let quota = config
@@ -2065,13 +2065,13 @@ mod tests {
             .as_ref()
             .expect("quota should be set");
         assert_eq!(quota.action, QuotaAction::Fallback);
-        std::env::remove_var("ZEPTOCLAW_PROVIDERS_ANTHROPIC_QUOTA_ACTION");
+        std::env::remove_var("CLAIDE_PROVIDERS_ANTHROPIC_QUOTA_ACTION");
     }
 
     #[test]
     fn test_azure_env_override_api_key() {
         // Uses a dedicated env var name to avoid collisions
-        std::env::set_var("ZEPTOCLAW_PROVIDERS_AZURE_API_KEY", "test-azure-env-key");
+        std::env::set_var("CLAIDE_PROVIDERS_AZURE_API_KEY", "test-azure-env-key");
         let mut config = Config::default();
         config.apply_env_overrides();
         assert_eq!(
@@ -2082,12 +2082,12 @@ mod tests {
                 .and_then(|p| p.api_key.as_deref()),
             Some("test-azure-env-key")
         );
-        std::env::remove_var("ZEPTOCLAW_PROVIDERS_AZURE_API_KEY");
+        std::env::remove_var("CLAIDE_PROVIDERS_AZURE_API_KEY");
     }
 
     #[test]
     fn test_bedrock_aws_key_not_auto_enabled_without_config() {
-        std::env::remove_var("ZEPTOCLAW_PROVIDERS_BEDROCK_API_KEY");
+        std::env::remove_var("CLAIDE_PROVIDERS_BEDROCK_API_KEY");
         std::env::set_var("AWS_ACCESS_KEY_ID", "AKIAIOSFODNN7EXAMPLE");
         let mut config = Config::default();
         // Ensure no explicit Bedrock config is present
@@ -2111,7 +2111,7 @@ mod tests {
 
     #[test]
     fn test_xai_env_override_api_key() {
-        std::env::set_var("ZEPTOCLAW_PROVIDERS_XAI_API_KEY", "xai-test-env-key");
+        std::env::set_var("CLAIDE_PROVIDERS_XAI_API_KEY", "xai-test-env-key");
         let mut config = Config::default();
         config.apply_env_overrides();
         assert_eq!(
@@ -2122,12 +2122,12 @@ mod tests {
                 .and_then(|p| p.api_key.as_deref()),
             Some("xai-test-env-key")
         );
-        std::env::remove_var("ZEPTOCLAW_PROVIDERS_XAI_API_KEY");
+        std::env::remove_var("CLAIDE_PROVIDERS_XAI_API_KEY");
     }
 
     #[test]
     fn test_qianfan_env_override_api_key() {
-        std::env::set_var("ZEPTOCLAW_PROVIDERS_QIANFAN_API_KEY", "qf-test-env-key");
+        std::env::set_var("CLAIDE_PROVIDERS_QIANFAN_API_KEY", "qf-test-env-key");
         let mut config = Config::default();
         config.apply_env_overrides();
         assert_eq!(
@@ -2138,15 +2138,15 @@ mod tests {
                 .and_then(|p| p.api_key.as_deref()),
             Some("qf-test-env-key")
         );
-        std::env::remove_var("ZEPTOCLAW_PROVIDERS_QIANFAN_API_KEY");
+        std::env::remove_var("CLAIDE_PROVIDERS_QIANFAN_API_KEY");
     }
 
     #[test]
     fn test_web_search_env_provider_override() {
         // Use unique env var names to avoid parallel test interference
-        std::env::set_var("ZEPTOCLAW_TOOLS_WEB_SEARCH_PROVIDER", "searxng");
+        std::env::set_var("CLAIDE_TOOLS_WEB_SEARCH_PROVIDER", "searxng");
         std::env::set_var(
-            "ZEPTOCLAW_TOOLS_WEB_SEARCH_API_URL",
+            "CLAIDE_TOOLS_WEB_SEARCH_API_URL",
             "https://s.example.com",
         );
         let mut cfg = Config::default();
@@ -2156,33 +2156,33 @@ mod tests {
             cfg.tools.web.search.api_url.as_deref(),
             Some("https://s.example.com")
         );
-        std::env::remove_var("ZEPTOCLAW_TOOLS_WEB_SEARCH_PROVIDER");
-        std::env::remove_var("ZEPTOCLAW_TOOLS_WEB_SEARCH_API_URL");
+        std::env::remove_var("CLAIDE_TOOLS_WEB_SEARCH_PROVIDER");
+        std::env::remove_var("CLAIDE_TOOLS_WEB_SEARCH_API_URL");
     }
 
     #[test]
     fn test_env_override_loop_guard_all_fields() {
-        std::env::set_var("ZEPTOCLAW_AGENTS_DEFAULTS_LOOP_GUARD_ENABLED", "false");
-        std::env::set_var("ZEPTOCLAW_AGENTS_DEFAULTS_LOOP_GUARD_WARN_THRESHOLD", "10");
-        std::env::set_var("ZEPTOCLAW_AGENTS_DEFAULTS_LOOP_GUARD_BLOCK_THRESHOLD", "20");
+        std::env::set_var("CLAIDE_AGENTS_DEFAULTS_LOOP_GUARD_ENABLED", "false");
+        std::env::set_var("CLAIDE_AGENTS_DEFAULTS_LOOP_GUARD_WARN_THRESHOLD", "10");
+        std::env::set_var("CLAIDE_AGENTS_DEFAULTS_LOOP_GUARD_BLOCK_THRESHOLD", "20");
         std::env::set_var(
-            "ZEPTOCLAW_AGENTS_DEFAULTS_LOOP_GUARD_GLOBAL_CIRCUIT_BREAKER",
+            "CLAIDE_AGENTS_DEFAULTS_LOOP_GUARD_GLOBAL_CIRCUIT_BREAKER",
             "50",
         );
         std::env::set_var(
-            "ZEPTOCLAW_AGENTS_DEFAULTS_LOOP_GUARD_PING_PONG_MIN_REPEATS",
+            "CLAIDE_AGENTS_DEFAULTS_LOOP_GUARD_PING_PONG_MIN_REPEATS",
             "5",
         );
-        std::env::set_var("ZEPTOCLAW_AGENTS_DEFAULTS_LOOP_GUARD_POLL_MULTIPLIER", "4");
+        std::env::set_var("CLAIDE_AGENTS_DEFAULTS_LOOP_GUARD_POLL_MULTIPLIER", "4");
         std::env::set_var(
-            "ZEPTOCLAW_AGENTS_DEFAULTS_LOOP_GUARD_OUTCOME_WARN_THRESHOLD",
+            "CLAIDE_AGENTS_DEFAULTS_LOOP_GUARD_OUTCOME_WARN_THRESHOLD",
             "7",
         );
         std::env::set_var(
-            "ZEPTOCLAW_AGENTS_DEFAULTS_LOOP_GUARD_OUTCOME_BLOCK_THRESHOLD",
+            "CLAIDE_AGENTS_DEFAULTS_LOOP_GUARD_OUTCOME_BLOCK_THRESHOLD",
             "9",
         );
-        std::env::set_var("ZEPTOCLAW_AGENTS_DEFAULTS_LOOP_GUARD_WINDOW_SIZE", "300");
+        std::env::set_var("CLAIDE_AGENTS_DEFAULTS_LOOP_GUARD_WINDOW_SIZE", "300");
 
         let mut config = Config::default();
         config.apply_env_overrides();
@@ -2198,14 +2198,14 @@ mod tests {
         assert_eq!(lg.outcome_block_threshold, 9);
         assert_eq!(lg.window_size, 300);
 
-        std::env::remove_var("ZEPTOCLAW_AGENTS_DEFAULTS_LOOP_GUARD_ENABLED");
-        std::env::remove_var("ZEPTOCLAW_AGENTS_DEFAULTS_LOOP_GUARD_WARN_THRESHOLD");
-        std::env::remove_var("ZEPTOCLAW_AGENTS_DEFAULTS_LOOP_GUARD_BLOCK_THRESHOLD");
-        std::env::remove_var("ZEPTOCLAW_AGENTS_DEFAULTS_LOOP_GUARD_GLOBAL_CIRCUIT_BREAKER");
-        std::env::remove_var("ZEPTOCLAW_AGENTS_DEFAULTS_LOOP_GUARD_PING_PONG_MIN_REPEATS");
-        std::env::remove_var("ZEPTOCLAW_AGENTS_DEFAULTS_LOOP_GUARD_POLL_MULTIPLIER");
-        std::env::remove_var("ZEPTOCLAW_AGENTS_DEFAULTS_LOOP_GUARD_OUTCOME_WARN_THRESHOLD");
-        std::env::remove_var("ZEPTOCLAW_AGENTS_DEFAULTS_LOOP_GUARD_OUTCOME_BLOCK_THRESHOLD");
-        std::env::remove_var("ZEPTOCLAW_AGENTS_DEFAULTS_LOOP_GUARD_WINDOW_SIZE");
+        std::env::remove_var("CLAIDE_AGENTS_DEFAULTS_LOOP_GUARD_ENABLED");
+        std::env::remove_var("CLAIDE_AGENTS_DEFAULTS_LOOP_GUARD_WARN_THRESHOLD");
+        std::env::remove_var("CLAIDE_AGENTS_DEFAULTS_LOOP_GUARD_BLOCK_THRESHOLD");
+        std::env::remove_var("CLAIDE_AGENTS_DEFAULTS_LOOP_GUARD_GLOBAL_CIRCUIT_BREAKER");
+        std::env::remove_var("CLAIDE_AGENTS_DEFAULTS_LOOP_GUARD_PING_PONG_MIN_REPEATS");
+        std::env::remove_var("CLAIDE_AGENTS_DEFAULTS_LOOP_GUARD_POLL_MULTIPLIER");
+        std::env::remove_var("CLAIDE_AGENTS_DEFAULTS_LOOP_GUARD_OUTCOME_WARN_THRESHOLD");
+        std::env::remove_var("CLAIDE_AGENTS_DEFAULTS_LOOP_GUARD_OUTCOME_BLOCK_THRESHOLD");
+        std::env::remove_var("CLAIDE_AGENTS_DEFAULTS_LOOP_GUARD_WINDOW_SIZE");
     }
 }

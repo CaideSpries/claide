@@ -1,6 +1,6 @@
-# ZeptoClaw Performance Benchmark Results
+# Claide Performance Benchmark Results
 
-> 📊 Detailed benchmark data for ZeptoClaw's performance characteristics.
+> 📊 Detailed benchmark data for Claide's performance characteristics.
 > 
 > For optimization tips and deployment guidance, see [PERFORMANCE.md](./PERFORMANCE.md)
 
@@ -10,7 +10,7 @@
 
 ## Summary
 
-ZeptoClaw demonstrates **outstanding performance** for an AI assistant framework, handling **1000+ concurrent users** with minimal memory usage and high throughput.
+Claide demonstrates **outstanding performance** for an AI assistant framework, handling **1000+ concurrent users** with minimal memory usage and high throughput.
 
 ---
 
@@ -111,7 +111,7 @@ All tests showed **<1ms average latency** with no spikes.
 |----------|--------------|------------------------|
 | **Python/Flask** | ~4 GB | ~$40 (2GB RAM) ❌ |
 | **Go** | ~1 GB | ~$10 (1GB RAM) ⚠️ |
-| **Rust/ZeptoClaw** | ~16 MB | ~$5 (512MB RAM) ✅ |
+| **Rust/Claide** | ~16 MB | ~$5 (512MB RAM) ✅ |
 
 *Based on DigitalOcean pricing: $5/month = 1 vCPU, 512MB RAM*
 
@@ -165,7 +165,7 @@ All tests showed **<1ms average latency** with no spikes.
 |---------|-------|--------------|
 | OpenAI Assistants API | 1000 | ~$200+ |
 | Google Dialogflow CX | 1000 | ~$300+ |
-| **ZeptoClaw (self-hosted)** | 1000 | **$5** ✅ |
+| **Claide (self-hosted)** | 1000 | **$5** ✅ |
 
 ---
 
@@ -194,14 +194,14 @@ cargo build --bin benchmark --release
 
 ## Conclusion
 
-ZeptoClaw achieves **enterprise-grade performance** on minimal hardware:
+Claide achieves **enterprise-grade performance** on minimal hardware:
 
 - ✅ **1000+ concurrent users** on a $5/month VPS
 - ✅ **<1ms latency** with no spikes
 - ✅ **Zero message loss** under load
 - ✅ **Linear scalability** from 100 to 1000+ users
 
-**Bottom line:** ZeptoClaw can serve a mid-sized company's AI assistant needs for the cost of a coffee per month.
+**Bottom line:** Claide can serve a mid-sized company's AI assistant needs for the cost of a coffee per month.
 
 ---
 

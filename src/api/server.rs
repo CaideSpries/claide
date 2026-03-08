@@ -1,4 +1,4 @@
-//! Axum API server for ZeptoClaw Panel.
+//! Axum API server for Claide Panel.
 
 use crate::api::config::PanelConfig;
 use crate::api::events::EventBus;

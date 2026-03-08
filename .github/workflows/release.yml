@@ -16,19 +16,19 @@ jobs:
         include:
           - target: x86_64-unknown-linux-gnu
             os: ubuntu-latest
-            artifact: zeptoclaw-linux-x86_64
+            artifact: claide-linux-x86_64
             features: peripheral-esp32
           - target: aarch64-unknown-linux-gnu
             os: ubuntu-latest
-            artifact: zeptoclaw-linux-aarch64
+            artifact: claide-linux-aarch64
             features: peripheral-esp32,peripheral-rpi
           - target: aarch64-apple-darwin
             os: macos-latest
-            artifact: zeptoclaw-macos-aarch64
+            artifact: claide-macos-aarch64
             features: peripheral-esp32
           - target: x86_64-apple-darwin
             os: macos-latest
-            artifact: zeptoclaw-macos-x86_64
+            artifact: claide-macos-x86_64
             features: peripheral-esp32
 
     steps:
@@ -57,7 +57,7 @@ jobs:
       - name: Package binary
         run: |
           mkdir -p dist
-          cp target/${{ matrix.target }}/release/zeptoclaw dist/${{ matrix.artifact }}
+          cp target/${{ matrix.target }}/release/claide dist/${{ matrix.artifact }}
           cd dist && sha256sum ${{ matrix.artifact }} > ${{ matrix.artifact }}.sha256
 
       - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0

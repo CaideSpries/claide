@@ -37,7 +37,7 @@ impl ManagedProcess {
 
 /// Central dependency manager.
 pub struct DepManager {
-    /// Base directory for installed dependencies (~/.zeptoclaw/deps/).
+    /// Base directory for installed dependencies (~/.claide/deps/).
     deps_dir: PathBuf,
     /// Registry tracking installed state.
     registry: RwLock<Registry>,
@@ -65,7 +65,7 @@ impl DepManager {
     pub fn default_dir() -> PathBuf {
         dirs::home_dir()
             .unwrap_or_else(|| PathBuf::from("."))
-            .join(".zeptoclaw/deps")
+            .join(".claide/deps")
     }
 
     /// Save registry to disk.
@@ -372,7 +372,7 @@ mod tests {
     fn test_dir() -> PathBuf {
         let id = TEST_COUNTER.fetch_add(1, Ordering::Relaxed);
         let dir = std::env::temp_dir().join(format!(
-            "zeptoclaw_test_depmanager_{}_{}",
+            "claide_test_depmanager_{}_{}",
             std::process::id(),
             id
         ));
@@ -590,6 +590,6 @@ mod tests {
     fn test_default_dir() {
         let dir = DepManager::default_dir();
         let dir_str = dir.to_string_lossy();
-        assert!(dir_str.contains(".zeptoclaw/deps"));
+        assert!(dir_str.contains(".claide/deps"));
     }
 }

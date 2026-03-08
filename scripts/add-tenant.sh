@@ -1,5 +1,5 @@
 #!/bin/bash
-# Add a new tenant to ZeptoClaw multi-tenant deployment
+# Add a new tenant to Claide multi-tenant deployment
 #
 # Usage:
 #   ./scripts/add-tenant.sh <tenant-name> <telegram-bot-token> <anthropic-api-key>

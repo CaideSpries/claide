@@ -1,8 +1,8 @@
-//! Long-term memory store for ZeptoClaw.
+//! Long-term memory store for Claide.
 //!
 //! Provides persistent key-value memory across sessions -- facts, preferences,
 //! and learnings that the agent remembers between conversations. Stored as a
-//! single JSON file at `~/.zeptoclaw/memory/longterm.json`.
+//! single JSON file at `~/.claide/memory/longterm.json`.
 
 use std::collections::HashMap;
 use std::path::PathBuf;
@@ -87,7 +87,7 @@ impl std::fmt::Debug for LongTermMemory {
 
 impl LongTermMemory {
     /// Create a new long-term memory store at the default path
-    /// (`~/.zeptoclaw/memory/longterm.json`). Creates the file and parent
+    /// (`~/.claide/memory/longterm.json`). Creates the file and parent
     /// directories if they do not exist.
     pub fn new() -> Result<Self> {
         let path = Config::dir().join("memory").join("longterm.json");
@@ -543,7 +543,7 @@ mod tests {
         mem.set("user:name", "Alice", "user", vec![], 1.0)
             .await
             .unwrap();
-        mem.set("project:name", "ZeptoClaw", "project", vec![], 1.0)
+        mem.set("project:name", "Claide", "project", vec![], 1.0)
             .await
             .unwrap();
 

@@ -1,6 +1,6 @@
-//! Error types for ZeptoClaw
+//! Error types for Claide
 //!
-//! This module defines all error types used throughout the ZeptoClaw framework.
+//! This module defines all error types used throughout the Claide framework.
 //! Uses `thiserror` for ergonomic error handling with automatic `Display` and
 //! `Error` trait implementations.
 
@@ -111,7 +111,7 @@ impl From<ProviderError> for ZeptoError {
 // Primary Error Type
 // ============================================================================
 
-/// The primary error type for ZeptoClaw operations.
+/// The primary error type for Claide operations.
 #[derive(Error, Debug)]
 pub enum ZeptoError {
     /// Configuration-related errors (invalid config, missing required fields, etc.)
@@ -184,7 +184,7 @@ pub enum ZeptoError {
     QuotaRejected(String),
 }
 
-/// A specialized `Result` type for ZeptoClaw operations.
+/// A specialized `Result` type for Claide operations.
 pub type Result<T> = std::result::Result<T, ZeptoError>;
 
 #[cfg(test)]

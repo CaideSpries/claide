@@ -1,6 +1,6 @@
 //! Session module - Session and conversation state management
 //!
-//! This module provides session management for ZeptoClaw, including:
+//! This module provides session management for Claide, including:
 //! - In-memory session storage with async access
 //! - File-based persistence for sessions
 //! - Session creation, retrieval, and deletion
@@ -8,7 +8,7 @@
 //! # Example
 //!
 //! ```
-//! use zeptoclaw::session::{SessionManager, Message};
+//! use claide::session::{SessionManager, Message};
 //!
 //! #[tokio::main]
 //! async fn main() {
@@ -57,7 +57,7 @@ use tracing::warn;
 /// # Persistence
 ///
 /// When created with `new()`, sessions are persisted to disk in the
-/// `~/.zeptoclaw/sessions/` directory. Use `new_memory()` for testing
+/// `~/.claide/sessions/` directory. Use `new_memory()` for testing
 /// or when persistence is not needed.
 pub struct SessionManager {
     /// In-memory cache of sessions
@@ -69,7 +69,7 @@ pub struct SessionManager {
 impl SessionManager {
     /// Create a new session manager with file-based persistence.
     ///
-    /// Sessions are stored in `~/.zeptoclaw/sessions/` as JSON files.
+    /// Sessions are stored in `~/.claide/sessions/` as JSON files.
     /// The directory is created if it doesn't exist.
     ///
     /// # Errors
@@ -78,7 +78,7 @@ impl SessionManager {
     ///
     /// # Example
     /// ```no_run
-    /// use zeptoclaw::session::SessionManager;
+    /// use claide::session::SessionManager;
     ///
     /// let manager = SessionManager::new().unwrap();
     /// ```
@@ -98,7 +98,7 @@ impl SessionManager {
     ///
     /// # Example
     /// ```
-    /// use zeptoclaw::session::SessionManager;
+    /// use claide::session::SessionManager;
     ///
     /// let manager = SessionManager::new_memory();
     /// ```
@@ -120,7 +120,7 @@ impl SessionManager {
     ///
     /// # Example
     /// ```no_run
-    /// use zeptoclaw::session::SessionManager;
+    /// use claide::session::SessionManager;
     /// use std::path::PathBuf;
     ///
     /// let manager = SessionManager::with_path(PathBuf::from("/tmp/sessions")).unwrap();
@@ -148,7 +148,7 @@ impl SessionManager {
     ///
     /// # Example
     /// ```
-    /// use zeptoclaw::session::SessionManager;
+    /// use claide::session::SessionManager;
     ///
     /// #[tokio::main]
     /// async fn main() {
@@ -238,7 +238,7 @@ impl SessionManager {
     ///
     /// # Example
     /// ```
-    /// use zeptoclaw::session::{SessionManager, Message};
+    /// use claide::session::{SessionManager, Message};
     ///
     /// #[tokio::main]
     /// async fn main() {
@@ -276,7 +276,7 @@ impl SessionManager {
     ///
     /// # Example
     /// ```
-    /// use zeptoclaw::session::SessionManager;
+    /// use claide::session::SessionManager;
     ///
     /// #[tokio::main]
     /// async fn main() {
@@ -314,7 +314,7 @@ impl SessionManager {
     ///
     /// # Example
     /// ```
-    /// use zeptoclaw::session::SessionManager;
+    /// use claide::session::SessionManager;
     ///
     /// #[tokio::main]
     /// async fn main() {

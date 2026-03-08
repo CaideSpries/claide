@@ -1,0 +1,2 @@
+# Birthdays — one per line: YYYY-MM-DD | Name
+# Copy actual entries from ~/.zeroclaw/workspace/data/birthdays.txt at deploy time

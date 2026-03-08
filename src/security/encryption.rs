@@ -323,7 +323,7 @@ pub fn is_secret_field(field_name: &str) -> bool {
 /// Resolve the master encryption key from environment or interactive prompt.
 ///
 /// Resolution order:
-/// 1. `ZEPTOCLAW_MASTER_KEY` environment variable (hex-encoded 32 bytes)
+/// 1. `CLAIDE_MASTER_KEY` environment variable (hex-encoded 32 bytes)
 /// 2. Interactive passphrase prompt via `rpassword` (if `interactive` is `true`)
 /// 3. Error if neither is available
 ///
@@ -333,14 +333,14 @@ pub fn is_secret_field(field_name: &str) -> bool {
 /// 64-character hex, or if no key source is available.
 pub fn resolve_master_key(interactive: bool) -> Result<SecretEncryption> {
     // 1. Try environment variable (hex-encoded 32 bytes = 64 hex chars)
-    if let Ok(hex_key) = std::env::var("ZEPTOCLAW_MASTER_KEY") {
+    if let Ok(hex_key) = std::env::var("CLAIDE_MASTER_KEY") {
         let bytes = hex::decode(hex_key.trim()).map_err(|e| {
-            ZeptoError::Config(format!("ZEPTOCLAW_MASTER_KEY is not valid hex: {e}"))
+            ZeptoError::Config(format!("CLAIDE_MASTER_KEY is not valid hex: {e}"))
         })?;
 
         if bytes.len() != 32 {
             return Err(ZeptoError::Config(format!(
-                "ZEPTOCLAW_MASTER_KEY must be 64 hex chars (32 bytes), got {} bytes",
+                "CLAIDE_MASTER_KEY must be 64 hex chars (32 bytes), got {} bytes",
                 bytes.len()
             )));
         }
@@ -364,7 +364,7 @@ pub fn resolve_master_key(interactive: bool) -> Result<SecretEncryption> {
 
     // 3. No key source available
     Err(ZeptoError::Config(
-        "no master key available: set ZEPTOCLAW_MASTER_KEY env var or use interactive mode".into(),
+        "no master key available: set CLAIDE_MASTER_KEY env var or use interactive mode".into(),
     ))
 }
 

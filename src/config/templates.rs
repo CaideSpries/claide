@@ -1,9 +1,9 @@
-//! Agent template system for ZeptoClaw
+//! Agent template system for Claide
 //!
 //! Provides predefined agent configurations (templates) that users can reference
 //! by name instead of manually configuring system prompts, tool whitelists, and
 //! model settings. Templates can be built-in or loaded from JSON files in
-//! `~/.zeptoclaw/templates/`.
+//! `~/.claide/templates/`.
 
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -238,7 +238,7 @@ fn builtin_templates() -> Vec<AgentTemplate> {
 /// Registry of agent templates, combining built-in and user-defined templates.
 ///
 /// Templates are stored in a `HashMap` keyed by name. User-defined templates
-/// loaded from `~/.zeptoclaw/templates/` can override built-in templates with
+/// loaded from `~/.claide/templates/` can override built-in templates with
 /// the same name.
 #[derive(Debug, Clone)]
 pub struct TemplateRegistry {
@@ -566,7 +566,7 @@ mod tests {
 
     #[test]
     fn test_load_from_directory_with_json_files() {
-        let temp_dir = std::env::temp_dir().join("zeptoclaw_tpl_test_load");
+        let temp_dir = std::env::temp_dir().join("claide_tpl_test_load");
         let _ = fs::remove_dir_all(&temp_dir);
         fs::create_dir_all(&temp_dir).unwrap();
 
@@ -609,7 +609,7 @@ mod tests {
 
     #[test]
     fn test_load_from_empty_directory() {
-        let temp_dir = std::env::temp_dir().join("zeptoclaw_tpl_test_empty");
+        let temp_dir = std::env::temp_dir().join("claide_tpl_test_empty");
         let _ = fs::remove_dir_all(&temp_dir);
         fs::create_dir_all(&temp_dir).unwrap();
 
@@ -621,14 +621,14 @@ mod tests {
 
     #[test]
     fn test_load_from_nonexistent_directory() {
-        let path = Path::new("/tmp/zeptoclaw_tpl_nonexistent_98765");
+        let path = Path::new("/tmp/claide_tpl_nonexistent_98765");
         let templates = TemplateRegistry::load_from_dir(path).unwrap();
         assert!(templates.is_empty());
     }
 
     #[test]
     fn test_load_invalid_json_file() {
-        let temp_dir = std::env::temp_dir().join("zeptoclaw_tpl_test_invalid");
+        let temp_dir = std::env::temp_dir().join("claide_tpl_test_invalid");
         let _ = fs::remove_dir_all(&temp_dir);
         fs::create_dir_all(&temp_dir).unwrap();
 
@@ -728,7 +728,7 @@ mod tests {
 
     #[test]
     fn test_merge_from_dir() {
-        let temp_dir = std::env::temp_dir().join("zeptoclaw_tpl_test_merge");
+        let temp_dir = std::env::temp_dir().join("claide_tpl_test_merge");
         let _ = fs::remove_dir_all(&temp_dir);
         fs::create_dir_all(&temp_dir).unwrap();
 
@@ -822,7 +822,7 @@ mod tests {
 
     #[test]
     fn test_load_from_dir_not_a_directory() {
-        let temp_file = std::env::temp_dir().join("zeptoclaw_tpl_test_notdir.txt");
+        let temp_file = std::env::temp_dir().join("claide_tpl_test_notdir.txt");
         fs::write(&temp_file, "not a directory").unwrap();
 
         let result = TemplateRegistry::load_from_dir(&temp_file);

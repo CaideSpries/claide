@@ -59,14 +59,14 @@ pub fn render(collector: &MetricsCollector, format: &TelemetryFormat) -> String 
 /// Renders all metrics in Prometheus text exposition format.
 ///
 /// Metric families emitted:
-/// - `zeptoclaw_tool_calls_total` (counter)
-/// - `zeptoclaw_tool_errors_total` (counter)
-/// - `zeptoclaw_tool_duration_seconds_sum` (counter)
-/// - `zeptoclaw_tool_duration_seconds_min` (gauge)
-/// - `zeptoclaw_tool_duration_seconds_max` (gauge)
-/// - `zeptoclaw_tokens_input_total` (counter)
-/// - `zeptoclaw_tokens_output_total` (counter)
-/// - `zeptoclaw_session_duration_seconds` (gauge)
+/// - `claide_tool_calls_total` (counter)
+/// - `claide_tool_errors_total` (counter)
+/// - `claide_tool_duration_seconds_sum` (counter)
+/// - `claide_tool_duration_seconds_min` (gauge)
+/// - `claide_tool_duration_seconds_max` (gauge)
+/// - `claide_tokens_input_total` (counter)
+/// - `claide_tokens_output_total` (counter)
+/// - `claide_session_duration_seconds` (gauge)
 pub fn render_prometheus(collector: &MetricsCollector) -> String {
     let mut out = String::new();
 
@@ -74,33 +74,33 @@ pub fn render_prometheus(collector: &MetricsCollector) -> String {
     let tools: BTreeMap<_, _> = collector.all_tool_metrics().into_iter().collect();
 
     // --- tool calls total ---
-    out.push_str("# HELP zeptoclaw_tool_calls_total Total number of tool calls.\n");
-    out.push_str("# TYPE zeptoclaw_tool_calls_total counter\n");
+    out.push_str("# HELP claide_tool_calls_total Total number of tool calls.\n");
+    out.push_str("# TYPE claide_tool_calls_total counter\n");
     for (name, m) in &tools {
         out.push_str(&format!(
-            "zeptoclaw_tool_calls_total{{tool=\"{}\"}} {}\n",
+            "claide_tool_calls_total{{tool=\"{}\"}} {}\n",
             name, m.call_count,
         ));
     }
 
     // --- tool errors total ---
-    out.push_str("# HELP zeptoclaw_tool_errors_total Total number of tool call errors.\n");
-    out.push_str("# TYPE zeptoclaw_tool_errors_total counter\n");
+    out.push_str("# HELP claide_tool_errors_total Total number of tool call errors.\n");
+    out.push_str("# TYPE claide_tool_errors_total counter\n");
     for (name, m) in &tools {
         out.push_str(&format!(
-            "zeptoclaw_tool_errors_total{{tool=\"{}\"}} {}\n",
+            "claide_tool_errors_total{{tool=\"{}\"}} {}\n",
             name, m.error_count,
         ));
     }
 
     // --- tool duration sum ---
     out.push_str(
-        "# HELP zeptoclaw_tool_duration_seconds_sum Cumulative tool call duration in seconds.\n",
+        "# HELP claide_tool_duration_seconds_sum Cumulative tool call duration in seconds.\n",
     );
-    out.push_str("# TYPE zeptoclaw_tool_duration_seconds_sum counter\n");
+    out.push_str("# TYPE claide_tool_duration_seconds_sum counter\n");
     for (name, m) in &tools {
         out.push_str(&format!(
-            "zeptoclaw_tool_duration_seconds_sum{{tool=\"{}\"}} {:.6}\n",
+            "claide_tool_duration_seconds_sum{{tool=\"{}\"}} {:.6}\n",
             name,
             m.total_duration.as_secs_f64(),
         ));
@@ -108,26 +108,26 @@ pub fn render_prometheus(collector: &MetricsCollector) -> String {
 
     // --- tool duration min ---
     out.push_str(
-        "# HELP zeptoclaw_tool_duration_seconds_min Minimum observed tool call duration in seconds.\n",
+        "# HELP claide_tool_duration_seconds_min Minimum observed tool call duration in seconds.\n",
     );
-    out.push_str("# TYPE zeptoclaw_tool_duration_seconds_min gauge\n");
+    out.push_str("# TYPE claide_tool_duration_seconds_min gauge\n");
     for (name, m) in &tools {
         let val = m.min_duration.map_or(0.0, |d| d.as_secs_f64());
         out.push_str(&format!(
-            "zeptoclaw_tool_duration_seconds_min{{tool=\"{}\"}} {:.6}\n",
+            "claide_tool_duration_seconds_min{{tool=\"{}\"}} {:.6}\n",
             name, val,
         ));
     }
 
     // --- tool duration max ---
     out.push_str(
-        "# HELP zeptoclaw_tool_duration_seconds_max Maximum observed tool call duration in seconds.\n",
+        "# HELP claide_tool_duration_seconds_max Maximum observed tool call duration in seconds.\n",
     );
-    out.push_str("# TYPE zeptoclaw_tool_duration_seconds_max gauge\n");
+    out.push_str("# TYPE claide_tool_duration_seconds_max gauge\n");
     for (name, m) in &tools {
         let val = m.max_duration.map_or(0.0, |d| d.as_secs_f64());
         out.push_str(&format!(
-            "zeptoclaw_tool_duration_seconds_max{{tool=\"{}\"}} {:.6}\n",
+            "claide_tool_duration_seconds_max{{tool=\"{}\"}} {:.6}\n",
             name, val,
         ));
     }
@@ -135,19 +135,19 @@ pub fn render_prometheus(collector: &MetricsCollector) -> String {
     // --- tokens ---
     let (tokens_in, tokens_out) = collector.total_tokens();
 
-    out.push_str("# HELP zeptoclaw_tokens_input_total Total input tokens consumed.\n");
-    out.push_str("# TYPE zeptoclaw_tokens_input_total counter\n");
-    out.push_str(&format!("zeptoclaw_tokens_input_total {}\n", tokens_in));
+    out.push_str("# HELP claide_tokens_input_total Total input tokens consumed.\n");
+    out.push_str("# TYPE claide_tokens_input_total counter\n");
+    out.push_str(&format!("claide_tokens_input_total {}\n", tokens_in));
 
-    out.push_str("# HELP zeptoclaw_tokens_output_total Total output tokens produced.\n");
-    out.push_str("# TYPE zeptoclaw_tokens_output_total counter\n");
-    out.push_str(&format!("zeptoclaw_tokens_output_total {}\n", tokens_out));
+    out.push_str("# HELP claide_tokens_output_total Total output tokens produced.\n");
+    out.push_str("# TYPE claide_tokens_output_total counter\n");
+    out.push_str(&format!("claide_tokens_output_total {}\n", tokens_out));
 
     // --- session duration ---
-    out.push_str("# HELP zeptoclaw_session_duration_seconds Session uptime in seconds.\n");
-    out.push_str("# TYPE zeptoclaw_session_duration_seconds gauge\n");
+    out.push_str("# HELP claide_session_duration_seconds Session uptime in seconds.\n");
+    out.push_str("# TYPE claide_session_duration_seconds gauge\n");
     out.push_str(&format!(
-        "zeptoclaw_session_duration_seconds {:.6}\n",
+        "claide_session_duration_seconds {:.6}\n",
         collector.session_duration().as_secs_f64(),
     ));
 
@@ -281,12 +281,12 @@ mod tests {
         let output = render_prometheus(&collector);
 
         // Should still contain HELP/TYPE headers for token and session metrics.
-        assert!(output.contains("# HELP zeptoclaw_tokens_input_total"));
-        assert!(output.contains("# TYPE zeptoclaw_tokens_input_total counter"));
-        assert!(output.contains("zeptoclaw_tokens_input_total 0"));
-        assert!(output.contains("zeptoclaw_tokens_output_total 0"));
-        assert!(output.contains("# HELP zeptoclaw_session_duration_seconds"));
-        assert!(output.contains("zeptoclaw_session_duration_seconds"));
+        assert!(output.contains("# HELP claide_tokens_input_total"));
+        assert!(output.contains("# TYPE claide_tokens_input_total counter"));
+        assert!(output.contains("claide_tokens_input_total 0"));
+        assert!(output.contains("claide_tokens_output_total 0"));
+        assert!(output.contains("# HELP claide_session_duration_seconds"));
+        assert!(output.contains("claide_session_duration_seconds"));
 
         // No tool-level data lines (only HELP/TYPE headers for tool metrics).
         assert!(!output.contains("tool=\""));
@@ -305,16 +305,16 @@ mod tests {
         let output = render_prometheus(&collector);
 
         // Tool call counts.
-        assert!(output.contains("zeptoclaw_tool_calls_total{tool=\"shell\"} 2"));
-        assert!(output.contains("zeptoclaw_tool_calls_total{tool=\"read_file\"} 1"));
+        assert!(output.contains("claide_tool_calls_total{tool=\"shell\"} 2"));
+        assert!(output.contains("claide_tool_calls_total{tool=\"read_file\"} 1"));
 
         // Error counts.
-        assert!(output.contains("zeptoclaw_tool_errors_total{tool=\"shell\"} 1"));
-        assert!(output.contains("zeptoclaw_tool_errors_total{tool=\"read_file\"} 0"));
+        assert!(output.contains("claide_tool_errors_total{tool=\"shell\"} 1"));
+        assert!(output.contains("claide_tool_errors_total{tool=\"read_file\"} 0"));
 
         // Tokens.
-        assert!(output.contains("zeptoclaw_tokens_input_total 1500"));
-        assert!(output.contains("zeptoclaw_tokens_output_total 800"));
+        assert!(output.contains("claide_tokens_input_total 1500"));
+        assert!(output.contains("claide_tokens_output_total 800"));
     }
 
     // -- render_prometheus contains expected metric names and labels --
@@ -327,14 +327,14 @@ mod tests {
         let output = render_prometheus(&collector);
 
         let expected_families = [
-            "zeptoclaw_tool_calls_total",
-            "zeptoclaw_tool_errors_total",
-            "zeptoclaw_tool_duration_seconds_sum",
-            "zeptoclaw_tool_duration_seconds_min",
-            "zeptoclaw_tool_duration_seconds_max",
-            "zeptoclaw_tokens_input_total",
-            "zeptoclaw_tokens_output_total",
-            "zeptoclaw_session_duration_seconds",
+            "claide_tool_calls_total",
+            "claide_tool_errors_total",
+            "claide_tool_duration_seconds_sum",
+            "claide_tool_duration_seconds_min",
+            "claide_tool_duration_seconds_max",
+            "claide_tokens_input_total",
+            "claide_tokens_output_total",
+            "claide_session_duration_seconds",
         ];
 
         for family in &expected_families {

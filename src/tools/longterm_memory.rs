@@ -24,7 +24,7 @@ impl LongTermMemoryTool {
     /// Create a new long-term memory tool.
     ///
     /// Initializes the underlying `LongTermMemory` store, loading any
-    /// previously persisted entries from `~/.zeptoclaw/memory/longterm.json`.
+    /// previously persisted entries from `~/.claide/memory/longterm.json`.
     pub fn new() -> Result<Self> {
         let memory = LongTermMemory::new()?;
         Ok(Self {

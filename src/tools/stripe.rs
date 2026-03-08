@@ -149,7 +149,7 @@ impl StripeTool {
         self
     }
 
-    /// Create from the global ZeptoClaw configuration.
+    /// Create from the global Claide configuration.
     ///
     /// Returns an error if `stripe.secret_key` is not configured.
     pub fn from_config() -> Result<Self> {
@@ -163,7 +163,7 @@ impl StripeTool {
             .ok_or_else(|| {
                 ZeptoError::Tool(
                     "stripe.secret_key not configured; set it in config.json or \
-                     ZEPTOCLAW_STRIPE_SECRET_KEY"
+                     CLAIDE_STRIPE_SECRET_KEY"
                         .into(),
                 )
             })?;
@@ -514,7 +514,7 @@ impl StripeTool {
             .ok_or_else(|| {
                 ZeptoError::Tool(
                     "stripe.webhook_secret not configured; set it in config.json or \
-                     ZEPTOCLAW_STRIPE_WEBHOOK_SECRET"
+                     CLAIDE_STRIPE_WEBHOOK_SECRET"
                         .into(),
                 )
             })?;
@@ -1234,9 +1234,9 @@ mod tests {
     fn test_stripe_env_overrides() {
         // Set env vars and load config via Config::load_from_path (uses a
         // nonexistent path so it starts from defaults, then applies env vars).
-        std::env::set_var("ZEPTOCLAW_STRIPE_SECRET_KEY", "sk_test_env_key");
-        std::env::set_var("ZEPTOCLAW_STRIPE_DEFAULT_CURRENCY", "SGD");
-        std::env::set_var("ZEPTOCLAW_STRIPE_WEBHOOK_SECRET", "whsec_env_secret");
+        std::env::set_var("CLAIDE_STRIPE_SECRET_KEY", "sk_test_env_key");
+        std::env::set_var("CLAIDE_STRIPE_DEFAULT_CURRENCY", "SGD");
+        std::env::set_var("CLAIDE_STRIPE_WEBHOOK_SECRET", "whsec_env_secret");
 
         let path = std::path::PathBuf::from("/nonexistent/stripe_test_config.json");
         let config = crate::config::Config::load_from_path(&path).unwrap();
@@ -1248,9 +1248,9 @@ mod tests {
             Some("whsec_env_secret")
         );
 
-        std::env::remove_var("ZEPTOCLAW_STRIPE_SECRET_KEY");
-        std::env::remove_var("ZEPTOCLAW_STRIPE_DEFAULT_CURRENCY");
-        std::env::remove_var("ZEPTOCLAW_STRIPE_WEBHOOK_SECRET");
+        std::env::remove_var("CLAIDE_STRIPE_SECRET_KEY");
+        std::env::remove_var("CLAIDE_STRIPE_DEFAULT_CURRENCY");
+        std::env::remove_var("CLAIDE_STRIPE_WEBHOOK_SECRET");
     }
 
     #[test]

@@ -1,4 +1,4 @@
-//! Plugin tool adapter for ZeptoClaw
+//! Plugin tool adapter for Claide
 //!
 //! This module provides `PluginTool`, an adapter that wraps a plugin tool
 //! definition (`PluginToolDef`) and implements the `Tool` trait so that
@@ -17,8 +17,8 @@
 //! # Example
 //!
 //! ```rust,ignore
-//! use zeptoclaw::tools::plugin::PluginTool;
-//! use zeptoclaw::plugins::PluginToolDef;
+//! use claide::tools::plugin::PluginTool;
+//! use claide::plugins::PluginToolDef;
 //! use serde_json::json;
 //!
 //! let def = PluginToolDef {

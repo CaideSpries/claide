@@ -1,4 +1,4 @@
-//! MCP tool wrapper — adapts MCP server tools to the ZeptoClaw Tool trait.
+//! MCP tool wrapper — adapts MCP server tools to the Claide Tool trait.
 
 use async_trait::async_trait;
 use std::sync::Arc;
@@ -6,7 +6,7 @@ use std::sync::Arc;
 use super::client::McpClient;
 use crate::tools::{Tool, ToolCategory, ToolContext, ToolOutput};
 
-/// Wraps a single MCP tool as a ZeptoClaw `Tool` implementation.
+/// Wraps a single MCP tool as a Claide `Tool` implementation.
 pub struct McpToolWrapper {
     /// Tool name as exposed to the agent (prefixed with server name).
     tool_name: String,

@@ -1,4 +1,4 @@
-//! Channel Manager for ZeptoClaw
+//! Channel Manager for Claide
 //!
 //! This module provides the `ChannelManager` which is responsible for:
 //! - Registering and managing multiple communication channels
@@ -66,9 +66,9 @@ struct SupervisorEntry {
 ///
 /// ```ignore
 /// use std::sync::Arc;
-/// use zeptoclaw::bus::MessageBus;
-/// use zeptoclaw::config::Config;
-/// use zeptoclaw::channels::ChannelManager;
+/// use claide::bus::MessageBus;
+/// use claide::config::Config;
+/// use claide::channels::ChannelManager;
 ///
 /// #[tokio::main]
 /// async fn main() {
@@ -115,9 +115,9 @@ impl ChannelManager {
     ///
     /// ```
     /// use std::sync::Arc;
-    /// use zeptoclaw::bus::MessageBus;
-    /// use zeptoclaw::config::Config;
-    /// use zeptoclaw::channels::ChannelManager;
+    /// use claide::bus::MessageBus;
+    /// use claide::config::Config;
+    /// use claide::channels::ChannelManager;
     ///
     /// let bus = Arc::new(MessageBus::new());
     /// let config = Config::default();
@@ -169,9 +169,9 @@ impl ChannelManager {
     ///
     /// ```
     /// use std::sync::Arc;
-    /// use zeptoclaw::bus::MessageBus;
-    /// use zeptoclaw::config::Config;
-    /// use zeptoclaw::channels::ChannelManager;
+    /// use claide::bus::MessageBus;
+    /// use claide::config::Config;
+    /// use claide::channels::ChannelManager;
     ///
     /// # tokio_test::block_on(async {
     /// let bus = Arc::new(MessageBus::new());

@@ -1,4 +1,4 @@
-//! Hook system for ZeptoClaw agent loop.
+//! Hook system for Claide agent loop.
 //!
 //! Config-driven hooks that fire at specific points in the agent loop:
 //!
@@ -29,7 +29,7 @@
 //! # Example
 //!
 //! ```rust
-//! use zeptoclaw::hooks::{HooksConfig, HookEngine, HookResult, HookAction, HookRule};
+//! use claide::hooks::{HooksConfig, HookEngine, HookResult, HookAction, HookRule};
 //!
 //! let config = HooksConfig {
 //!     enabled: true,

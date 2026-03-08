@@ -204,7 +204,7 @@ pub async fn list_models(State(state): State<Arc<AppState>>) -> Json<ModelsRespo
                 id: model_id,
                 object: "model",
                 created: 0,
-                owned_by: format!("zeptoclaw/{name}"),
+                owned_by: format!("claide/{name}"),
             });
         }
     }
@@ -216,7 +216,7 @@ pub async fn list_models(State(state): State<Arc<AppState>>) -> Json<ModelsRespo
                 id: provider.default_model().to_string(),
                 object: "model",
                 created: 0,
-                owned_by: format!("zeptoclaw/{}", provider.name()),
+                owned_by: format!("claide/{}", provider.name()),
             });
         }
     }

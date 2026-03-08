@@ -1,6 +1,6 @@
 //! LLM response cache with TTL expiry and LRU eviction.
 //!
-//! Persists to `~/.zeptoclaw/cache/responses.json`. Cache key is a SHA-256
+//! Persists to `~/.claide/cache/responses.json`. Cache key is a SHA-256
 //! digest of `(model, system_prompt, user_prompt)`. Entries expire after a
 //! configurable TTL and are evicted LRU when the store reaches capacity.
 
@@ -43,12 +43,12 @@ pub struct ResponseCache {
 impl ResponseCache {
     /// Create a new response cache with the given TTL and capacity.
     ///
-    /// Loads existing entries from `~/.zeptoclaw/cache/responses.json` on disk.
+    /// Loads existing entries from `~/.claide/cache/responses.json` on disk.
     /// `max_entries` is clamped to a minimum of 1 to prevent infinite loops.
     pub fn new(ttl_secs: u64, max_entries: usize) -> Self {
         let path = dirs::home_dir()
             .unwrap_or_else(|| PathBuf::from("."))
-            .join(".zeptoclaw")
+            .join(".claide")
             .join("cache")
             .join("responses.json");
         let store = Self::load_from_disk(&path);
@@ -248,7 +248,7 @@ mod tests {
         let tid = std::thread::current().id();
         ResponseCache {
             store: CacheStore::default(),
-            path: PathBuf::from(format!("/tmp/zeptoclaw-test-cache-{tid:?}-{id}.json")),
+            path: PathBuf::from(format!("/tmp/claide-test-cache-{tid:?}-{id}.json")),
             ttl_secs: 3600,
             max_entries: 5,
         }
@@ -392,7 +392,7 @@ mod tests {
     fn test_max_entries_zero_clamped() {
         let cache = ResponseCache {
             store: CacheStore::default(),
-            path: PathBuf::from("/tmp/zeptoclaw-test-clamp.json"),
+            path: PathBuf::from("/tmp/claide-test-clamp.json"),
             ttl_secs: 3600,
             max_entries: 0,
         };

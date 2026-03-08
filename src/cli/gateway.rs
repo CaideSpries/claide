@@ -7,17 +7,17 @@ use anyhow::{Context, Result};
 use tokio::sync::{mpsc, watch};
 use tracing::{error, info, warn};
 
-use zeptoclaw::bus::MessageBus;
-use zeptoclaw::channels::{register_configured_channels, ChannelManager, WhatsAppChannel};
-use zeptoclaw::config::watcher::ConfigWatcher;
-use zeptoclaw::config::{Config, ContainerAgentBackend};
-use zeptoclaw::deps::{fetcher::RealFetcher, DepManager, HasDependencies};
-use zeptoclaw::health::{
+use claide::bus::MessageBus;
+use claide::channels::{register_configured_channels, ChannelManager, WhatsAppChannel};
+use claide::config::watcher::ConfigWatcher;
+use claide::config::{Config, ContainerAgentBackend};
+use claide::deps::{fetcher::RealFetcher, DepManager, HasDependencies};
+use claide::health::{
     health_port, start_health_server, start_health_server_legacy, start_periodic_usage_flush,
     HealthRegistry, UsageMetrics,
 };
-use zeptoclaw::heartbeat::{ensure_heartbeat_file, HeartbeatService};
-use zeptoclaw::providers::{
+use claide::heartbeat::{ensure_heartbeat_file, HeartbeatService};
+use claide::providers::{
     configured_provider_names, resolve_runtime_provider, RUNTIME_SUPPORTED_PROVIDERS,
 };
 
@@ -29,14 +29,14 @@ pub(crate) async fn cmd_gateway(
     containerized_flag: Option<String>,
     tunnel_flag: Option<String>,
 ) -> Result<()> {
-    println!("Starting ZeptoClaw Gateway...");
+    println!("Starting Claide Gateway...");
 
     // Load configuration
     let mut config = Config::load().with_context(|| "Failed to load configuration")?;
 
     // Startup guard — check for consecutive crash degradation
     let guard = if config.gateway.startup_guard.enabled {
-        let g = zeptoclaw::StartupGuard::new(
+        let g = claide::StartupGuard::new(
             config.gateway.startup_guard.crash_threshold,
             config.gateway.startup_guard.window_secs,
         );
@@ -84,12 +84,12 @@ pub(crate) async fn cmd_gateway(
     }
 
     // Start tunnel if requested
-    let mut _tunnel: Option<Box<dyn zeptoclaw::tunnel::TunnelProvider>> = None;
+    let mut _tunnel: Option<Box<dyn claide::tunnel::TunnelProvider>> = None;
     let tunnel_provider = tunnel_flag.or(config.tunnel.provider.clone());
     if let Some(ref provider) = tunnel_provider {
         let mut tunnel_config = config.tunnel.clone();
         tunnel_config.provider = Some(provider.clone());
-        let mut t = zeptoclaw::tunnel::create_tunnel(&tunnel_config)
+        let mut t = claide::tunnel::create_tunnel(&tunnel_config)
             .with_context(|| format!("Failed to create {} tunnel", provider))?;
 
         let gateway_port = config.gateway.port;
@@ -164,7 +164,7 @@ pub(crate) async fn cmd_gateway(
         info!("Starting gateway with containerized agent mode");
 
         // Resolve backend (auto-detect or explicit from config)
-        let backend = zeptoclaw::gateway::resolve_backend(&config.container_agent)
+        let backend = claide::gateway::resolve_backend(&config.container_agent)
             .await
             .map_err(|e| anyhow::anyhow!("{}", e))?;
 
@@ -172,19 +172,19 @@ pub(crate) async fn cmd_gateway(
 
         // Validate the resolved backend
         match backend {
-            zeptoclaw::gateway::ResolvedBackend::Docker => {
+            claide::gateway::ResolvedBackend::Docker => {
                 validate_docker_available(configured_docker_binary(&config.container_agent))
                     .await?;
             }
             #[cfg(target_os = "macos")]
-            zeptoclaw::gateway::ResolvedBackend::Apple => {
+            claide::gateway::ResolvedBackend::Apple => {
                 validate_apple_available().await?;
             }
         }
 
         // Check image exists (Docker-specific)
         let image = &config.container_agent.image;
-        if backend == zeptoclaw::gateway::ResolvedBackend::Docker {
+        if backend == claide::gateway::ResolvedBackend::Docker {
             let docker_binary = configured_docker_binary(&config.container_agent);
             let image_check = tokio::process::Command::new(docker_binary)
                 .args(["image", "inspect", image])
@@ -209,7 +209,7 @@ pub(crate) async fn cmd_gateway(
 
         info!("Using container image: {} (backend={})", image, backend);
 
-        let proxy_instance = Arc::new(zeptoclaw::gateway::ContainerAgentProxy::new(
+        let proxy_instance = Arc::new(claide::gateway::ContainerAgentProxy::new(
             config.clone(),
             bus.clone(),
             backend,
@@ -241,7 +241,7 @@ pub(crate) async fn cmd_gateway(
         if runtime_provider_name.is_none() {
             let configured = configured_provider_names(&config);
             if configured.is_empty() {
-                error!("No AI provider configured. Set ZEPTOCLAW_PROVIDERS_ANTHROPIC_API_KEY");
+                error!("No AI provider configured. Set CLAIDE_PROVIDERS_ANTHROPIC_API_KEY");
                 error!("or add your API key to {:?}", Config::path());
             } else {
                 error!(
@@ -340,10 +340,10 @@ pub(crate) async fn cmd_gateway(
     };
 
     // Start memory hygiene scheduler
-    let _hygiene_handle = match zeptoclaw::memory::longterm::LongTermMemory::new() {
+    let _hygiene_handle = match claide::memory::longterm::LongTermMemory::new() {
         Ok(ltm) => {
             let ltm = Arc::new(tokio::sync::Mutex::new(ltm));
-            Some(zeptoclaw::memory::hygiene::start_hygiene_scheduler(
+            Some(claide::memory::hygiene::start_hygiene_scheduler(
                 ltm,
                 config.memory.hygiene.clone(),
             ))
@@ -357,7 +357,7 @@ pub(crate) async fn cmd_gateway(
     // Start device service if configured
     // TODO: publish to MessageBus for channel delivery once InboundMessage wrapping is settled
     let _device_handle =
-        zeptoclaw::devices::DeviceService::new(config.devices.enabled, config.devices.monitor_usb)
+        claide::devices::DeviceService::new(config.devices.enabled, config.devices.monitor_usb)
             .start()
             .map(|mut rx| {
                 tokio::spawn(async move {
@@ -561,7 +561,7 @@ pub(crate) async fn cmd_gateway(
 
 /// Validate that Docker is available.
 async fn validate_docker_available(docker_binary: &str) -> Result<()> {
-    if !zeptoclaw::gateway::is_docker_available_with_binary(docker_binary).await {
+    if !claide::gateway::is_docker_available_with_binary(docker_binary).await {
         return Err(anyhow::anyhow!(
             "Docker is not available via '{}'. Install Docker or run without --containerized.",
             docker_binary
@@ -570,7 +570,7 @@ async fn validate_docker_available(docker_binary: &str) -> Result<()> {
     Ok(())
 }
 
-fn configured_docker_binary(config: &zeptoclaw::config::ContainerAgentConfig) -> &str {
+fn configured_docker_binary(config: &claide::config::ContainerAgentConfig) -> &str {
     config
         .docker_binary
         .as_deref()
@@ -582,7 +582,7 @@ fn configured_docker_binary(config: &zeptoclaw::config::ContainerAgentConfig) ->
 /// Validate that Apple Container is available (macOS only).
 #[cfg(target_os = "macos")]
 async fn validate_apple_available() -> Result<()> {
-    if !zeptoclaw::gateway::is_apple_container_available().await {
+    if !claide::gateway::is_apple_container_available().await {
         return Err(anyhow::anyhow!(
             "Apple Container is not available. Requires macOS 15+ with `container` CLI installed."
         ));
@@ -591,7 +591,7 @@ async fn validate_apple_available() -> Result<()> {
 }
 
 /// Collect dependencies from all enabled channels with bridge_managed=true.
-fn collect_enabled_channel_deps(config: &Config) -> Vec<zeptoclaw::deps::Dependency> {
+fn collect_enabled_channel_deps(config: &Config) -> Vec<claide::deps::Dependency> {
     let mut deps = Vec::new();
 
     // WhatsApp
@@ -617,7 +617,7 @@ fn collect_enabled_channel_deps(config: &Config) -> Vec<zeptoclaw::deps::Depende
 /// 3. Health check (10s timeout) - logs warning but does not block
 ///
 /// All failures are logged as warnings, allowing the gateway to continue.
-async fn install_and_start_dep(mgr: &DepManager, dep: &zeptoclaw::deps::Dependency) {
+async fn install_and_start_dep(mgr: &DepManager, dep: &claide::deps::Dependency) {
     // Install
     match mgr.ensure_installed(dep).await {
         Ok(_) => info!("✓ Installed {}", dep.name),
@@ -683,7 +683,7 @@ mod tests {
     #[test]
     fn test_collect_enabled_channel_deps_whatsapp_managed() {
         let mut config = Config::default();
-        config.channels.whatsapp = Some(zeptoclaw::config::WhatsAppConfig {
+        config.channels.whatsapp = Some(claide::config::WhatsAppConfig {
             enabled: true,
             bridge_managed: true,
             bridge_url: "ws://localhost:3001".to_string(),
@@ -700,7 +700,7 @@ mod tests {
     #[test]
     fn test_collect_enabled_channel_deps_whatsapp_not_managed() {
         let mut config = Config::default();
-        config.channels.whatsapp = Some(zeptoclaw::config::WhatsAppConfig {
+        config.channels.whatsapp = Some(claide::config::WhatsAppConfig {
             enabled: true,
             bridge_managed: false, // User manages externally
             bridge_url: "ws://localhost:3001".to_string(),
@@ -716,7 +716,7 @@ mod tests {
     #[test]
     fn test_collect_enabled_channel_deps_whatsapp_disabled() {
         let mut config = Config::default();
-        config.channels.whatsapp = Some(zeptoclaw::config::WhatsAppConfig {
+        config.channels.whatsapp = Some(claide::config::WhatsAppConfig {
             enabled: false,
             bridge_managed: true,
             bridge_url: "ws://localhost:3001".to_string(),

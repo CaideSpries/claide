@@ -223,7 +223,7 @@ mod tests {
 
     fn temp_path(suffix: &str) -> PathBuf {
         std::env::temp_dir().join(format!(
-            "zeptoclaw_test_routines_{}_{}.json",
+            "claide_test_routines_{}_{}.json",
             suffix,
             std::process::id()
         ))

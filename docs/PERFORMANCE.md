@@ -1,6 +1,6 @@
-# ZeptoClaw Performance Guide
+# Claide Performance Guide
 
-This document covers performance characteristics, benchmarks, and optimization tips for ZeptoClaw.
+This document covers performance characteristics, benchmarks, and optimization tips for Claide.
 
 ## Quick Facts
 
@@ -76,14 +76,14 @@ let (tx, rx) = tokio::sync::mpsc::channel(1000);
 ```bash
 # Runs comfortably on any hardware
 # Raspberry Pi 4, old laptop, etc.
-zeptoclaw gateway
+claide gateway
 ```
 
 ### Small Team (10-100 users)
 ```bash
 # $5/month DigitalOcean droplet
 # 512MB RAM, 1 vCPU
-zeptoclaw gateway --config production.toml
+claide gateway --config production.toml
 ```
 
 ### Startup (100-1000 users)
@@ -167,13 +167,13 @@ Monitor these in production:
 
 ```bash
 # Memory usage
-ps -o rss= -p $(pgrep zeptoclaw)
+ps -o rss= -p $(pgrep claide)
 
 # CPU usage
-top -pid $(pgrep zeptoclaw)
+top -pid $(pgrep claide)
 
 # Open connections
-lsof -p $(pgrep zeptoclaw) | grep ESTABLISHED | wc -l
+lsof -p $(pgrep claide) | grep ESTABLISHED | wc -l
 ```
 
 ### Log Analysis
@@ -181,7 +181,7 @@ lsof -p $(pgrep zeptoclaw) | grep ESTABLISHED | wc -l
 Enable structured logging:
 
 ```bash
-RUST_LOG=info zeptoclaw gateway 2>&1 | jq '. | {timestamp, level, fields}'
+RUST_LOG=info claide gateway 2>&1 | jq '. | {timestamp, level, fields}'
 ```
 
 ## Bottlenecks and Solutions
@@ -197,7 +197,7 @@ RUST_LOG=info zeptoclaw gateway 2>&1 | jq '. | {timestamp, level, fields}'
 
 ### vs. Python (FastAPI + Celery)
 
-| Aspect | Python | ZeptoClaw |
+| Aspect | Python | Claide |
 |--------|--------|-----------|
 | 1000 users RAM | 4 GB | 12 MB |
 | Throughput | 100 msg/s | 932 msg/s |
@@ -206,7 +206,7 @@ RUST_LOG=info zeptoclaw gateway 2>&1 | jq '. | {timestamp, level, fields}'
 
 ### vs. Go (Gin + Goroutines)
 
-| Aspect | Go | ZeptoClaw |
+| Aspect | Go | Claide |
 |--------|-----|-----------|
 | 1000 users RAM | 1 GB | 12 MB |
 | GC pauses | 10-100ms | None |
@@ -219,7 +219,7 @@ RUST_LOG=info zeptoclaw gateway 2>&1 | jq '. | {timestamp, level, fields}'
 |---------|------------------|-----------|
 | OpenAI Assistants | ~$200 | Easy, but expensive |
 | Google Dialogflow | ~$300 | Enterprise features |
-| **ZeptoClaw** | **$5** | Self-hosted, private |
+| **Claide** | **$5** | Self-hosted, private |
 
 ## Optimization Checklist
 
@@ -233,7 +233,7 @@ Before deploying to production:
 - [ ] Configure systemd limits:
 
 ```ini
-# /etc/systemd/system/zeptoclaw.service
+# /etc/systemd/system/claide.service
 [Service]
 LimitNOFILE=65535
 MemoryMax=512M
@@ -249,7 +249,7 @@ CPUQuota=80%
 cargo install flamegraph
 
 # Run with profiling
-CARGO_PROFILE_RELEASE_DEBUG=true cargo flamegraph --bin zeptoclaw
+CARGO_PROFILE_RELEASE_DEBUG=true cargo flamegraph --bin claide
 ```
 
 ### Memory Profiling
@@ -257,7 +257,7 @@ CARGO_PROFILE_RELEASE_DEBUG=true cargo flamegraph --bin zeptoclaw
 ```bash
 # Use dhat or heaptrack
 cargo build --features dhat-heap
-DHAT_HEAP_PROFILING=1 ./target/debug/zeptoclaw
+DHAT_HEAP_PROFILING=1 ./target/debug/claide
 ```
 
 ## Scaling Strategies
@@ -281,7 +281,7 @@ For unlimited scale:
            ┌───────────────┼───────────────┐
            ▼               ▼               ▼
       ┌─────────┐     ┌─────────┐     ┌─────────┐
-      │ZeptoClaw│     │ZeptoClaw│     │ZeptoClaw│
+      │Claide│     │Claide│     │Claide│
       │   #1    │     │   #2    │     │   #3    │
       └────┬────┘     └────┬────┘     └────┬────┘
            │               │               │

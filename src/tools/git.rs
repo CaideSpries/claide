@@ -1,4 +1,4 @@
-//! Git CLI tool for ZeptoClaw.
+//! Git CLI tool for Claide.
 //!
 //! Shells out to the system `git` binary. No libgit2 dependency.
 //! All commands run in the configured workspace directory.

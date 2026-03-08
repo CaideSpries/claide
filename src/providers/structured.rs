@@ -17,7 +17,7 @@
 //! # Example
 //!
 //! ```rust
-//! use zeptoclaw::providers::structured::{OutputFormat, validate_json_response};
+//! use claide::providers::structured::{OutputFormat, validate_json_response};
 //! use serde_json::json;
 //!
 //! // Simple JSON mode
@@ -78,7 +78,7 @@ impl OutputFormat {
     ///
     /// # Example
     /// ```
-    /// use zeptoclaw::providers::structured::OutputFormat;
+    /// use claide::providers::structured::OutputFormat;
     ///
     /// let format = OutputFormat::json();
     /// assert!(format.is_json());
@@ -95,7 +95,7 @@ impl OutputFormat {
     ///
     /// # Example
     /// ```
-    /// use zeptoclaw::providers::structured::OutputFormat;
+    /// use claide::providers::structured::OutputFormat;
     /// use serde_json::json;
     ///
     /// let format = OutputFormat::json_schema("person", json!({
@@ -127,7 +127,7 @@ impl OutputFormat {
     ///
     /// # Example
     /// ```
-    /// use zeptoclaw::providers::structured::OutputFormat;
+    /// use claide::providers::structured::OutputFormat;
     /// use serde_json::json;
     ///
     /// let format = OutputFormat::json_schema_lenient("result", json!({
@@ -148,7 +148,7 @@ impl OutputFormat {
     ///
     /// # Example
     /// ```
-    /// use zeptoclaw::providers::structured::OutputFormat;
+    /// use claide::providers::structured::OutputFormat;
     ///
     /// assert!(!OutputFormat::Text.is_json());
     /// assert!(OutputFormat::Json.is_json());
@@ -161,7 +161,7 @@ impl OutputFormat {
     ///
     /// # Example
     /// ```
-    /// use zeptoclaw::providers::structured::OutputFormat;
+    /// use claide::providers::structured::OutputFormat;
     ///
     /// assert!(OutputFormat::Text.is_text());
     /// assert!(!OutputFormat::Json.is_text());
@@ -182,7 +182,7 @@ impl OutputFormat {
     ///
     /// # Example
     /// ```
-    /// use zeptoclaw::providers::structured::OutputFormat;
+    /// use claide::providers::structured::OutputFormat;
     /// use serde_json::json;
     ///
     /// let format = OutputFormat::json();
@@ -221,7 +221,7 @@ impl OutputFormat {
     ///
     /// # Example
     /// ```
-    /// use zeptoclaw::providers::structured::OutputFormat;
+    /// use claide::providers::structured::OutputFormat;
     ///
     /// let format = OutputFormat::json();
     /// let suffix = format.to_claude_system_suffix().unwrap();
@@ -262,7 +262,7 @@ impl OutputFormat {
 ///
 /// # Example
 /// ```
-/// use zeptoclaw::providers::structured::{OutputFormat, validate_json_response};
+/// use claide::providers::structured::{OutputFormat, validate_json_response};
 ///
 /// let format = OutputFormat::json();
 /// let result = validate_json_response(r#"{"key": "value"}"#, &format);

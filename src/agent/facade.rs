@@ -1,4 +1,4 @@
-//! High-level library facade for embedding ZeptoClaw as a crate.
+//! High-level library facade for embedding Claide as a crate.
 //!
 //! `ZeptoAgent` provides a simple `chat()` method with persistent conversation
 //! history, suitable for embedding in GUI apps (Tauri, Electron) or other Rust
@@ -8,8 +8,8 @@
 //! # Example
 //!
 //! ```rust,ignore
-//! use zeptoclaw::agent::ZeptoAgent;
-//! use zeptoclaw::{ClaudeProvider, EchoTool};
+//! use claide::agent::ZeptoAgent;
+//! use claide::{ClaudeProvider, EchoTool};
 //!
 //! let agent = ZeptoAgent::builder()
 //!     .provider(ClaudeProvider::new("sk-..."))

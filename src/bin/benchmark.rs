@@ -1,4 +1,4 @@
-//! ZeptoClaw Load Testing Benchmark
+//! Claide Load Testing Benchmark
 //!
 //! Simulates concurrent users to measure:
 //! - Memory usage
@@ -20,16 +20,16 @@ use tokio::sync::mpsc;
 use tokio::task::JoinHandle;
 use tracing::{info, warn};
 
-use zeptoclaw::agent::AgentLoop;
-use zeptoclaw::bus::{InboundMessage, MessageBus};
-use zeptoclaw::config::Config;
-use zeptoclaw::providers::{ChatOptions, LLMProvider, LLMResponse, ToolDefinition};
-use zeptoclaw::session::{Message, SessionManager};
-use zeptoclaw::tools::EchoTool;
+use claide::agent::AgentLoop;
+use claide::bus::{InboundMessage, MessageBus};
+use claide::config::Config;
+use claide::providers::{ChatOptions, LLMProvider, LLMResponse, ToolDefinition};
+use claide::session::{Message, SessionManager};
+use claide::tools::EchoTool;
 
 #[derive(Parser)]
-#[command(name = "zeptoclaw-benchmark")]
-#[command(about = "Load testing benchmark for ZeptoClaw")]
+#[command(name = "claide-benchmark")]
+#[command(about = "Load testing benchmark for Claide")]
 struct Args {
     /// Number of concurrent users to simulate
     #[arg(short, long, default_value = "100")]
@@ -118,12 +118,12 @@ impl LLMProvider for MockProvider {
         _tools: Vec<ToolDefinition>,
         _model: Option<&str>,
         _options: ChatOptions,
-    ) -> std::result::Result<LLMResponse, zeptoclaw::error::ZeptoError> {
+    ) -> std::result::Result<LLMResponse, claide::error::ZeptoError> {
         // Find the last user message and echo it back
         let response_text = messages
             .iter()
             .rev()
-            .find(|m| matches!(m.role, zeptoclaw::session::Role::User))
+            .find(|m| matches!(m.role, claide::session::Role::User))
             .map(|m| format!("Echo: {}", m.content))
             .unwrap_or_else(|| "Echo: Hello".to_string());
 

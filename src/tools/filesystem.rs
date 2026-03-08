@@ -1,4 +1,4 @@
-//! Filesystem tools for ZeptoClaw
+//! Filesystem tools for Claide
 //!
 //! This module provides tools for file system operations including reading,
 //! writing, listing directories, and editing files. All paths can be either
@@ -42,8 +42,8 @@ fn resolve_path(path: &str, ctx: &ToolContext) -> Result<(String, String)> {
 ///
 /// # Example
 /// ```rust
-/// use zeptoclaw::tools::{Tool, ToolContext};
-/// use zeptoclaw::tools::filesystem::ReadFileTool;
+/// use claide::tools::{Tool, ToolContext};
+/// use claide::tools::filesystem::ReadFileTool;
 /// use serde_json::json;
 ///
 /// # tokio_test::block_on(async {
@@ -115,8 +115,8 @@ impl Tool for ReadFileTool {
 ///
 /// # Example
 /// ```rust
-/// use zeptoclaw::tools::{Tool, ToolContext};
-/// use zeptoclaw::tools::filesystem::WriteFileTool;
+/// use claide::tools::{Tool, ToolContext};
+/// use claide::tools::filesystem::WriteFileTool;
 /// use serde_json::json;
 ///
 /// # tokio_test::block_on(async {
@@ -212,8 +212,8 @@ impl Tool for WriteFileTool {
 ///
 /// # Example
 /// ```rust
-/// use zeptoclaw::tools::{Tool, ToolContext};
-/// use zeptoclaw::tools::filesystem::ListDirTool;
+/// use claide::tools::{Tool, ToolContext};
+/// use claide::tools::filesystem::ListDirTool;
 /// use serde_json::json;
 ///
 /// # tokio_test::block_on(async {
@@ -306,8 +306,8 @@ impl Tool for ListDirTool {
 ///
 /// # Example
 /// ```rust
-/// use zeptoclaw::tools::{Tool, ToolContext};
-/// use zeptoclaw::tools::filesystem::EditFileTool;
+/// use claide::tools::{Tool, ToolContext};
+/// use claide::tools::filesystem::EditFileTool;
 /// use serde_json::json;
 ///
 /// # tokio_test::block_on(async {
@@ -428,14 +428,14 @@ mod tests {
     #[tokio::test]
     async fn test_read_file_tool() {
         let dir = tempdir().unwrap();
-        let file_path = dir.path().join("zeptoclaw_test_read.txt");
+        let file_path = dir.path().join("claide_test_read.txt");
         fs::write(&file_path, "test content").unwrap();
 
         let tool = ReadFileTool;
         let ctx = ToolContext::new().with_workspace(dir.path().to_str().unwrap());
 
         let result = tool
-            .execute(json!({"path": "zeptoclaw_test_read.txt"}), &ctx)
+            .execute(json!({"path": "claide_test_read.txt"}), &ctx)
             .await;
         assert!(result.is_ok());
         assert_eq!(result.unwrap().for_llm, "test content");

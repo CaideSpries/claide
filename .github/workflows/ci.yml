@@ -24,7 +24,7 @@ jobs:
         with:
           tool: nextest
       - run: cargo nextest run --lib
-      - run: cargo nextest run --bin zeptoclaw
+      - run: cargo nextest run --bin claide
       - run: cargo nextest run --test cli_smoke
       - run: cargo nextest run --test integration
       - run: cargo nextest run --test e2e
@@ -128,7 +128,7 @@ jobs:
       - run: cargo build --release
       - name: Check binary size
         run: |
-          size_bytes=$(stat --format=%s target/release/zeptoclaw)
+          size_bytes=$(stat --format=%s target/release/claide)
           size_mb=$(awk "BEGIN {printf \"%.1f\", ${size_bytes}/1048576}")
           echo "Binary size: ${size_mb} MB (limit: ${BINARY_SIZE_LIMIT_MB} MB)"
           echo "### Binary size: ${size_mb} MB" >> "$GITHUB_STEP_SUMMARY"

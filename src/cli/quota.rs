@@ -2,11 +2,11 @@
 
 use anyhow::Result;
 
-use zeptoclaw::providers::QuotaStore;
+use claide::providers::QuotaStore;
 
 use super::QuotaSubcommand;
 
-/// Handle `zeptoclaw quota` subcommands.
+/// Handle `claide quota` subcommands.
 pub(crate) fn cmd_quota(action: QuotaSubcommand) -> Result<()> {
     match action {
         QuotaSubcommand::Status => {
@@ -61,7 +61,7 @@ pub(crate) fn cmd_quota(action: QuotaSubcommand) -> Result<()> {
 #[cfg(test)]
 mod tests {
     use tempfile::TempDir;
-    use zeptoclaw::providers::{quota::QuotaPeriod, QuotaStore};
+    use claide::providers::{quota::QuotaPeriod, QuotaStore};
 
     #[test]
     fn test_quota_status_empty() {

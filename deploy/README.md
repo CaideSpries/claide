@@ -1,6 +1,6 @@
 # Deployment Guide
 
-Pre-built templates for deploying ZeptoClaw to various platforms.
+Pre-built templates for deploying Claide to various platforms.
 
 ## One-Click Deploy
 
@@ -8,9 +8,9 @@ Pre-built templates for deploying ZeptoClaw to various platforms.
 
 | Platform | Method |
 |----------|--------|
-| DigitalOcean | [![Deploy to DO](https://www.deploytodo.com/do-btn-blue.svg)](https://cloud.digitalocean.com/apps/new?repo=https://github.com/qhkm/zeptoclaw/tree/main) |
-| Railway | [![Deploy on Railway](https://railway.app/button.svg)](https://railway.com/deploy?template=https://github.com/qhkm/zeptoclaw) |
-| Render | [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/qhkm/zeptoclaw) |
+| DigitalOcean | [![Deploy to DO](https://www.deploytodo.com/do-btn-blue.svg)](https://cloud.digitalocean.com/apps/new?repo=https://github.com/qhkm/claide/tree/main) |
+| Railway | [![Deploy on Railway](https://railway.app/button.svg)](https://railway.com/deploy?template=https://github.com/qhkm/claide) |
+| Render | [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/qhkm/claide) |
 | Fly.io | [Deploy guide](https://fly.io/docs/launch/) with `deploy/fly.toml` |
 
 ### Any VPS
@@ -18,18 +18,18 @@ Pre-built templates for deploying ZeptoClaw to various platforms.
 The fastest way to deploy on any Linux VPS:
 
 ```bash
-curl -fsSL https://zeptoclaw.com/setup.sh | bash
+curl -fsSL https://claide.com/setup.sh | bash
 ```
 
 This interactive wizard will:
-- Download the latest ZeptoClaw binary
+- Download the latest Claide binary
 - Configure your LLM provider API key
 - Configure your messaging channel (Telegram, Slack, Discord, or Webhook)
 - Install and start a systemd service
 
 **Options:**
 - `--docker` - Deploy as a Docker container instead of bare binary
-- `--uninstall` - Clean removal of ZeptoClaw and all configuration
+- `--uninstall` - Clean removal of Claide and all configuration
 
 ## Prerequisites
 
@@ -43,9 +43,9 @@ The simplest deployment — a single Docker container on any VPS.
 
 ```bash
 # 1. Clone and build
-git clone https://github.com/qhkm/zeptoclaw.git
-cd zeptoclaw
-docker build -t zeptoclaw .
+git clone https://github.com/qhkm/claide.git
+cd claide
+docker build -t claide .
 
 # 2. Configure
 cp deploy/.env.example .env
@@ -105,8 +105,8 @@ fly auth login
 fly launch --no-deploy --dockerfile ../Dockerfile
 
 # Set secrets
-fly secrets set ZEPTOCLAW_PROVIDERS_ANTHROPIC_API_KEY=sk-ant-...
-fly secrets set ZEPTOCLAW_CHANNELS_TELEGRAM_BOT_TOKEN=...
+fly secrets set CLAIDE_PROVIDERS_ANTHROPIC_API_KEY=sk-ant-...
+fly secrets set CLAIDE_CHANNELS_TELEGRAM_BOT_TOKEN=...
 
 # Deploy
 fly deploy --dockerfile ../Dockerfile
@@ -124,8 +124,8 @@ Best for: One-click deploy from GitHub.
 2. Go to [railway.com/new](https://railway.com/new)
 3. Select your repository
 4. Set environment variables in the dashboard:
-   - `ZEPTOCLAW_PROVIDERS_ANTHROPIC_API_KEY`
-   - `ZEPTOCLAW_CHANNELS_TELEGRAM_BOT_TOKEN`
+   - `CLAIDE_PROVIDERS_ANTHROPIC_API_KEY`
+   - `CLAIDE_CHANNELS_TELEGRAM_BOT_TOKEN`
 5. Deploy
 
 ### Render
@@ -147,12 +147,12 @@ See `.env.example` for all available variables. Key ones:
 
 | Variable | Required | Description |
 |---|---|---|
-| `ZEPTOCLAW_PROVIDERS_ANTHROPIC_API_KEY` | Yes* | Anthropic API key |
-| `ZEPTOCLAW_PROVIDERS_OPENAI_API_KEY` | Yes* | OpenAI API key |
-| `ZEPTOCLAW_CHANNELS_TELEGRAM_BOT_TOKEN` | For Telegram | Telegram bot token |
-| `ZEPTOCLAW_CHANNELS_SLACK_BOT_TOKEN` | For Slack | Slack bot token |
-| `ZEPTOCLAW_CHANNELS_DISCORD_BOT_TOKEN` | For Discord | Discord bot token |
-| `RUST_LOG` | No | Log level (default: `zeptoclaw=info`) |
+| `CLAIDE_PROVIDERS_ANTHROPIC_API_KEY` | Yes* | Anthropic API key |
+| `CLAIDE_PROVIDERS_OPENAI_API_KEY` | Yes* | OpenAI API key |
+| `CLAIDE_CHANNELS_TELEGRAM_BOT_TOKEN` | For Telegram | Telegram bot token |
+| `CLAIDE_CHANNELS_SLACK_BOT_TOKEN` | For Slack | Slack bot token |
+| `CLAIDE_CHANNELS_DISCORD_BOT_TOKEN` | For Discord | Discord bot token |
+| `RUST_LOG` | No | Log level (default: `claide=info`) |
 
 *At least one LLM provider API key is required.
 
@@ -176,7 +176,7 @@ All templates mount a `/data` volume for session persistence and memory storage.
 git pull
 
 # Rebuild and restart
-docker build -t zeptoclaw .
+docker build -t claide .
 docker compose -f deploy/docker-compose.single.yml up -d
 ```
 

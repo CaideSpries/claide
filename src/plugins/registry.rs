@@ -1,4 +1,4 @@
-//! Plugin registry for ZeptoClaw
+//! Plugin registry for Claide
 //!
 //! This module provides the `PluginRegistry` struct for managing loaded plugins
 //! and mapping tool names back to their originating plugins. It ensures tool
@@ -25,7 +25,7 @@ use super::types::{Plugin, PluginToolDef};
 /// # Example
 ///
 /// ```rust
-/// use zeptoclaw::plugins::{PluginRegistry, Plugin, PluginManifest, PluginToolDef};
+/// use claide::plugins::{PluginRegistry, Plugin, PluginManifest, PluginToolDef};
 /// use std::path::PathBuf;
 /// use serde_json::json;
 ///

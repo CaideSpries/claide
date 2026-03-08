@@ -4,13 +4,13 @@ use std::io::{self, Write};
 
 use anyhow::{Context, Result};
 
-use zeptoclaw::auth;
-use zeptoclaw::auth::codex_import;
-use zeptoclaw::config::{Config, ContainerAgentBackend, ProviderConfig};
-use zeptoclaw::providers::{
+use claide::auth;
+use claide::auth::codex_import;
+use claide::config::{Config, ContainerAgentBackend, ProviderConfig};
+use claide::providers::{
     configured_unsupported_provider_names, resolve_runtime_provider, RUNTIME_SUPPORTED_PROVIDERS,
 };
-use zeptoclaw::runtime::available_runtimes;
+use claide::runtime::available_runtimes;
 
 use super::common::{memory_backend_label, memory_citations_label, skills_loader_from_config};
 use super::heartbeat::heartbeat_file_path;
@@ -60,7 +60,7 @@ async fn cmd_auth_login(provider: Option<String>) -> Result<()> {
             "Provider '{}' does not support OAuth authentication.\n\
              Supported providers: {}\n\n\
              To configure API keys instead:\n  \
-             export ZEPTOCLAW_PROVIDERS_{}_API_KEY=your-key-here",
+             export CLAIDE_PROVIDERS_{}_API_KEY=your-key-here",
             provider,
             auth::oauth_supported_providers().join(", "),
             provider.to_uppercase()
@@ -69,18 +69,18 @@ async fn cmd_auth_login(provider: Option<String>) -> Result<()> {
 
     println!("WARNING: Using OAuth subscription tokens for API access may violate");
     println!("the provider's Terms of Service. The provider may block these tokens");
-    println!("at any time. If blocked, ZeptoClaw will fall back to your API key.");
+    println!("at any time. If blocked, Claide will fall back to your API key.");
     println!();
 
     let provider_env = format!(
-        "ZEPTOCLAW_PROVIDERS_{}_OAUTH_CLIENT_ID",
+        "CLAIDE_PROVIDERS_{}_OAUTH_CLIENT_ID",
         provider.to_uppercase()
     );
     let client_id = std::env::var(&provider_env)
         .ok()
         .filter(|v| !v.trim().is_empty())
         .or_else(|| {
-            std::env::var("ZEPTOCLAW_OAUTH_CLIENT_ID")
+            std::env::var("CLAIDE_OAUTH_CLIENT_ID")
                 .ok()
                 .filter(|v| !v.trim().is_empty())
         })
@@ -90,7 +90,7 @@ async fn cmd_auth_login(provider: Option<String>) -> Result<()> {
                  Set a registered client id via:\n\
                    export {}=your-client-id\n\
                  or:\n\
-                   export ZEPTOCLAW_OAUTH_CLIENT_ID=your-client-id\n\n\
+                   export CLAIDE_OAUTH_CLIENT_ID=your-client-id\n\n\
                  Note: Anthropic OAuth endpoints/flow may not be publicly available yet.",
                 provider,
                 provider_env
@@ -111,7 +111,7 @@ async fn cmd_auth_login_openai() -> Result<()> {
 
     println!("WARNING: OAuth subscription tokens for API access may violate");
     println!("OpenAI's Terms of Service. If tokens are rejected, set an API key:");
-    println!("  export ZEPTOCLAW_PROVIDERS_OPENAI_API_KEY=your-key-here");
+    println!("  export CLAIDE_PROVIDERS_OPENAI_API_KEY=your-key-here");
     println!();
 
     // 1. Try Codex CLI import
@@ -144,7 +144,7 @@ async fn cmd_auth_login_openai() -> Result<()> {
 
 /// Save tokens to the encrypted store and print success information.
 fn save_and_print_tokens(provider: &str, tokens: auth::OAuthTokenSet) -> Result<()> {
-    let encryption = zeptoclaw::security::encryption::resolve_master_key(true)
+    let encryption = claide::security::encryption::resolve_master_key(true)
         .map_err(|e| anyhow::anyhow!("Cannot store tokens without encryption key: {}", e))?;
 
     let store = auth::store::TokenStore::new(encryption);
@@ -174,7 +174,7 @@ fn save_and_print_tokens(provider: &str, tokens: auth::OAuthTokenSet) -> Result<
 
 /// OAuth logout.
 fn cmd_auth_logout(provider: Option<String>) -> Result<()> {
-    let encryption = match zeptoclaw::security::encryption::resolve_master_key(true) {
+    let encryption = match claide::security::encryption::resolve_master_key(true) {
         Ok(enc) => enc,
         Err(_) => {
             println!("No encryption key available. If you have stored tokens,");
@@ -220,7 +220,7 @@ fn cmd_auth_logout(provider: Option<String>) -> Result<()> {
                     );
                 }
                 println!();
-                println!("Specify a provider to log out: zeptoclaw auth logout <provider>");
+                println!("Specify a provider to log out: claide auth logout <provider>");
             }
             Err(e) => println!("Failed to read token store: {}", e),
         }
@@ -231,7 +231,7 @@ fn cmd_auth_logout(provider: Option<String>) -> Result<()> {
 
 /// Force refresh OAuth tokens.
 async fn cmd_auth_refresh(provider: &str) -> Result<()> {
-    let encryption = zeptoclaw::security::encryption::resolve_master_key(true)
+    let encryption = claide::security::encryption::resolve_master_key(true)
         .map_err(|e| anyhow::anyhow!("Cannot access tokens without encryption key: {}", e))?;
 
     let store = auth::store::TokenStore::new(encryption);
@@ -244,7 +244,7 @@ async fn cmd_auth_refresh(provider: &str) -> Result<()> {
         Err(e) => {
             println!("Failed to refresh token for {}: {}", provider, e);
             println!();
-            println!("Try logging in again: zeptoclaw auth login {}", provider);
+            println!("Try logging in again: claide auth login {}", provider);
         }
     }
 
@@ -265,7 +265,7 @@ pub(crate) async fn cmd_auth_setup_token() -> Result<()> {
     println!();
     println!("WARNING: Using subscription tokens for API access may violate");
     println!("Anthropic's Terms of Service. Tokens may be revoked at any time.");
-    println!("If revoked, ZeptoClaw will fall back to your API key.");
+    println!("If revoked, Claide will fall back to your API key.");
     println!();
 
     // Read access token
@@ -301,7 +301,7 @@ pub(crate) async fn cmd_auth_setup_token() -> Result<()> {
     };
 
     // Store encrypted
-    let encryption = zeptoclaw::security::encryption::resolve_master_key(true)
+    let encryption = claide::security::encryption::resolve_master_key(true)
         .map_err(|e| anyhow::anyhow!("Cannot store tokens without encryption key: {}", e))?;
     let store = auth::store::TokenStore::new(encryption);
     store
@@ -324,7 +324,7 @@ pub(crate) async fn cmd_auth_setup_token() -> Result<()> {
         println!("Refresh token: stored (will auto-refresh before expiry).");
     }
     println!();
-    println!("Test with: zeptoclaw agent -m \"Hello\"");
+    println!("Test with: claide agent -m \"Hello\"");
 
     Ok(())
 }
@@ -338,7 +338,7 @@ async fn cmd_auth_status() -> Result<()> {
     println!();
 
     // Load OAuth token store (best-effort)
-    let token_store = match zeptoclaw::security::encryption::resolve_master_key(false) {
+    let token_store = match claide::security::encryption::resolve_master_key(false) {
         Ok(enc) => Ok(auth::store::TokenStore::new(enc)),
         Err(err) => {
             println!("OAuth token store unavailable: {}", err);
@@ -497,7 +497,7 @@ fn provider_status(provider: &Option<ProviderConfig>) -> &'static str {
 pub(crate) async fn cmd_status() -> Result<()> {
     let config = Config::load().unwrap_or_default();
 
-    println!("ZeptoClaw Status");
+    println!("Claide Status");
     println!("================");
     println!();
 
@@ -649,7 +649,7 @@ pub(crate) async fn cmd_status() -> Result<()> {
     // Long-term memory stats
     let ltm_path = Config::dir().join("memory").join("longterm.json");
     if ltm_path.exists() {
-        match zeptoclaw::memory::longterm::LongTermMemory::new() {
+        match claide::memory::longterm::LongTermMemory::new() {
             Ok(mem) => {
                 let count = mem.count();
                 let categories = mem.categories();

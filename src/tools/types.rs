@@ -1,4 +1,4 @@
-//! Tool types for ZeptoClaw
+//! Tool types for Claide
 //!
 //! This module defines the core types for tool execution, including the `Tool` trait
 //! that all tools must implement, and the `ToolContext` struct that provides
@@ -155,8 +155,8 @@ impl ToolOutput {
 /// ```rust
 /// use async_trait::async_trait;
 /// use serde_json::Value;
-/// use zeptoclaw::tools::{Tool, ToolContext, ToolOutput};
-/// use zeptoclaw::error::Result;
+/// use claide::tools::{Tool, ToolContext, ToolOutput};
+/// use claide::error::Result;
 ///
 /// struct MyTool;
 ///
@@ -247,7 +247,7 @@ impl ToolContext {
     ///
     /// # Example
     /// ```
-    /// use zeptoclaw::tools::ToolContext;
+    /// use claide::tools::ToolContext;
     ///
     /// let ctx = ToolContext::new();
     /// assert!(ctx.channel.is_none());
@@ -264,7 +264,7 @@ impl ToolContext {
     ///
     /// # Example
     /// ```
-    /// use zeptoclaw::tools::ToolContext;
+    /// use claide::tools::ToolContext;
     ///
     /// let ctx = ToolContext::new()
     ///     .with_channel("telegram", "123456");
@@ -284,7 +284,7 @@ impl ToolContext {
     ///
     /// # Example
     /// ```
-    /// use zeptoclaw::tools::ToolContext;
+    /// use claide::tools::ToolContext;
     ///
     /// let ctx = ToolContext::new()
     ///     .with_workspace("/home/user/project");

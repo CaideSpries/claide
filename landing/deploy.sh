@@ -31,33 +31,33 @@ deploy_r8r() {
     echo "Done: https://r8r.pages.dev"
 }
 
-deploy_zeptoclaw() {
-    echo "Building zeptoclaw docs..."
-    cd "$SCRIPT_DIR/zeptoclaw/docs"
+deploy_claide() {
+    echo "Building claide docs..."
+    cd "$SCRIPT_DIR/claide/docs"
     rm -rf dist .astro
     npm install --silent
     npx astro build
     cd "$SCRIPT_DIR"
 
     echo "Assembling deploy..."
-    rm -rf "$SCRIPT_DIR/zeptoclaw/_deploy"
-    mkdir -p "$SCRIPT_DIR/zeptoclaw/_deploy/docs"
-    cp "$SCRIPT_DIR/zeptoclaw/index.html" "$SCRIPT_DIR/zeptoclaw/_deploy/"
-    cp "$SCRIPT_DIR/zeptoclaw/mascot-no-bg.png" "$SCRIPT_DIR/zeptoclaw/_deploy/"
-    cp "$SCRIPT_DIR/../deploy/setup.sh" "$SCRIPT_DIR/zeptoclaw/_deploy/"
-    [ -f "$SCRIPT_DIR/zeptoclaw/favicon.svg" ] && cp "$SCRIPT_DIR/zeptoclaw/favicon.svg" "$SCRIPT_DIR/zeptoclaw/_deploy/"
-    cp -r "$SCRIPT_DIR/zeptoclaw/docs/dist/"* "$SCRIPT_DIR/zeptoclaw/_deploy/docs/"
+    rm -rf "$SCRIPT_DIR/claide/_deploy"
+    mkdir -p "$SCRIPT_DIR/claide/_deploy/docs"
+    cp "$SCRIPT_DIR/claide/index.html" "$SCRIPT_DIR/claide/_deploy/"
+    cp "$SCRIPT_DIR/claide/mascot-no-bg.png" "$SCRIPT_DIR/claide/_deploy/"
+    cp "$SCRIPT_DIR/../deploy/setup.sh" "$SCRIPT_DIR/claide/_deploy/"
+    [ -f "$SCRIPT_DIR/claide/favicon.svg" ] && cp "$SCRIPT_DIR/claide/favicon.svg" "$SCRIPT_DIR/claide/_deploy/"
+    cp -r "$SCRIPT_DIR/claide/docs/dist/"* "$SCRIPT_DIR/claide/_deploy/docs/"
 
-    echo "Deploying zeptoclaw..."
-    wrangler pages deploy "$SCRIPT_DIR/zeptoclaw/_deploy" \
-        --project-name=zeptoclaw --branch=main --commit-dirty=true
-    rm -rf "$SCRIPT_DIR/zeptoclaw/_deploy"
-    echo "Done: https://zeptoclaw.com"
+    echo "Deploying claide..."
+    wrangler pages deploy "$SCRIPT_DIR/claide/_deploy" \
+        --project-name=claide --branch=main --commit-dirty=true
+    rm -rf "$SCRIPT_DIR/claide/_deploy"
+    echo "Done: https://claide.com"
 }
 
 case "$DEPLOY_TARGET" in
-    zeptoclaw) deploy_zeptoclaw ;;
+    claide) deploy_claide ;;
     r8r)       deploy_r8r ;;
-    all)       deploy_r8r; echo ""; deploy_zeptoclaw ;;
-    *)         echo "Usage: deploy.sh [zeptoclaw|r8r|all]"; exit 1 ;;
+    all)       deploy_r8r; echo ""; deploy_claide ;;
+    *)         echo "Usage: deploy.sh [claide|r8r|all]"; exit 1 ;;
 esac

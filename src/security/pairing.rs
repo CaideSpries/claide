@@ -5,7 +5,7 @@
 //! Failed validation attempts are tracked per identifier; after `max_attempts`, the identifier
 //! is locked out for `lockout_secs`.
 //!
-//! Persists paired devices to `~/.zeptoclaw/security/paired_devices.json`.
+//! Persists paired devices to `~/.claide/security/paired_devices.json`.
 //!
 //! # Security notes
 //!
@@ -79,7 +79,7 @@ impl PairingManager {
     pub fn new(max_attempts: u32, lockout_secs: u64) -> Self {
         let path = dirs::home_dir()
             .unwrap_or_else(|| PathBuf::from("."))
-            .join(".zeptoclaw")
+            .join(".claide")
             .join("security")
             .join("paired_devices.json");
         let store = Self::load_from_disk(&path);
@@ -411,7 +411,7 @@ mod tests {
         let tid = std::thread::current().id();
         PairingManager {
             store: PairingStore::default(),
-            path: PathBuf::from(format!("/tmp/zeptoclaw-test-pairing-{tid:?}-{id}.json")),
+            path: PathBuf::from(format!("/tmp/claide-test-pairing-{tid:?}-{id}.json")),
             pending_code: None,
             lockouts: HashMap::new(),
             max_attempts: 5,
@@ -519,7 +519,7 @@ mod tests {
     fn test_validate_token_no_disk_write() {
         // validate_token should NOT write to disk (deferred to next state change)
         let dir =
-            std::env::temp_dir().join(format!("zeptoclaw-pairing-nodefer-{}", Uuid::new_v4()));
+            std::env::temp_dir().join(format!("claide-pairing-nodefer-{}", Uuid::new_v4()));
         std::fs::create_dir_all(&dir).unwrap();
         let path = dir.join("paired_devices.json");
 
@@ -710,7 +710,7 @@ mod tests {
 
     #[test]
     fn test_store_persistence_roundtrip() {
-        let dir = std::env::temp_dir().join(format!("zeptoclaw-pairing-test-{}", Uuid::new_v4()));
+        let dir = std::env::temp_dir().join(format!("claide-pairing-test-{}", Uuid::new_v4()));
         std::fs::create_dir_all(&dir).unwrap();
         let path = dir.join("paired_devices.json");
 
@@ -757,7 +757,7 @@ mod tests {
     #[test]
     fn test_load_from_disk_corrupt_file() {
         let dir =
-            std::env::temp_dir().join(format!("zeptoclaw-pairing-corrupt-{}", Uuid::new_v4()));
+            std::env::temp_dir().join(format!("claide-pairing-corrupt-{}", Uuid::new_v4()));
         std::fs::create_dir_all(&dir).unwrap();
         let path = dir.join("paired_devices.json");
         std::fs::write(&path, "not valid json!!!").unwrap();
@@ -773,7 +773,7 @@ mod tests {
 
     #[test]
     fn test_load_from_disk_missing_file() {
-        let path = PathBuf::from("/tmp/zeptoclaw-pairing-nonexistent-12345.json");
+        let path = PathBuf::from("/tmp/claide-pairing-nonexistent-12345.json");
         let mgr = PairingManager::with_path(path, 5, 300);
         assert!(mgr.store.devices.is_empty());
     }

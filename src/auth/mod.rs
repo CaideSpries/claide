@@ -183,14 +183,14 @@ pub fn provider_oauth_config(provider: &str) -> Option<ProviderOAuthConfig> {
             provider: "anthropic".to_string(),
             token_url: "https://console.anthropic.com/v1/oauth/token".to_string(),
             authorize_url: "https://console.anthropic.com/oauth/authorize".to_string(),
-            client_name: "ZeptoClaw".to_string(),
+            client_name: "Claide".to_string(),
             scopes: vec![],
         }),
         "google" => Some(ProviderOAuthConfig {
             provider: "google".to_string(),
             token_url: "https://oauth2.googleapis.com/token".to_string(),
             authorize_url: "https://accounts.google.com/o/oauth2/v2/auth".to_string(),
-            client_name: "ZeptoClaw".to_string(),
+            client_name: "Claide".to_string(),
             scopes: vec![
                 "https://www.googleapis.com/auth/gmail.modify".to_string(),
                 "https://www.googleapis.com/auth/calendar".to_string(),
@@ -200,7 +200,7 @@ pub fn provider_oauth_config(provider: &str) -> Option<ProviderOAuthConfig> {
             provider: "openai".to_string(),
             token_url: "https://auth.openai.com/oauth/token".to_string(),
             authorize_url: "https://auth.openai.com/oauth/authorize".to_string(),
-            client_name: "ZeptoClaw".to_string(),
+            client_name: "Claide".to_string(),
             scopes: vec![
                 "openid".to_string(),
                 "email".to_string(),

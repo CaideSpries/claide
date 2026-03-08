@@ -1,4 +1,4 @@
-//! `zeptoclaw serve` — standalone OpenAI-compatible API server.
+//! `claide serve` — standalone OpenAI-compatible API server.
 //!
 //! Boots the kernel (provider chain, tools, safety) and exposes:
 //! - `POST /v1/chat/completions` (streaming + non-streaming)
@@ -15,11 +15,11 @@ use tracing::info;
 
 /// Run the standalone OpenAI-compatible API server.
 pub async fn cmd_serve(port: u16, bind: String) -> Result<()> {
-    let config = zeptoclaw::config::Config::load()
+    let config = claide::config::Config::load()
         .map_err(|e| anyhow::anyhow!("Failed to load configuration: {e}"))?;
 
-    let bus = Arc::new(zeptoclaw::bus::MessageBus::new());
-    let kernel = zeptoclaw::kernel::ZeptoKernel::boot(config, bus, None, None).await?;
+    let bus = Arc::new(claide::bus::MessageBus::new());
+    let kernel = claide::kernel::ZeptoKernel::boot(config, bus, None, None).await?;
 
     let provider = kernel
         .provider()
@@ -28,8 +28,8 @@ pub async fn cmd_serve(port: u16, bind: String) -> Result<()> {
     let config_arc = kernel.config.clone();
 
     // Build a minimal AppState with only the fields the OpenAI routes need.
-    let event_bus = zeptoclaw::api::events::EventBus::new(4);
-    let mut state = zeptoclaw::api::server::AppState::new(String::new(), event_bus);
+    let event_bus = claide::api::events::EventBus::new(4);
+    let mut state = claide::api::server::AppState::new(String::new(), event_bus);
     state.provider = Some(provider);
     state.config = Some(config_arc);
 
@@ -38,11 +38,11 @@ pub async fn cmd_serve(port: u16, bind: String) -> Result<()> {
     let app = Router::new()
         .route(
             "/v1/chat/completions",
-            post(zeptoclaw::api::routes::openai::chat_completions),
+            post(claide::api::routes::openai::chat_completions),
         )
         .route(
             "/v1/models",
-            get(zeptoclaw::api::routes::openai::list_models),
+            get(claide::api::routes::openai::list_models),
         )
         .with_state(shared);
 

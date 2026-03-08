@@ -1,8 +1,8 @@
 //! Memory CLI command handlers.
 
 use anyhow::{Context, Result};
-use zeptoclaw::memory::longterm::LongTermMemory;
-use zeptoclaw::memory::snapshot;
+use claide::memory::longterm::LongTermMemory;
+use claide::memory::snapshot;
 
 use super::MemoryAction;
 
@@ -37,7 +37,7 @@ async fn cmd_memory_list(category: Option<String>) -> Result<()> {
             println!("No memories in category '{}'.", cat);
         } else {
             println!("No memories stored yet.");
-            println!("Store one: zeptoclaw memory set user:name \"Your Name\"");
+            println!("Store one: claide memory set user:name \"Your Name\"");
         }
         return Ok(());
     }
@@ -135,7 +135,7 @@ async fn cmd_memory_stats() -> Result<()> {
         }
     }
 
-    let path = zeptoclaw::config::Config::dir()
+    let path = claide::config::Config::dir()
         .join("memory")
         .join("longterm.json");
     if path.exists() {

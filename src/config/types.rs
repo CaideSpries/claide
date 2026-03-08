@@ -1,4 +1,4 @@
-//! Configuration type definitions for ZeptoClaw
+//! Configuration type definitions for Claide
 //!
 //! This module defines all configuration structs used throughout the framework.
 //! All types implement serde traits for JSON serialization and have sensible defaults.
@@ -50,7 +50,7 @@ impl Default for ProjectConfig {
     }
 }
 
-/// Main configuration struct for ZeptoClaw
+/// Main configuration struct for Claide
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default)]
 #[derive(Default)]
@@ -250,7 +250,7 @@ impl Default for PanelConfig {
 ///
 /// When enabled, caches LLM responses keyed by SHA-256 of
 /// `(model, system_prompt, user_prompt)`. Supports TTL expiry and LRU eviction.
-/// Persists to `~/.zeptoclaw/cache/responses.json`.
+/// Persists to `~/.claide/cache/responses.json`.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default)]
 pub struct CacheConfig {
@@ -687,8 +687,8 @@ fn default_max_tool_result_bytes() -> usize {
 }
 
 /// Default model compile-time configuration.
-/// Set `ZEPTOCLAW_DEFAULT_MODEL` at compile time to override.
-const COMPILE_TIME_DEFAULT_MODEL: &str = match option_env!("ZEPTOCLAW_DEFAULT_MODEL") {
+/// Set `CLAIDE_DEFAULT_MODEL` at compile time to override.
+const COMPILE_TIME_DEFAULT_MODEL: &str = match option_env!("CLAIDE_DEFAULT_MODEL") {
     Some(v) => v,
     None => "claude-sonnet-4-5-20250929",
 };
@@ -696,7 +696,7 @@ const COMPILE_TIME_DEFAULT_MODEL: &str = match option_env!("ZEPTOCLAW_DEFAULT_MO
 impl Default for AgentDefaults {
     fn default() -> Self {
         Self {
-            workspace: "~/.zeptoclaw/workspace".to_string(),
+            workspace: "~/.claide/workspace".to_string(),
             model: COMPILE_TIME_DEFAULT_MODEL.to_string(),
             max_tokens: 8192,
             temperature: 0.7,
@@ -763,7 +763,7 @@ pub struct ChannelsConfig {
     pub serial: Option<SerialChannelConfig>,
     /// MQTT channel configuration. Requires `mqtt` feature.
     pub mqtt: Option<MqttChannelConfig>,
-    /// Directory for channel plugins (default: ~/.zeptoclaw/channels/)
+    /// Directory for channel plugins (default: ~/.claide/channels/)
     #[serde(default)]
     pub channel_plugins_dir: Option<String>,
 }
@@ -808,9 +808,9 @@ pub struct MqttChannelConfig {
     pub broker_url: String,
     /// Client ID for the MQTT connection.
     pub client_id: String,
-    /// Topics to subscribe to for inbound messages (e.g., ["zeptoclaw/inbox/#"]).
+    /// Topics to subscribe to for inbound messages (e.g., ["claide/inbox/#"]).
     pub subscribe_topics: Vec<String>,
-    /// Topic prefix for publishing responses (e.g., "zeptoclaw/outbox").
+    /// Topic prefix for publishing responses (e.g., "claide/outbox").
     pub publish_prefix: String,
     /// QoS level (0 = at most once, 1 = at least once, 2 = exactly once).
     pub qos: u8,
@@ -833,9 +833,9 @@ impl Default for MqttChannelConfig {
         Self {
             enabled: false,
             broker_url: "mqtt://localhost:1883".to_string(),
-            client_id: "zeptoclaw-agent".to_string(),
-            subscribe_topics: vec!["zeptoclaw/inbox/#".to_string()],
-            publish_prefix: "zeptoclaw/outbox".to_string(),
+            client_id: "claide-agent".to_string(),
+            subscribe_topics: vec!["claide/inbox/#".to_string()],
+            publish_prefix: "claide/outbox".to_string(),
             qos: 1,
             username: String::new(),
             password: String::new(),
@@ -982,7 +982,7 @@ pub struct WhatsAppConfig {
     /// When true, empty `allow_from` rejects all senders (strict mode).
     #[serde(default)]
     pub deny_by_default: bool,
-    /// Whether ZeptoClaw manages the bridge binary lifecycle.
+    /// Whether Claide manages the bridge binary lifecycle.
     /// When true, `channel setup` and `gateway` will auto-install and start the bridge.
     /// When false, the user manages the bridge process externally.
     #[serde(default = "default_bridge_managed")]
@@ -1973,7 +1973,7 @@ pub struct RuntimeConfig {
 }
 
 fn default_mount_allowlist_path() -> String {
-    "~/.zeptoclaw/mount-allowlist.json".to_string()
+    "~/.claide/mount-allowlist.json".to_string()
 }
 
 impl Default for RuntimeConfig {
@@ -2184,7 +2184,7 @@ impl Default for ContainerAgentConfig {
     fn default() -> Self {
         Self {
             backend: ContainerAgentBackend::Auto,
-            image: "zeptoclaw:latest".to_string(),
+            image: "claide:latest".to_string(),
             docker_binary: None,
             memory_limit: Some("1g".to_string()),
             cpu_limit: Some("2.0".to_string()),
@@ -2204,7 +2204,7 @@ impl Default for ContainerAgentConfig {
 /// # Example
 ///
 /// ```
-/// use zeptoclaw::config::CustomToolDef;
+/// use claide::config::CustomToolDef;
 /// use std::collections::HashMap;
 ///
 /// let def = CustomToolDef {

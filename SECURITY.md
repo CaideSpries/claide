@@ -9,7 +9,7 @@
 
 ## Security Features
 
-ZeptoClaw implements defense-in-depth:
+Claide implements defense-in-depth:
 
 1. **Runtime Isolation** — Configurable Native, Docker, or Apple Container runtimes for shell execution
 2. **Containerized Gateway** — Full agent isolation per request with semaphore concurrency limiting

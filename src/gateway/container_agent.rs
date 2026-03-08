@@ -28,13 +28,13 @@ use super::idempotency::IdempotencyStore;
 use super::ipc::{parse_marked_response, AgentRequest, AgentResponse, AgentResult};
 use super::rate_limit::GatewayRateLimiter;
 
-const CONTAINER_WORKSPACE_DIR: &str = "/data/.zeptoclaw/workspace";
-const CONTAINER_SESSIONS_DIR: &str = "/data/.zeptoclaw/sessions";
-const CONTAINER_CONFIG_PATH: &str = "/data/.zeptoclaw/config.json";
+const CONTAINER_WORKSPACE_DIR: &str = "/data/.claide/workspace";
+const CONTAINER_SESSIONS_DIR: &str = "/data/.claide/sessions";
+const CONTAINER_CONFIG_PATH: &str = "/data/.claide/config.json";
 
 /// Path inside the container where the env file is mounted (Apple Container only).
 #[cfg(target_os = "macos")]
-const CONTAINER_ENV_DIR: &str = "/tmp/zeptoclaw-env";
+const CONTAINER_ENV_DIR: &str = "/tmp/claide-env";
 
 /// Resolved backend after auto-detection.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -248,7 +248,7 @@ impl ContainerAgentProxy {
                                     let rejection = OutboundMessage::new(
                                         &inbound.channel,
                                         &inbound.chat_id,
-                                        "Access denied: device not paired. Use `zeptoclaw pair new` to generate a pairing code.",
+                                        "Access denied: device not paired. Use `claide pair new` to generate a pairing code.",
                                     );
                                     if let Err(e) = self.bus.publish_outbound(rejection).await {
                                         error!("Failed to publish pairing rejection: {}", e);
@@ -416,7 +416,7 @@ impl ContainerAgentProxy {
 
     /// Spawn a container and communicate via stdin/stdout.
     async fn spawn_container(&self, request: &AgentRequest) -> Result<AgentResponse> {
-        let config_root = dirs::home_dir().unwrap_or_default().join(".zeptoclaw");
+        let config_root = dirs::home_dir().unwrap_or_default().join(".claide");
         let workspace_dir = config_root.join("workspace");
         let sessions_dir = config_root.join("sessions");
         let config_path = config_root.join("config.json");
@@ -539,7 +539,7 @@ impl ContainerAgentProxy {
             if let Some(ref key) = anthropic.api_key {
                 if !key.trim().is_empty() {
                     env_vars.push((
-                        "ZEPTOCLAW_PROVIDERS_ANTHROPIC_API_KEY".to_string(),
+                        "CLAIDE_PROVIDERS_ANTHROPIC_API_KEY".to_string(),
                         key.clone(),
                     ));
                 }
@@ -547,7 +547,7 @@ impl ContainerAgentProxy {
             if let Some(ref base) = anthropic.api_base {
                 if !base.trim().is_empty() {
                     env_vars.push((
-                        "ZEPTOCLAW_PROVIDERS_ANTHROPIC_API_BASE".to_string(),
+                        "CLAIDE_PROVIDERS_ANTHROPIC_API_BASE".to_string(),
                         base.clone(),
                     ));
                 }
@@ -557,7 +557,7 @@ impl ContainerAgentProxy {
             if let Some(ref key) = openai.api_key {
                 if !key.trim().is_empty() {
                     env_vars.push((
-                        "ZEPTOCLAW_PROVIDERS_OPENAI_API_KEY".to_string(),
+                        "CLAIDE_PROVIDERS_OPENAI_API_KEY".to_string(),
                         key.clone(),
                     ));
                 }
@@ -565,7 +565,7 @@ impl ContainerAgentProxy {
             if let Some(ref base) = openai.api_base {
                 if !base.trim().is_empty() {
                     env_vars.push((
-                        "ZEPTOCLAW_PROVIDERS_OPENAI_API_BASE".to_string(),
+                        "CLAIDE_PROVIDERS_OPENAI_API_BASE".to_string(),
                         base.clone(),
                     ));
                 }
@@ -575,7 +575,7 @@ impl ContainerAgentProxy {
             if let Some(ref key) = openrouter.api_key {
                 if !key.trim().is_empty() {
                     env_vars.push((
-                        "ZEPTOCLAW_PROVIDERS_OPENROUTER_API_KEY".to_string(),
+                        "CLAIDE_PROVIDERS_OPENROUTER_API_KEY".to_string(),
                         key.clone(),
                     ));
                 }
@@ -583,7 +583,7 @@ impl ContainerAgentProxy {
             if let Some(ref base) = openrouter.api_base {
                 if !base.trim().is_empty() {
                     env_vars.push((
-                        "ZEPTOCLAW_PROVIDERS_OPENROUTER_API_BASE".to_string(),
+                        "CLAIDE_PROVIDERS_OPENROUTER_API_BASE".to_string(),
                         base.clone(),
                     ));
                 }
@@ -593,7 +593,7 @@ impl ContainerAgentProxy {
         // Container-internal paths
         env_vars.push(("HOME".to_string(), "/data".to_string()));
         env_vars.push((
-            "ZEPTOCLAW_AGENTS_DEFAULTS_WORKSPACE".to_string(),
+            "CLAIDE_AGENTS_DEFAULTS_WORKSPACE".to_string(),
             CONTAINER_WORKSPACE_DIR.to_string(),
         ));
 
@@ -665,7 +665,7 @@ impl ContainerAgentProxy {
 
         // Image and command
         args.push(self.container_config.image.clone());
-        args.push("zeptoclaw".to_string());
+        args.push("claide".to_string());
         args.push("agent-stdin".to_string());
 
         let binary = validate_docker_binary(&self.container_config)?;
@@ -693,7 +693,7 @@ impl ContainerAgentProxy {
         sessions_dir: &Path,
         config_path: &Path,
     ) -> Result<ContainerInvocation> {
-        let container_name = format!("zeptoclaw-{}", Uuid::new_v4());
+        let container_name = format!("claide-{}", Uuid::new_v4());
         let mut args = vec![
             "run".to_string(),
             "--rm".to_string(),
@@ -753,11 +753,11 @@ impl ContainerAgentProxy {
         // Image
         args.push(self.container_config.image.clone());
 
-        // Wrap command: source env file then exec zeptoclaw
+        // Wrap command: source env file then exec claide
         args.push("sh".to_string());
         args.push("-c".to_string());
         args.push(format!(
-            ". {}/env.sh && exec zeptoclaw agent-stdin",
+            ". {}/env.sh && exec claide agent-stdin",
             CONTAINER_ENV_DIR
         ));
 
@@ -971,7 +971,7 @@ mod tests {
     #[test]
     fn test_build_docker_invocation_mounts_expected_paths_and_hides_secrets() {
         let mut config = Config::default();
-        config.container_agent.image = "zeptoclaw:test".to_string();
+        config.container_agent.image = "claide:test".to_string();
         config.providers.anthropic = Some(ProviderConfig {
             api_key: Some("secret-anthropic-key".to_string()),
             ..Default::default()
@@ -981,7 +981,7 @@ mod tests {
         let proxy = ContainerAgentProxy::new(config, bus, ResolvedBackend::Docker);
 
         let temp_root =
-            std::env::temp_dir().join(format!("zeptoclaw-proxy-test-{}", Uuid::new_v4()));
+            std::env::temp_dir().join(format!("claide-proxy-test-{}", Uuid::new_v4()));
         let workspace_dir = temp_root.join("workspace");
         let sessions_dir = temp_root.join("sessions");
         let config_path = temp_root.join("config.json");
@@ -1005,14 +1005,14 @@ mod tests {
         assert!(has_arg_pair(
             &invocation.args,
             "-e",
-            "ZEPTOCLAW_PROVIDERS_ANTHROPIC_API_KEY"
+            "CLAIDE_PROVIDERS_ANTHROPIC_API_KEY"
         ));
         assert!(!invocation
             .args
             .iter()
             .any(|arg| arg.contains("secret-anthropic-key")));
         assert!(invocation.env.iter().any(|(name, value)| {
-            name == "ZEPTOCLAW_PROVIDERS_ANTHROPIC_API_KEY" && value == "secret-anthropic-key"
+            name == "CLAIDE_PROVIDERS_ANTHROPIC_API_KEY" && value == "secret-anthropic-key"
         }));
 
         assert!(invocation.temp_dir.is_none());
@@ -1086,7 +1086,7 @@ mod tests {
         let vars = proxy.collect_env_vars();
         assert!(vars.iter().any(|(k, v)| k == "HOME" && v == "/data"));
         assert!(vars.iter().any(
-            |(k, v)| k == "ZEPTOCLAW_AGENTS_DEFAULTS_WORKSPACE" && v == CONTAINER_WORKSPACE_DIR
+            |(k, v)| k == "CLAIDE_AGENTS_DEFAULTS_WORKSPACE" && v == CONTAINER_WORKSPACE_DIR
         ));
     }
 
@@ -1098,7 +1098,7 @@ mod tests {
         let proxy = ContainerAgentProxy::new(config, bus, ResolvedBackend::Docker);
 
         let temp_root =
-            std::env::temp_dir().join(format!("zeptoclaw-binary-test-{}", Uuid::new_v4()));
+            std::env::temp_dir().join(format!("claide-binary-test-{}", Uuid::new_v4()));
         let workspace_dir = temp_root.join("workspace");
         let sessions_dir = temp_root.join("sessions");
         let config_path = temp_root.join("config.json");
@@ -1125,7 +1125,7 @@ mod tests {
         let bus = Arc::new(MessageBus::new());
         let proxy = ContainerAgentProxy::new(config, bus, ResolvedBackend::Docker);
 
-        let temp_root = std::env::temp_dir().join(format!("zeptoclaw-wk-test-{}", Uuid::new_v4()));
+        let temp_root = std::env::temp_dir().join(format!("claide-wk-test-{}", Uuid::new_v4()));
         let workspace_dir = temp_root.join("workspace");
         let sessions_dir = temp_root.join("sessions");
         let config_path = temp_root.join("config.json");
@@ -1316,7 +1316,7 @@ EOF
         let proxy = ContainerAgentProxy::new(config, bus, ResolvedBackend::Docker);
 
         let temp_root =
-            std::env::temp_dir().join(format!("zeptoclaw-mount-test-{}", Uuid::new_v4()));
+            std::env::temp_dir().join(format!("claide-mount-test-{}", Uuid::new_v4()));
         let workspace_dir = temp_root.join("workspace");
         let sessions_dir = temp_root.join("sessions");
         let config_path = temp_root.join("config.json");
@@ -1343,7 +1343,7 @@ EOF
         let bus = Arc::new(MessageBus::new());
         let proxy = ContainerAgentProxy::new(config, bus, ResolvedBackend::Docker);
 
-        let temp_root = std::env::temp_dir().join(format!("zeptoclaw-env-test-{}", Uuid::new_v4()));
+        let temp_root = std::env::temp_dir().join(format!("claide-env-test-{}", Uuid::new_v4()));
         let workspace_dir = temp_root.join("workspace");
         let sessions_dir = temp_root.join("sessions");
         let config_path = temp_root.join("config.json");
@@ -1370,7 +1370,7 @@ EOF
         let bus = Arc::new(MessageBus::new());
         let proxy = ContainerAgentProxy::new(config, bus, ResolvedBackend::Docker);
 
-        let temp_root = std::env::temp_dir().join(format!("zeptoclaw-aws-test-{}", Uuid::new_v4()));
+        let temp_root = std::env::temp_dir().join(format!("claide-aws-test-{}", Uuid::new_v4()));
         let workspace_dir = temp_root.join("workspace");
         let sessions_dir = temp_root.join("sessions");
         let config_path = temp_root.join("config.json");
@@ -1399,7 +1399,7 @@ EOF
         let proxy = ContainerAgentProxy::new(config, bus, ResolvedBackend::Docker);
 
         let temp_root =
-            std::env::temp_dir().join(format!("zeptoclaw-trav-test-{}", Uuid::new_v4()));
+            std::env::temp_dir().join(format!("claide-trav-test-{}", Uuid::new_v4()));
         let workspace_dir = temp_root.join("workspace");
         let sessions_dir = temp_root.join("sessions");
         let config_path = temp_root.join("config.json");
@@ -1422,7 +1422,7 @@ EOF
     fn test_build_docker_invocation_accepts_safe_extra_mount() {
         // Create a real directory to mount — no blocked patterns in path
         let mount_root =
-            std::env::temp_dir().join(format!("zeptoclaw-safe-mount-{}", Uuid::new_v4()));
+            std::env::temp_dir().join(format!("claide-safe-mount-{}", Uuid::new_v4()));
         let safe_dir = mount_root.join("project-data");
         std::fs::create_dir_all(&safe_dir).unwrap();
 
@@ -1434,7 +1434,7 @@ EOF
         let proxy = ContainerAgentProxy::new(config, bus, ResolvedBackend::Docker);
 
         let temp_root =
-            std::env::temp_dir().join(format!("zeptoclaw-safe-test-{}", Uuid::new_v4()));
+            std::env::temp_dir().join(format!("claide-safe-test-{}", Uuid::new_v4()));
         let workspace_dir = temp_root.join("workspace");
         let sessions_dir = temp_root.join("sessions");
         let config_path = temp_root.join("config.json");

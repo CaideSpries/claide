@@ -6,7 +6,7 @@
 //! # Example
 //!
 //! ```
-//! use zeptoclaw::safety::leak_detector::{LeakDetector, LeakAction};
+//! use claide::safety::leak_detector::{LeakDetector, LeakAction};
 //!
 //! let detector = LeakDetector::new();
 //! let detections = detector.scan("my key is sk-abc12345678901234567890");

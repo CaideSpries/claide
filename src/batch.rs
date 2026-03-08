@@ -326,7 +326,7 @@ mod tests {
 
     #[test]
     fn test_load_prompts_error_on_nonexistent_file() {
-        let path = Path::new("/tmp/zeptoclaw_nonexistent_batch_file_xyz.txt");
+        let path = Path::new("/tmp/claide_nonexistent_batch_file_xyz.txt");
         let result = load_prompts(path);
         assert!(result.is_err());
         let err = result.unwrap_err().to_string();

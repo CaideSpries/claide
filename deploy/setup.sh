@@ -1,21 +1,21 @@
 #!/bin/sh
 set -eu
 
-# ZeptoClaw Universal VPS Setup Script
-# Usage: curl -fsSL https://zeptoclaw.com/setup.sh | sh
-#    or: curl -fsSL https://zeptoclaw.com/setup.sh | sh -s -- --docker
+# Claide Universal VPS Setup Script
+# Usage: curl -fsSL https://claide.com/setup.sh | sh
+#    or: curl -fsSL https://claide.com/setup.sh | sh -s -- --docker
 #    or: bash deploy/setup.sh --help
 
 # ─── Constants ────────────────────────────────────────────────────────────────
 
-REPO="qhkm/zeptoclaw"
-BINARY="zeptoclaw"
+REPO="qhkm/claide"
+BINARY="claide"
 INSTALL_DIR="/usr/local/bin"
-CONFIG_DIR="${HOME}/.zeptoclaw"
-SERVICE_NAME="zeptoclaw"
+CONFIG_DIR="${HOME}/.claide"
+SERVICE_NAME="claide"
 SERVICE_FILE="/etc/systemd/system/${SERVICE_NAME}.service"
-DOCKER_IMAGE="ghcr.io/qhkm/zeptoclaw:latest"
-CONTAINER_NAME="zeptoclaw"
+DOCKER_IMAGE="ghcr.io/qhkm/claide:latest"
+CONTAINER_NAME="claide"
 
 # ─── Colors (only if terminal) ───────────────────────────────────────────────
 
@@ -64,24 +64,24 @@ need_sudo() {
 
 usage() {
   cat <<EOF
-${BOLD}ZeptoClaw VPS Setup${RESET}
+${BOLD}Claide VPS Setup${RESET}
 
 Usage:
-  curl -fsSL https://zeptoclaw.com/setup.sh | sh
-  curl -fsSL https://zeptoclaw.com/setup.sh | sh -s -- --docker
+  curl -fsSL https://claide.com/setup.sh | sh
+  curl -fsSL https://claide.com/setup.sh | sh -s -- --docker
   bash deploy/setup.sh [OPTIONS]
 
 Options:
   --docker      Use Docker instead of native binary
-  --uninstall   Remove ZeptoClaw from this system
+  --uninstall   Remove Claide from this system
   --help        Show this help message
 
 Examples:
   # Install binary
-  curl -fsSL https://zeptoclaw.com/setup.sh | sh
+  curl -fsSL https://claide.com/setup.sh | sh
 
   # Docker mode
-  curl -fsSL https://zeptoclaw.com/setup.sh | sh -s -- --docker
+  curl -fsSL https://claide.com/setup.sh | sh -s -- --docker
 
   # Uninstall
   bash deploy/setup.sh --uninstall
@@ -138,7 +138,7 @@ check_system() {
 # ─── Uninstall ───────────────────────────────────────────────────────────────
 
 do_uninstall() {
-  info "Uninstalling ZeptoClaw..."
+  info "Uninstalling Claide..."
   need_sudo
 
   # Stop and disable systemd service
@@ -178,7 +178,7 @@ do_uninstall() {
     info "Remove manually with: rm -rf ${CONFIG_DIR}"
   fi
 
-  ok "ZeptoClaw has been uninstalled"
+  ok "Claide has been uninstalled"
   exit 0
 }
 
@@ -296,7 +296,7 @@ main() {
     esac
   done
 
-  printf "\n${BOLD}ZeptoClaw Setup${RESET} (%s mode)\n\n" "$MODE"
+  printf "\n${BOLD}Claide Setup${RESET} (%s mode)\n\n" "$MODE"
 
   check_system
 
@@ -312,14 +312,14 @@ main() {
 
   if [ "$MODE" = "docker" ]; then
     VERSION="$(docker inspect --format '{{index .Config.Labels "org.opencontainers.image.version"}}' "$DOCKER_IMAGE" 2>/dev/null || echo 'latest')"
-    ok "ZeptoClaw ${VERSION}"
+    ok "Claide ${VERSION}"
     printf "\n${BOLD}Next step:${RESET}\n"
-    printf "  docker run --rm -it -v %s:/data/.zeptoclaw %s zeptoclaw onboard\n\n" "$CONFIG_DIR" "$DOCKER_IMAGE"
+    printf "  docker run --rm -it -v %s:/data/.claide %s claide onboard\n\n" "$CONFIG_DIR" "$DOCKER_IMAGE"
   else
     VERSION="$(${INSTALL_DIR}/${BINARY} --version 2>/dev/null || echo 'installed')"
-    ok "ZeptoClaw ${VERSION}"
+    ok "Claide ${VERSION}"
     printf "\n${BOLD}Next step:${RESET}\n"
-    printf "  zeptoclaw onboard\n\n"
+    printf "  claide onboard\n\n"
   fi
 }
 

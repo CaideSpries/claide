@@ -1,4 +1,4 @@
-//! Content policy engine for ZeptoClaw.
+//! Content policy engine for Claide.
 //!
 //! Evaluates input text against a set of compiled rules to detect security
 //! threats, injection attempts, and sensitive data exposure. Each rule has an

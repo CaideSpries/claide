@@ -23,7 +23,7 @@
 //! ## Persistence
 //!
 //! Vectors are persisted to a sidecar JSON file
-//! (`~/.zeptoclaw/memory/hnsw_vectors.json`). The HNSW index is rebuilt from
+//! (`~/.claide/memory/hnsw_vectors.json`). The HNSW index is rebuilt from
 //! this file on startup; no index serialization is required.
 //!
 //! ## score_batch strategy

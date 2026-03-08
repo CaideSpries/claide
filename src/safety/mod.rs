@@ -1,4 +1,4 @@
-//! Safety layer for ZeptoClaw — output sanitization and threat detection.
+//! Safety layer for Claide — output sanitization and threat detection.
 //!
 //! Orchestrates four sub-modules (validator, leak_detector, policy, sanitizer)
 //! into a single pipeline that tool outputs pass through before reaching the LLM.

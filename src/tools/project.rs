@@ -1,4 +1,4 @@
-//! Project management tool for ZeptoClaw.
+//! Project management tool for Claide.
 //!
 //! Provides a unified interface for managing issues across GitHub, Jira, and Linear.
 //!
@@ -119,7 +119,7 @@ impl ProjectTool {
             .client
             .get(&url)
             .header("Authorization", auth)
-            .header("User-Agent", "zeptoclaw")
+            .header("User-Agent", "claide")
             .header("Accept", "application/vnd.github+json")
             .query(&[("per_page", limit.to_string().as_str()), ("state", "open")])
             .send()
@@ -162,7 +162,7 @@ impl ProjectTool {
             .client
             .get(&url)
             .header("Authorization", auth)
-            .header("User-Agent", "zeptoclaw")
+            .header("User-Agent", "claide")
             .header("Accept", "application/vnd.github+json")
             .send()
             .await
@@ -220,7 +220,7 @@ impl ProjectTool {
             .client
             .post(&url)
             .header("Authorization", auth)
-            .header("User-Agent", "zeptoclaw")
+            .header("User-Agent", "claide")
             .header("Accept", "application/vnd.github+json")
             .json(&payload)
             .send()
@@ -281,7 +281,7 @@ impl ProjectTool {
             .client
             .patch(&url)
             .header("Authorization", auth)
-            .header("User-Agent", "zeptoclaw")
+            .header("User-Agent", "claide")
             .header("Accept", "application/vnd.github+json")
             .json(&payload)
             .send()
@@ -313,7 +313,7 @@ impl ProjectTool {
             .client
             .get("https://api.github.com/search/issues")
             .header("Authorization", auth)
-            .header("User-Agent", "zeptoclaw")
+            .header("User-Agent", "claide")
             .header("Accept", "application/vnd.github+json")
             .query(&[("q", full_query.as_str()), ("per_page", &limit.to_string())])
             .send()

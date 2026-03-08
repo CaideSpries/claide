@@ -1,4 +1,4 @@
-//! Message types for the ZeptoClaw message bus
+//! Message types for the Claide message bus
 //!
 //! This module defines the core message types used for communication
 //! between channels, agents, and the message bus.
@@ -82,7 +82,7 @@ impl InboundMessage {
     ///
     /// # Example
     /// ```
-    /// use zeptoclaw::bus::message::InboundMessage;
+    /// use claide::bus::message::InboundMessage;
     ///
     /// let msg = InboundMessage::new("telegram", "user123", "chat456", "Hello, bot!");
     /// assert_eq!(msg.session_key, "telegram:chat456");
@@ -106,7 +106,7 @@ impl InboundMessage {
     ///
     /// # Example
     /// ```
-    /// use zeptoclaw::bus::message::{InboundMessage, MediaAttachment, MediaType};
+    /// use claide::bus::message::{InboundMessage, MediaAttachment, MediaType};
     ///
     /// let media = MediaAttachment::new(MediaType::Image).with_url("https://example.com/image.png");
     /// let msg = InboundMessage::new("telegram", "user123", "chat456", "Check this out!")
@@ -122,7 +122,7 @@ impl InboundMessage {
     ///
     /// # Example
     /// ```
-    /// use zeptoclaw::bus::message::InboundMessage;
+    /// use claide::bus::message::InboundMessage;
     ///
     /// let msg = InboundMessage::new("telegram", "user123", "chat456", "Hello")
     ///     .with_metadata("message_id", "12345")
@@ -150,7 +150,7 @@ impl OutboundMessage {
     ///
     /// # Example
     /// ```
-    /// use zeptoclaw::bus::message::OutboundMessage;
+    /// use claide::bus::message::OutboundMessage;
     ///
     /// let msg = OutboundMessage::new("telegram", "chat456", "Hello from the bot!");
     /// assert_eq!(msg.channel, "telegram");
@@ -169,7 +169,7 @@ impl OutboundMessage {
     ///
     /// # Example
     /// ```
-    /// use zeptoclaw::bus::message::OutboundMessage;
+    /// use claide::bus::message::OutboundMessage;
     ///
     /// let msg = OutboundMessage::new("telegram", "chat456", "This is a reply")
     ///     .with_reply("original_msg_123");
@@ -190,7 +190,7 @@ impl OutboundMessage {
     ///
     /// # Example
     /// ```
-    /// use zeptoclaw::bus::message::{InboundMessage, OutboundMessage};
+    /// use claide::bus::message::{InboundMessage, OutboundMessage};
     ///
     /// let inbound = InboundMessage::new("telegram", "user123", "chat456", "Hello");
     /// let response = OutboundMessage::reply_to(&inbound, "Hello back!");
@@ -236,7 +236,7 @@ impl MediaAttachment {
     ///
     /// # Example
     /// ```
-    /// use zeptoclaw::bus::message::{MediaAttachment, MediaType};
+    /// use claide::bus::message::{MediaAttachment, MediaType};
     ///
     /// let media = MediaAttachment::new(MediaType::Image)
     ///     .with_mime_type("image/webp");

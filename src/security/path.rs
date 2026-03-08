@@ -57,7 +57,7 @@ impl AsRef<Path> for SafePath {
 /// # Examples
 ///
 /// ```
-/// use zeptoclaw::security::validate_path_in_workspace;
+/// use claide::security::validate_path_in_workspace;
 ///
 /// // Relative path within workspace
 /// let result = validate_path_in_workspace("src/main.rs", "/workspace");

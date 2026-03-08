@@ -158,7 +158,7 @@ export default function Dashboard() {
       <div>
         <h1 className="text-2xl font-bold text-zinc-100 mb-1">Dashboard</h1>
         <p className="text-zinc-400 text-sm">
-          Overview of your ZeptoClaw agent — activity, health, and recent events.
+          Overview of your Claide agent — activity, health, and recent events.
         </p>
       </div>
 

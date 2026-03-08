@@ -13,7 +13,7 @@
 //! # Example
 //!
 //! ```rust,ignore
-//! use zeptoclaw::agent::budget::TokenBudget;
+//! use claide::agent::budget::TokenBudget;
 //!
 //! let budget = TokenBudget::new(10_000);
 //! budget.record(500, 200);

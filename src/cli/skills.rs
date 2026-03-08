@@ -2,8 +2,8 @@
 
 use anyhow::{Context, Result};
 
-use zeptoclaw::config::Config;
-use zeptoclaw::skills::{EnvSpec, Skill, SkillsLoader};
+use claide::config::Config;
+use claide::skills::{EnvSpec, Skill, SkillsLoader};
 
 use super::common::skills_loader_from_config;
 use super::SkillsAction;
@@ -167,7 +167,7 @@ description: Describe what this skill does.
 #   - name: MY_API_KEY
 #     description: Your API key for the service
 #     required: true
-metadata: {{"zeptoclaw":{{"emoji":"📚","requires":{{}}}}}}
+metadata: {{"claide":{{"emoji":"📚","requires":{{}}}}}}
 ---
 
 # {name} Skill
@@ -195,8 +195,8 @@ async fn cmd_skills_search(config: &Config, query: &str, source: &str) -> Result
 
     // GitHub search
     if source == "all" || source == "github" {
-        let topics = &["zeptoclaw-skill", "openclaw-skill"];
-        match zeptoclaw::skills::github_source::search_github(&client, query, topics).await {
+        let topics = &["claide-skill", "openclaw-skill"];
+        match claide::skills::github_source::search_github(&client, query, topics).await {
             Ok(results) => all_results.extend(results),
             Err(e) => eprintln!("GitHub search failed: {}", e),
         }
@@ -222,8 +222,8 @@ async fn cmd_skills_search(config: &Config, query: &str, source: &str) -> Result
     println!("Found {} skill(s):\n", all_results.len());
     for r in &all_results {
         let source_label = match r.source {
-            zeptoclaw::skills::github_source::SkillSource::GitHub => "github",
-            zeptoclaw::skills::github_source::SkillSource::ClawHub => "clawhub",
+            claide::skills::github_source::SkillSource::GitHub => "github",
+            claide::skills::github_source::SkillSource::ClawHub => "clawhub",
         };
         println!(
             "  {} ({}) [{}] score={:.2} stars={}",
@@ -239,7 +239,7 @@ async fn cmd_skills_search(config: &Config, query: &str, source: &str) -> Result
 }
 
 /// Default community skills repository.
-const COMMUNITY_REPO: &str = "qhkm/zeptoclaw-skills";
+const COMMUNITY_REPO: &str = "qhkm/claide-skills";
 
 /// Validate a skill name for filesystem safety.
 fn validate_skill_name(name: &str) -> Result<()> {
@@ -261,7 +261,7 @@ fn validate_skill_name(name: &str) -> Result<()> {
 async fn cmd_skills_install(name: &str, github: Option<&str>) -> Result<()> {
     validate_skill_name(name)?;
 
-    let skills_dir = zeptoclaw::config::Config::dir().join("skills");
+    let skills_dir = claide::config::Config::dir().join("skills");
     std::fs::create_dir_all(&skills_dir)?;
     let target_dir = skills_dir.join(name);
 
@@ -358,7 +358,7 @@ async fn install_from_multi_skill_repo(
     println!("Installing '{}' from github.com/{} ...", skill_path, repo);
 
     let tmp_dir =
-        std::env::temp_dir().join(format!("zeptoclaw-skill-install-{}", std::process::id()));
+        std::env::temp_dir().join(format!("claide-skill-install-{}", std::process::id()));
 
     let output = tokio::process::Command::new("git")
         .args([
@@ -445,7 +445,7 @@ description: Describe what this skill does.
 #   - name: MY_API_KEY
 #     description: Your API key for the service
 #     required: true
-metadata: {{"zeptoclaw":{{"emoji":"📚","requires":{{}}}}}}
+metadata: {{"claide":{{"emoji":"📚","requires":{{}}}}}}
 ---
 
 # {name} Skill
@@ -559,13 +559,13 @@ Describe usage and concrete command examples.
         assert_eq!(normalize_github_repo("owner/repo.git"), "owner/repo");
         // Sub-path preserved for multi-skill repos
         assert_eq!(
-            normalize_github_repo("https://github.com/qhkm/zeptoclaw-skills/obsidian-vault"),
-            "qhkm/zeptoclaw-skills/obsidian-vault"
+            normalize_github_repo("https://github.com/qhkm/claide-skills/obsidian-vault"),
+            "qhkm/claide-skills/obsidian-vault"
         );
         // Shorthand with skill path
         assert_eq!(
-            normalize_github_repo("qhkm/zeptoclaw-skills/weather"),
-            "qhkm/zeptoclaw-skills/weather"
+            normalize_github_repo("qhkm/claide-skills/weather"),
+            "qhkm/claide-skills/weather"
         );
     }
 
@@ -598,19 +598,19 @@ Describe usage and concrete command examples.
 
         // 3 segments → multi-skill repo with skill path
         let normalized =
-            normalize_github_repo("https://github.com/qhkm/zeptoclaw-skills/obsidian-vault");
+            normalize_github_repo("https://github.com/qhkm/claide-skills/obsidian-vault");
         let segments: Vec<&str> = normalized.split('/').collect();
         assert_eq!(segments.len(), 3);
         assert_eq!(
             format!("{}/{}", segments[0], segments[1]),
-            "qhkm/zeptoclaw-skills"
+            "qhkm/claide-skills"
         );
         assert_eq!(segments[2..].join("/"), "obsidian-vault");
     }
 
     #[test]
     fn test_copy_dir_recursive() {
-        let tmp = std::env::temp_dir().join("zeptoclaw-test-copy-dir");
+        let tmp = std::env::temp_dir().join("claide-test-copy-dir");
         let _ = std::fs::remove_dir_all(&tmp);
 
         let src = tmp.join("src");
@@ -642,7 +642,7 @@ Describe usage and concrete command examples.
 
     #[test]
     fn test_community_repo_constant() {
-        assert_eq!(COMMUNITY_REPO, "qhkm/zeptoclaw-skills");
+        assert_eq!(COMMUNITY_REPO, "qhkm/claide-skills");
         let segments: Vec<&str> = COMMUNITY_REPO.split('/').collect();
         assert_eq!(segments.len(), 2);
     }

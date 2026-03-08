@@ -7,9 +7,9 @@
 //! # Example
 //!
 //! ```rust,ignore
-//! use zeptoclaw::providers::{LLMProvider, ChatOptions, ToolDefinition};
-//! use zeptoclaw::providers::claude::ClaudeProvider;
-//! use zeptoclaw::session::Message;
+//! use claide::providers::{LLMProvider, ChatOptions, ToolDefinition};
+//! use claide::providers::claude::ClaudeProvider;
+//! use claide::session::Message;
 //!
 //! async fn example() {
 //!     let provider = ClaudeProvider::new("your-api-key");

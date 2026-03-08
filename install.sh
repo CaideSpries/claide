@@ -1,8 +1,8 @@
 #!/bin/sh
 set -eu
 
-REPO="qhkm/zeptoclaw"
-BINARY="zeptoclaw"
+REPO="qhkm/claide"
+BINARY="claide"
 
 # --- Detect platform ---
 
@@ -24,8 +24,8 @@ ARTIFACT="${BINARY}-${OS_LABEL}-${ARCH_LABEL}"
 
 # --- Resolve version ---
 
-if [ -n "${ZEPTOCLAW_VERSION:-}" ]; then
-  VERSION="$ZEPTOCLAW_VERSION"
+if [ -n "${CLAIDE_VERSION:-}" ]; then
+  VERSION="$CLAIDE_VERSION"
   BASE_URL="https://github.com/${REPO}/releases/download/${VERSION}"
 else
   BASE_URL="https://github.com/${REPO}/releases/latest/download"
@@ -35,8 +35,8 @@ fi
 # --- Pick install directory ---
 # Prefer ~/.local/bin (no sudo), fall back to /usr/local/bin.
 
-if [ -n "${ZEPTOCLAW_INSTALL_DIR:-}" ]; then
-  INSTALL_DIR="$ZEPTOCLAW_INSTALL_DIR"
+if [ -n "${CLAIDE_INSTALL_DIR:-}" ]; then
+  INSTALL_DIR="$CLAIDE_INSTALL_DIR"
 elif [ -d "$HOME/.local/bin" ] || mkdir -p "$HOME/.local/bin" 2>/dev/null; then
   INSTALL_DIR="$HOME/.local/bin"
 else
@@ -52,7 +52,7 @@ else
   HW_NOTE=" (includes ESP32 hardware support)"
 fi
 
-echo "Installing ZeptoClaw ${VERSION} for ${OS_LABEL}/${ARCH_LABEL}${HW_NOTE}..."
+echo "Installing Claide ${VERSION} for ${OS_LABEL}/${ARCH_LABEL}${HW_NOTE}..."
 
 # --- Download ---
 
@@ -121,11 +121,11 @@ esac
 # --- Done ---
 
 echo ""
-echo "ZeptoClaw installed successfully! ${INSTALLED_VERSION}"
+echo "Claide installed successfully! ${INSTALLED_VERSION}"
 echo ""
 echo "Get started:"
-echo "  zeptoclaw onboard          # Interactive setup"
-echo "  zeptoclaw agent -m 'Hello' # Talk to your agent"
+echo "  claide onboard          # Interactive setup"
+echo "  claide agent -m 'Hello' # Talk to your agent"
 echo ""
-echo "Update later:  zeptoclaw update"
+echo "Update later:  claide update"
 echo "Docs:          https://github.com/${REPO}"

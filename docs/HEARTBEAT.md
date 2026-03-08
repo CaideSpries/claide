@@ -1,6 +1,6 @@
 # Heartbeat Service
 
-Heartbeat periodically asks ZeptoClaw to review background tasks from `HEARTBEAT.md`.
+Heartbeat periodically asks Claide to review background tasks from `HEARTBEAT.md`.
 
 ## Config
 
@@ -9,7 +9,7 @@ Heartbeat periodically asks ZeptoClaw to review background tasks from `HEARTBEAT
   "heartbeat": {
     "enabled": true,
     "interval_secs": 1800,
-    "file_path": "~/.zeptoclaw/HEARTBEAT.md"
+    "file_path": "~/.claide/HEARTBEAT.md"
   }
 }
 ```
@@ -17,9 +17,9 @@ Heartbeat periodically asks ZeptoClaw to review background tasks from `HEARTBEAT
 ## CLI
 
 ```bash
-zeptoclaw heartbeat --show
-zeptoclaw heartbeat --edit
-zeptoclaw heartbeat
+claide heartbeat --show
+claide heartbeat --edit
+claide heartbeat
 ```
 
 ## How It Works

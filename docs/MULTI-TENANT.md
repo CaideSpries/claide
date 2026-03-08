@@ -1,10 +1,10 @@
 # Multi-Tenant Deployment
 
-Run multiple ZeptoClaw tenants on a single VPS using Docker. Each tenant gets complete isolation with zero application code changes.
+Run multiple Claide tenants on a single VPS using Docker. Each tenant gets complete isolation with zero application code changes.
 
 ## Why Container-Per-Tenant
 
-ZeptoClaw is ~4MB binary, ~6MB RSS idle. Docker provides process, filesystem, and network isolation out of the box. No multi-tenant code needed.
+Claide is ~4MB binary, ~6MB RSS idle. Docker provides process, filesystem, and network isolation out of the box. No multi-tenant code needed.
 
 | Tenants | RAM Required | VPS Cost |
 |---------|-------------|----------|
@@ -19,7 +19,7 @@ Each tenant is fully isolated. If one tenant prompts the agent to destroy files,
 
 ```bash
 # 1. Build the image
-docker build -t zeptoclaw:latest .
+docker build -t claide:latest .
 
 # 2. Add tenants
 ./scripts/add-tenant.sh shop-ahmad "123:ABC..." "sk-ant-..."
@@ -38,7 +38,7 @@ docker logs zc-shop-ahmad
 ## File Structure
 
 ```
-zeptoclaw/
+claide/
 ├── docker-compose.multi-tenant.yml   # Compose file with all tenants
 ├── scripts/
 │   └── add-tenant.sh                 # Script to create tenant config
@@ -77,7 +77,7 @@ docker compose -f docker-compose.multi-tenant.yml stop tenant-<name>
 # Remove their service block from docker-compose.multi-tenant.yml
 
 # Optionally delete their data
-docker volume rm zeptoclaw_<name>-data
+docker volume rm claide_<name>-data
 rm -rf tenants/<name>
 ```
 
@@ -125,11 +125,11 @@ Back up all tenant data volumes:
 ```bash
 #!/bin/bash
 # backup-tenants.sh
-BACKUP_DIR="/backups/zeptoclaw/$(date +%Y-%m-%d)"
+BACKUP_DIR="/backups/claide/$(date +%Y-%m-%d)"
 mkdir -p "$BACKUP_DIR"
 
-for volume in $(docker volume ls -q | grep -E "^zeptoclaw_.*-data$"); do
-    tenant=$(echo "$volume" | sed 's/zeptoclaw_\(.*\)-data/\1/')
+for volume in $(docker volume ls -q | grep -E "^claide_.*-data$"); do
+    tenant=$(echo "$volume" | sed 's/claide_\(.*\)-data/\1/')
     echo "Backing up $tenant..."
     docker run --rm -v "$volume:/data:ro" -v "$BACKUP_DIR:/backup" \
         alpine tar czf "/backup/$tenant.tar.gz" -C /data .
@@ -141,7 +141,7 @@ echo "Backups saved to $BACKUP_DIR"
 Schedule with cron:
 
 ```
-0 3 * * * /opt/zeptoclaw/backup-tenants.sh
+0 3 * * * /opt/claide/backup-tenants.sh
 ```
 
 ## Auto-Restart on Crash
@@ -154,7 +154,7 @@ For extra resilience, add a healthcheck:
 tenant-shop-ahmad:
   <<: *defaults
   healthcheck:
-    test: ["CMD", "pgrep", "zeptoclaw"]
+    test: ["CMD", "pgrep", "claide"]
     interval: 30s
     timeout: 5s
     retries: 3
@@ -171,14 +171,14 @@ docker compose -f docker-compose.multi-tenant.yml up -d
 
 Each generated tenant service includes:
 - `RUST_LOG_FORMAT=json` for structured JSON logging
-- `ZEPTOCLAW_HEALTH_PORT=9090` for liveness/readiness endpoints
-- `com.zeptoclaw.tenant/version/env` container labels for ops filtering
+- `CLAIDE_HEALTH_PORT=9090` for liveness/readiness endpoints
+- `com.claide.tenant/version/env` container labels for ops filtering
 - Docker healthcheck via `wget` to `/healthz`
 
 You can override the version and environment labels:
 
 ```bash
-ZEPTOCLAW_VERSION=0.2.0 ZEPTOCLAW_ENV=staging ./scripts/generate-compose.sh > docker-compose.multi-tenant.yml
+CLAIDE_VERSION=0.2.0 CLAIDE_ENV=staging ./scripts/generate-compose.sh > docker-compose.multi-tenant.yml
 ```
 
 ## Swarm Configuration
@@ -213,7 +213,7 @@ Each tenant can enable agent swarm delegation, allowing the lead agent to spawn 
 ## Security Notes
 
 - Config files are mounted read-only (`:ro`) - the agent cannot modify its own credentials
-- Each container runs as non-root user (`zeptoclaw`)
+- Each container runs as non-root user (`claide`)
 - Containers have no network access to each other by default
 - Tenant API keys stay in their own config file, never shared
 - Docker volumes are isolated per tenant

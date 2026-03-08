@@ -1,4 +1,4 @@
-//! ZeptoClaw - Ultra-lightweight personal AI assistant
+//! Claide - Ultra-lightweight personal AI assistant
 
 pub mod agent;
 #[cfg(feature = "panel")]

@@ -1,9 +1,9 @@
-//! Plugin system for ZeptoClaw
+//! Plugin system for Claide
 //!
 //! This module provides a plugin system that allows loading tools from external
 //! JSON-defined command plugins. Each plugin is a directory containing a
 //! `plugin.json` manifest and optional scripts. Plugins wrap shell commands
-//! with parameter interpolation, making it easy to extend ZeptoClaw's tool
+//! with parameter interpolation, making it easy to extend Claide's tool
 //! set without writing Rust code.
 //!
 //! # Architecture
@@ -15,7 +15,7 @@
 //! # Plugin Directory Structure
 //!
 //! ```text
-//! ~/.zeptoclaw/plugins/
+//! ~/.claide/plugins/
 //! ├── git-tools/
 //! │   └── plugin.json
 //! ├── docker-tools/
@@ -33,7 +33,7 @@
 //!   "name": "git-tools",
 //!   "version": "1.0.0",
 //!   "description": "Git integration tools",
-//!   "author": "ZeptoClaw",
+//!   "author": "Claide",
 //!   "tools": [
 //!     {
 //!       "name": "git_status",
@@ -56,9 +56,9 @@
 //!
 //! ```rust,no_run
 //! use std::path::PathBuf;
-//! use zeptoclaw::plugins::{discover_plugins, PluginRegistry};
+//! use claide::plugins::{discover_plugins, PluginRegistry};
 //!
-//! let dirs = vec![PathBuf::from("/home/user/.zeptoclaw/plugins")];
+//! let dirs = vec![PathBuf::from("/home/user/.claide/plugins")];
 //! let plugins = discover_plugins(&dirs).unwrap();
 //!
 //! let mut registry = PluginRegistry::new();

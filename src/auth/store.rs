@@ -18,7 +18,7 @@ use super::OAuthTokenSet;
 /// Encrypted OAuth token store.
 ///
 /// Persists tokens as JSON encrypted with XChaCha20-Poly1305 at
-/// `~/.zeptoclaw/auth/tokens.json.enc`. Each provider's token set is
+/// `~/.claide/auth/tokens.json.enc`. Each provider's token set is
 /// stored as a separate entry keyed by provider name.
 pub struct TokenStore {
     path: PathBuf,
@@ -34,7 +34,7 @@ struct TokensFile {
 impl TokenStore {
     /// Create a new token store with the given encryption key.
     ///
-    /// The store file is located at `~/.zeptoclaw/auth/tokens.json.enc`.
+    /// The store file is located at `~/.claide/auth/tokens.json.enc`.
     pub fn new(encryption: SecretEncryption) -> Self {
         let path = crate::config::Config::dir()
             .join("auth")

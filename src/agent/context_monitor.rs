@@ -17,8 +17,8 @@
 //! # Example
 //!
 //! ```rust
-//! use zeptoclaw::agent::context_monitor::{ContextMonitor, CompactionStrategy};
-//! use zeptoclaw::session::Message;
+//! use claide::agent::context_monitor::{ContextMonitor, CompactionStrategy};
+//! use claide::session::Message;
 //!
 //! let monitor = ContextMonitor::new(100_000, 0.80);
 //! let messages = vec![Message::user("Hello, world!")];

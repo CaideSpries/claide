@@ -1,4 +1,4 @@
-//! Provider plugin adapter for ZeptoClaw.
+//! Provider plugin adapter for Claide.
 //!
 //! Executes standalone provider binaries via JSON-RPC 2.0 over stdin/stdout.
 //! Each `chat()` call spawns the configured binary, writes a request to stdin,

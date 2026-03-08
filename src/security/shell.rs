@@ -169,9 +169,9 @@ const LITERAL_BLOCKED_PATTERNS: &[&str] = &[
     ".ssh/authorized_keys",
     ".aws/credentials",
     ".kube/config",
-    // ZeptoClaw's own config (contains API keys and channel tokens)
-    ".zeptoclaw/config.json",
-    ".zeptoclaw/config.yaml",
+    // Claide's own config (contains API keys and channel tokens)
+    ".claide/config.json",
+    ".claide/config.yaml",
 ];
 
 /// Convert a command string that may contain shell glob characters into a regex
@@ -965,21 +965,21 @@ mod tests {
     }
 
     #[test]
-    fn test_zeptoclaw_config_blocked() {
+    fn test_claide_config_blocked() {
         let config = ShellSecurityConfig::new();
 
         assert!(config
-            .validate_command("cat ~/.zeptoclaw/config.json")
+            .validate_command("cat ~/.claide/config.json")
             .is_err());
         assert!(config
-            .validate_command("cat ~/.zeptoclaw/config.yaml")
+            .validate_command("cat ~/.claide/config.yaml")
             .is_err());
         assert!(config
-            .validate_command("cat /home/user/.zeptoclaw/config.json")
+            .validate_command("cat /home/user/.claide/config.json")
             .is_err());
-        // Reading other zeptoclaw files (non-config) should be fine
+        // Reading other claide files (non-config) should be fine
         assert!(config
-            .validate_command("cat ~/.zeptoclaw/skills/SKILL.md")
+            .validate_command("cat ~/.claide/skills/SKILL.md")
             .is_ok());
     }
 

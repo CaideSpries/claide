@@ -532,8 +532,8 @@ impl DiscordChannel {
                 "intents": GATEWAY_INTENTS,
                 "properties": {
                     "os": std::env::consts::OS,
-                    "browser": "zeptoclaw",
-                    "device": "zeptoclaw"
+                    "browser": "claide",
+                    "device": "claide"
                 }
             }
         })
@@ -1053,26 +1053,39 @@ impl DiscordChannel {
                                                             if let Some(mut inbound) =
                                                                 Self::parse_message_create(data, &allowlist, deny_by_default)
                                                             {
-                                                                // Download image attachments
+                                                                // Download media attachments (images, audio, documents)
                                                                 if let Ok(msg_data) = serde_json::from_value::<MessageCreateData>(data.clone()) {
                                                                     for att in &msg_data.attachments {
                                                                         if let Some(ref ct) = att.content_type {
-                                                                            if ct.starts_with("image/")
-                                                                                && att.size.is_none_or(|s| s <= 20 * 1024 * 1024)
+                                                                            let media_type = if ct.starts_with("image/") {
+                                                                                Some(MediaType::Image)
+                                                                            } else if ct.starts_with("audio/") || ct == "video/ogg" {
+                                                                                Some(MediaType::Audio)
+                                                                            } else if ct.starts_with("application/pdf")
+                                                                                || ct == "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                                                                                || ct == "text/plain"
                                                                             {
-                                                                                match client.get(&att.url).send().await {
-                                                                                    Ok(resp) => {
-                                                                                        if let Ok(bytes) = resp.bytes().await {
-                                                                                            let mut media = MediaAttachment::new(MediaType::Image)
-                                                                                                .with_data(bytes.to_vec())
-                                                                                                .with_mime_type(ct);
-                                                                                            if let Some(ref name) = att.filename {
-                                                                                                media = media.with_filename(name);
+                                                                                Some(MediaType::Document)
+                                                                            } else {
+                                                                                None
+                                                                            };
+
+                                                                            if let Some(mt) = media_type {
+                                                                                if att.size.is_none_or(|s| s <= 25 * 1024 * 1024) {
+                                                                                    match client.get(&att.url).send().await {
+                                                                                        Ok(resp) => {
+                                                                                            if let Ok(bytes) = resp.bytes().await {
+                                                                                                let mut media = MediaAttachment::new(mt)
+                                                                                                    .with_data(bytes.to_vec())
+                                                                                                    .with_mime_type(ct);
+                                                                                                if let Some(ref name) = att.filename {
+                                                                                                    media = media.with_filename(name);
+                                                                                                }
+                                                                                                inbound = inbound.with_media(media);
                                                                                             }
-                                                                                            inbound = inbound.with_media(media);
                                                                                         }
+                                                                                        Err(e) => warn!("Failed to download Discord attachment: {}", e),
                                                                                     }
-                                                                                    Err(e) => warn!("Failed to download Discord attachment: {}", e),
                                                                                 }
                                                                             }
                                                                         }
@@ -1810,7 +1823,7 @@ mod tests {
         assert_eq!(payload["op"], 2);
         assert_eq!(payload["d"]["token"], "my-token");
         assert_eq!(payload["d"]["intents"], GATEWAY_INTENTS);
-        assert_eq!(payload["d"]["properties"]["browser"], "zeptoclaw");
+        assert_eq!(payload["d"]["properties"]["browser"], "claide");
     }
 
     #[test]

@@ -1,4 +1,4 @@
-//! Tool registry for ZeptoClaw
+//! Tool registry for Claide
 //!
 //! This module provides the `ToolRegistry` struct for managing and executing tools.
 //! Tools can be registered, looked up by name, and executed with context.
@@ -22,7 +22,7 @@ use super::{Tool, ToolContext, ToolOutput};
 /// # Example
 ///
 /// ```rust
-/// use zeptoclaw::tools::{ToolRegistry, EchoTool};
+/// use claide::tools::{ToolRegistry, EchoTool};
 /// use serde_json::json;
 ///
 /// # tokio_test::block_on(async {
@@ -44,7 +44,7 @@ impl ToolRegistry {
     ///
     /// # Example
     /// ```
-    /// use zeptoclaw::tools::ToolRegistry;
+    /// use claide::tools::ToolRegistry;
     ///
     /// let registry = ToolRegistry::new();
     /// assert_eq!(registry.names().len(), 0);
@@ -64,7 +64,7 @@ impl ToolRegistry {
     ///
     /// # Example
     /// ```
-    /// use zeptoclaw::tools::{ToolRegistry, EchoTool};
+    /// use claide::tools::{ToolRegistry, EchoTool};
     ///
     /// let mut registry = ToolRegistry::new();
     /// registry.register(Box::new(EchoTool));
@@ -86,7 +86,7 @@ impl ToolRegistry {
     ///
     /// # Example
     /// ```
-    /// use zeptoclaw::tools::{ToolRegistry, EchoTool};
+    /// use claide::tools::{ToolRegistry, EchoTool};
     ///
     /// let mut registry = ToolRegistry::new();
     /// registry.register(Box::new(EchoTool));
@@ -111,7 +111,7 @@ impl ToolRegistry {
     ///
     /// # Example
     /// ```
-    /// use zeptoclaw::tools::{ToolRegistry, EchoTool};
+    /// use claide::tools::{ToolRegistry, EchoTool};
     /// use serde_json::json;
     ///
     /// # tokio_test::block_on(async {
@@ -141,7 +141,7 @@ impl ToolRegistry {
     ///
     /// # Example
     /// ```
-    /// use zeptoclaw::tools::{ToolRegistry, ToolContext, EchoTool};
+    /// use claide::tools::{ToolRegistry, ToolContext, EchoTool};
     /// use serde_json::json;
     ///
     /// # tokio_test::block_on(async {
@@ -199,7 +199,7 @@ impl ToolRegistry {
     ///
     /// # Example
     /// ```
-    /// use zeptoclaw::tools::{ToolRegistry, EchoTool};
+    /// use claide::tools::{ToolRegistry, EchoTool};
     ///
     /// let mut registry = ToolRegistry::new();
     /// registry.register(Box::new(EchoTool));
@@ -251,7 +251,7 @@ impl ToolRegistry {
     ///
     /// # Example
     /// ```
-    /// use zeptoclaw::tools::{ToolRegistry, EchoTool};
+    /// use claide::tools::{ToolRegistry, EchoTool};
     ///
     /// let mut registry = ToolRegistry::new();
     /// registry.register(Box::new(EchoTool));
@@ -282,7 +282,7 @@ impl ToolRegistry {
     ///
     /// # Example
     /// ```
-    /// use zeptoclaw::tools::{ToolRegistry, EchoTool};
+    /// use claide::tools::{ToolRegistry, EchoTool};
     ///
     /// let mut registry = ToolRegistry::new();
     /// registry.register(Box::new(EchoTool));
@@ -304,7 +304,7 @@ impl ToolRegistry {
     ///
     /// # Example
     /// ```
-    /// use zeptoclaw::tools::{ToolRegistry, EchoTool};
+    /// use claide::tools::{ToolRegistry, EchoTool};
     ///
     /// let mut registry = ToolRegistry::new();
     /// assert!(!registry.has("echo"));
@@ -323,7 +323,7 @@ impl ToolRegistry {
     ///
     /// # Example
     /// ```
-    /// use zeptoclaw::tools::{ToolRegistry, EchoTool};
+    /// use claide::tools::{ToolRegistry, EchoTool};
     ///
     /// let mut registry = ToolRegistry::new();
     /// assert_eq!(registry.len(), 0);
@@ -342,7 +342,7 @@ impl ToolRegistry {
     ///
     /// # Example
     /// ```
-    /// use zeptoclaw::tools::{ToolRegistry, EchoTool};
+    /// use claide::tools::{ToolRegistry, EchoTool};
     ///
     /// let mut registry = ToolRegistry::new();
     /// assert!(registry.is_empty());

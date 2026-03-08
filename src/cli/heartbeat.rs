@@ -5,9 +5,9 @@ use std::sync::Arc;
 
 use anyhow::{Context, Result};
 
-use zeptoclaw::bus::{InboundMessage, MessageBus};
-use zeptoclaw::config::Config;
-use zeptoclaw::heartbeat::{ensure_heartbeat_file, HeartbeatService, HEARTBEAT_PROMPT};
+use claide::bus::{InboundMessage, MessageBus};
+use claide::config::Config;
+use claide::heartbeat::{ensure_heartbeat_file, HeartbeatService, HEARTBEAT_PROMPT};
 
 use super::common::{create_agent, expand_tilde};
 

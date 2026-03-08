@@ -141,7 +141,7 @@ impl GeminiAuth {
 
 /// Native Gemini provider that speaks the Gemini REST API directly.
 ///
-/// Use [`GeminiProvider::from_config`] to build from the zeptoclaw config, or
+/// Use [`GeminiProvider::from_config`] to build from the claide config, or
 /// [`GeminiProvider::new_with_key`] / [`GeminiProvider::new_with_token`] for
 /// testing / manual construction.
 pub struct GeminiProvider {

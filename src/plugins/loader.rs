@@ -1,4 +1,4 @@
-//! Plugin discovery and loading for ZeptoClaw
+//! Plugin discovery and loading for Claide
 //!
 //! This module handles discovering plugin directories, loading and parsing
 //! `plugin.json` manifests, and validating manifest contents for safety
@@ -32,9 +32,9 @@ use super::types::{BinaryPluginConfig, Plugin, PluginManifest};
 ///
 /// ```no_run
 /// use std::path::PathBuf;
-/// use zeptoclaw::plugins::discover_plugins;
+/// use claide::plugins::discover_plugins;
 ///
-/// let dirs = vec![PathBuf::from("/home/user/.zeptoclaw/plugins")];
+/// let dirs = vec![PathBuf::from("/home/user/.claide/plugins")];
 /// let plugins = discover_plugins(&dirs).unwrap();
 /// for plugin in &plugins {
 ///     println!("Found plugin: {} v{}", plugin.name(), plugin.manifest.version);

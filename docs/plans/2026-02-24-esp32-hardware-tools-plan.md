@@ -1405,7 +1405,7 @@ git push -u origin HEAD
 **Step 2: Create PR**
 
 ```bash
-gh pr create --repo qhkm/zeptoclaw \
+gh pr create --repo qhkm/claide \
   --title "feat: ESP32 hardware tools — GPIO, I2C, NVS, Serial channel" \
   --body "$(cat <<'EOF'
 ## Summary

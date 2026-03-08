@@ -90,7 +90,7 @@ pub async fn import_snapshot(
     Ok((imported, skipped))
 }
 
-/// Default snapshot path: `~/.zeptoclaw/memory/snapshot.json`.
+/// Default snapshot path: `~/.claide/memory/snapshot.json`.
 pub fn default_snapshot_path() -> std::path::PathBuf {
     crate::config::Config::dir()
         .join("memory")

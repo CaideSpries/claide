@@ -1,5 +1,5 @@
 // Polls GET /api/health every 5 seconds via react-query.
-// Shape mirrors ZeptoClaw's HealthServer JSON response (src/health.rs).
+// Shape mirrors Claide's HealthServer JSON response (src/health.rs).
 
 import { useQuery } from '@tanstack/react-query'
 import { apiFetch } from '../lib/api'

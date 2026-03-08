@@ -8,9 +8,9 @@
 //! ```rust
 //! # tokio_test::block_on(async {
 //! use std::sync::Arc;
-//! use zeptoclaw::api::tasks::TaskStore;
-//! use zeptoclaw::tools::{Tool, ToolContext};
-//! use zeptoclaw::tools::task::TaskTool;
+//! use claide::api::tasks::TaskStore;
+//! use claide::tools::{Tool, ToolContext};
+//! use claide::tools::task::TaskTool;
 //! use serde_json::json;
 //!
 //! let store = Arc::new(TaskStore::new_in_memory());

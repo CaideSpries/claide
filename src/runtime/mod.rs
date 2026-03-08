@@ -1,4 +1,4 @@
-//! Container runtime module for ZeptoClaw
+//! Container runtime module for Claide
 //!
 //! This module provides container isolation for shell command execution.
 //! It supports multiple runtimes:

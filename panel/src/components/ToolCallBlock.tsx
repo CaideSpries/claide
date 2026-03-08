@@ -4,7 +4,7 @@
 // Usage:
 //   <ToolCallBlock
 //     name="web_search"
-//     args='{"query":"zeptoclaw"}'
+//     args='{"query":"claide"}'
 //     result='{"results":[...]}'
 //     duration_ms={342}
 //   />

@@ -368,9 +368,9 @@ async fn fetch_tenant_token_cached(
 ///
 /// ```ignore
 /// use std::sync::Arc;
-/// use zeptoclaw::bus::MessageBus;
-/// use zeptoclaw::config::LarkConfig;
-/// use zeptoclaw::channels::LarkChannel;
+/// use claide::bus::MessageBus;
+/// use claide::config::LarkConfig;
+/// use claide::channels::LarkChannel;
 ///
 /// let config = LarkConfig {
 ///     enabled: true,

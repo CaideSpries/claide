@@ -1,6 +1,6 @@
 //! Webhook Inbound Channel Implementation
 //!
-//! This module provides a generic HTTP webhook channel for ZeptoClaw. External
+//! This module provides a generic HTTP webhook channel for Claide. External
 //! services can POST JSON payloads to a configurable endpoint and have them
 //! published to the message bus as inbound messages.
 //!
@@ -27,7 +27,7 @@
 //! Authorization: Bearer <optional-token>
 //!
 //! {
-//!     "message": "Hello, ZeptoClaw!",
+//!     "message": "Hello, Claide!",
 //!     "sender": "external-service",
 //!     "chat_id": "webhook-chat-123"
 //! }
@@ -37,9 +37,9 @@
 //!
 //! ```ignore
 //! use std::sync::Arc;
-//! use zeptoclaw::bus::MessageBus;
-//! use zeptoclaw::channels::webhook::{WebhookChannel, WebhookChannelConfig};
-//! use zeptoclaw::channels::BaseChannelConfig;
+//! use claide::bus::MessageBus;
+//! use claide::channels::webhook::{WebhookChannel, WebhookChannelConfig};
+//! use claide::channels::BaseChannelConfig;
 //!
 //! let config = WebhookChannelConfig::default();
 //! let base_config = BaseChannelConfig::new("webhook");
@@ -142,7 +142,7 @@ struct ParsedHttpRequest {
     body: String,
 }
 
-/// Generic HTTP webhook channel for ZeptoClaw.
+/// Generic HTTP webhook channel for Claide.
 ///
 /// Accepts POST requests on a configurable path, validates an optional Bearer
 /// token, parses the JSON body, and publishes an `InboundMessage` to the
@@ -177,9 +177,9 @@ impl WebhookChannel {
     ///
     /// ```ignore
     /// use std::sync::Arc;
-    /// use zeptoclaw::bus::MessageBus;
-    /// use zeptoclaw::channels::webhook::{WebhookChannel, WebhookChannelConfig};
-    /// use zeptoclaw::channels::BaseChannelConfig;
+    /// use claide::bus::MessageBus;
+    /// use claide::channels::webhook::{WebhookChannel, WebhookChannelConfig};
+    /// use claide::channels::BaseChannelConfig;
     ///
     /// let config = WebhookChannelConfig::default();
     /// let base_config = BaseChannelConfig::new("webhook");

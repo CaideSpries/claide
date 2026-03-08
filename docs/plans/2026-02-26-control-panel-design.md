@@ -1,4 +1,4 @@
-# ZeptoClaw Control Panel — Design Document
+# Claide Control Panel — Design Document
 
 **Date:** 2026-02-26
 **Status:** Approved
@@ -6,11 +6,11 @@
 
 ## Overview
 
-A companion web dashboard for ZeptoClaw that provides real-time agent monitoring, cron/routine management, conversation viewing, kanban task board, and live agent visualization. Lives in the same repo as `panel/`, started via `zeptoclaw panel`.
+A companion web dashboard for Claide that provides real-time agent monitoring, cron/routine management, conversation viewing, kanban task board, and live agent visualization. Lives in the same repo as `panel/`, started via `claide panel`.
 
-**Audience:** ZeptoClaw users (developers)
+**Audience:** Claide users (developers)
 **Deployment:** Local web app (localhost)
-**Stack:** Vite + React + Tailwind (frontend), axum (API server in ZeptoClaw binary)
+**Stack:** Vite + React + Tailwind (frontend), axum (API server in Claide binary)
 **Data layer:** REST API + WebSocket for real-time events
 
 ## Architecture
@@ -18,11 +18,11 @@ A companion web dashboard for ZeptoClaw that provides real-time agent monitoring
 ### Monorepo Structure
 
 ```
-zeptoclaw/
+claide/
 ├── Cargo.toml
 ├── src/
 │   ├── cli/
-│   │   └── panel.rs        # `zeptoclaw panel` command handler
+│   │   └── panel.rs        # `claide panel` command handler
 │   ├── api/                 # axum API server module
 │   │   ├── mod.rs
 │   │   ├── server.rs        # axum router, static file serving, WebSocket
@@ -68,50 +68,50 @@ zeptoclaw/
 
 ```bash
 # One-command install
-zeptoclaw panel install              # build from source (requires Node.js 18+)
-zeptoclaw panel install --download   # download pre-built from GitHub releases (no Node.js)
-zeptoclaw panel install --rebuild    # force clean rebuild
+claide panel install              # build from source (requires Node.js 18+)
+claide panel install --download   # download pre-built from GitHub releases (no Node.js)
+claide panel install --rebuild    # force clean rebuild
 
 # Start
-zeptoclaw panel                      # API + serve panel/dist/
-zeptoclaw panel --dev                # API only, user runs pnpm dev separately
-zeptoclaw panel --api-only           # headless API server
-zeptoclaw panel --port 3000          # custom panel port
-zeptoclaw panel --api-port 9091      # custom API port
-zeptoclaw panel --bind 0.0.0.0      # external bind (requires TLS)
+claide panel                      # API + serve panel/dist/
+claide panel --dev                # API only, user runs pnpm dev separately
+claide panel --api-only           # headless API server
+claide panel --port 3000          # custom panel port
+claide panel --api-port 9091      # custom API port
+claide panel --bind 0.0.0.0      # external bind (requires TLS)
 
 # Auth management
-zeptoclaw panel auth mode password   # switch to password login
-zeptoclaw panel auth mode token      # switch to token-only
-zeptoclaw panel auth mode none       # disable auth
-zeptoclaw panel auth reset-password  # reset password
-zeptoclaw panel auth status          # show current mode
+claide panel auth mode password   # switch to password login
+claide panel auth mode token      # switch to token-only
+claide panel auth mode none       # disable auth
+claide panel auth reset-password  # reset password
+claide panel auth status          # show current mode
 
 # Maintenance
-zeptoclaw panel --rotate-token       # regenerate API token
-zeptoclaw panel uninstall            # remove node_modules + dist + token
+claide panel --rotate-token       # regenerate API token
+claide panel uninstall            # remove node_modules + dist + token
 ```
 
 ### Install Flow
 
-`zeptoclaw panel install` performs:
+`claide panel install` performs:
 
 1. Check `node` >= 18 on PATH (error with install link if missing)
 2. Check `pnpm` (install via `corepack enable pnpm` if missing)
 3. `pnpm install --dir panel/`
 4. `pnpm --dir panel build` (outputs to `panel/dist/`)
-5. Generate random 32-byte hex API token -> `~/.zeptoclaw/panel.token`
+5. Generate random 32-byte hex API token -> `~/.claide/panel.token`
 6. Interactive auth setup prompt (token / password / skip)
 7. Print success message
 
 For crates.io installs (`--download`):
 - Fetch pre-built `panel-dist.tar.gz` from GitHub release matching binary version
-- Extract to `~/.zeptoclaw/panel/dist/`
+- Extract to `~/.claide/panel/dist/`
 - No Node.js required
 
 Panel location resolution order:
 1. `./panel/dist/` (repo checkout)
-2. `~/.zeptoclaw/panel/dist/` (downloaded)
+2. `~/.claide/panel/dist/` (downloaded)
 3. Error with install instructions
 
 ## API Design
@@ -168,7 +168,7 @@ WS   /ws/events                 # real-time event stream
 
 ### Kanban Task Model
 
-New data model persisted at `~/.zeptoclaw/tasks.json`:
+New data model persisted at `~/.claide/tasks.json`:
 
 ```json
 {
@@ -250,15 +250,15 @@ Agent access: new `TaskTool` in `src/tools/` exposes create/update/move/list act
 | `password` | Yes | Issued after login | Shared network, Tailscale |
 | `none` | No | No | Trusted LAN, quick testing |
 
-**Token mode:** API token from `~/.zeptoclaw/panel.token`, injected via one-time httpOnly cookie (5s expiry).
+**Token mode:** API token from `~/.claide/panel.token`, injected via one-time httpOnly cookie (5s expiry).
 
 **Password mode:**
 - Login page at `/login`
-- Bcrypt hash stored in `~/.zeptoclaw/panel.auth`
+- Bcrypt hash stored in `~/.claide/panel.auth`
 - JWT (HS256, 24h expiry) issued on success, stored as httpOnly cookie
 - 5 failed attempts -> 60s lockout
 
-**Auth file** (`~/.zeptoclaw/panel.auth`, chmod 600):
+**Auth file** (`~/.claide/panel.auth`, chmod 600):
 ```json
 {
   "username": "admin",
@@ -306,12 +306,12 @@ Agent access: new `TaskTool` in `src/tools/` exposes create/update/move/list act
 }
 ```
 
-## What Changes in ZeptoClaw Core
+## What Changes in Claide Core
 
 1. **New module: `src/api/`** — axum server with routes, auth middleware, WebSocket
 2. **New module: `src/cli/panel.rs`** — `panel` command (install, start, auth subcommands)
 3. **New tool: `src/tools/task.rs`** — TaskTool for kanban CRUD (agent-accessible)
-4. **New data: `~/.zeptoclaw/tasks.json`** — kanban task persistence
+4. **New data: `~/.claide/tasks.json`** — kanban task persistence
 5. **Event bus: `src/bus/`** — tokio::broadcast channel for agent loop events -> WebSocket
 6. **Agent loop instrumentation** — emit events to bus (tool start/done/fail, agent start/done)
 7. **New deps in Cargo.toml:** `axum`, `tower-http` (cors, static files), `jsonwebtoken`, `bcrypt`

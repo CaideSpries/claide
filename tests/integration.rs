@@ -7,8 +7,8 @@
 use async_trait::async_trait;
 use std::sync::Arc;
 use tempfile::tempdir;
-use zeptoclaw::error::ZeptoError;
-use zeptoclaw::{
+use claide::error::ZeptoError;
+use claide::{
     bus::{InboundMessage, MessageBus, OutboundMessage},
     config::{Config, MemoryBackend, MemoryCitationsMode},
     heartbeat::{HeartbeatService, HEARTBEAT_PROMPT},
@@ -49,7 +49,7 @@ impl LLMProvider for AlwaysFailProvider {
         _tools: Vec<ToolDefinition>,
         _model: Option<&str>,
         _options: ChatOptions,
-    ) -> zeptoclaw::error::Result<LLMResponse> {
+    ) -> claide::error::Result<LLMResponse> {
         Err(ZeptoError::Provider(
             "simulated primary failure".to_string(),
         ))
@@ -72,7 +72,7 @@ impl LLMProvider for StaticSuccessProvider {
         _tools: Vec<ToolDefinition>,
         _model: Option<&str>,
         _options: ChatOptions,
-    ) -> zeptoclaw::error::Result<LLMResponse> {
+    ) -> claide::error::Result<LLMResponse> {
         Ok(LLMResponse::text(self.response))
     }
 }
@@ -208,7 +208,7 @@ async fn test_tool_execution_with_context() {
 
 #[test]
 fn test_model_switch_end_to_end_parsing() {
-    use zeptoclaw::channels::model_switch::*;
+    use claide::channels::model_switch::*;
 
     assert!(parse_model_command("hello").is_none());
     assert_eq!(parse_model_command("/model"), Some(ModelCommand::Show));
@@ -230,7 +230,7 @@ fn test_model_switch_end_to_end_parsing() {
 
 #[test]
 fn test_model_list_format() {
-    use zeptoclaw::channels::model_switch::*;
+    use claide::channels::model_switch::*;
 
     let configured = vec!["anthropic".to_string(), "groq".to_string()];
     let output = format_model_list(&configured, None, &[]);
@@ -304,10 +304,10 @@ async fn test_session_full_conversation() {
     // Load and verify
     let loaded = manager.get_or_create("telegram:chat123").await.unwrap();
     assert_eq!(loaded.messages.len(), 4);
-    assert_eq!(loaded.messages[0].role, zeptoclaw::session::Role::System);
-    assert_eq!(loaded.messages[1].role, zeptoclaw::session::Role::User);
-    assert_eq!(loaded.messages[2].role, zeptoclaw::session::Role::Assistant);
-    assert_eq!(loaded.messages[3].role, zeptoclaw::session::Role::User);
+    assert_eq!(loaded.messages[0].role, claide::session::Role::System);
+    assert_eq!(loaded.messages[1].role, claide::session::Role::User);
+    assert_eq!(loaded.messages[2].role, claide::session::Role::Assistant);
+    assert_eq!(loaded.messages[3].role, claide::session::Role::User);
 }
 
 #[tokio::test]
@@ -320,7 +320,7 @@ async fn test_session_with_tool_calls() {
 
     // Assistant with tool call
     let tool_call =
-        zeptoclaw::session::ToolCall::new("call_1", "echo", r#"{"message": "Hello World"}"#);
+        claide::session::ToolCall::new("call_1", "echo", r#"{"message": "Hello World"}"#);
     session.add_message(Message::assistant_with_tools(
         "Let me echo that.",
         vec![tool_call],
@@ -734,7 +734,7 @@ fn test_skills_loader_workspace_override_and_filter_unavailable() {
     .unwrap();
     std::fs::write(
         builtin.join("needs_env/SKILL.md"),
-        "---\nname: needs_env\ndescription: Needs env var\nmetadata: {\"zeptoclaw\":{\"requires\":{\"env\":[\"ZEPTOCLAW_INTEGRATION_TEST_MISSING_ENV_2B9F2E16\"]}}}\n---\n# Needs Env",
+        "---\nname: needs_env\ndescription: Needs env var\nmetadata: {\"claide\":{\"requires\":{\"env\":[\"CLAIDE_INTEGRATION_TEST_MISSING_ENV_2B9F2E16\"]}}}\n---\n# Needs Env",
     )
     .unwrap();
 
@@ -842,7 +842,7 @@ async fn test_tool_call_flow() {
 
     // Simulate LLM deciding to call a tool
     let tool_call =
-        zeptoclaw::session::ToolCall::new("call_001", "echo", r#"{"message": "Test message"}"#);
+        claide::session::ToolCall::new("call_001", "echo", r#"{"message": "Test message"}"#);
     session.add_message(Message::assistant_with_tools(
         "I'll echo that for you.",
         vec![tool_call.clone()],
@@ -1014,8 +1014,8 @@ async fn test_shell_permissive_mode() {
 
 #[tokio::test]
 async fn test_runtime_factory_native() {
-    use zeptoclaw::config::RuntimeConfig;
-    use zeptoclaw::runtime::create_runtime;
+    use claide::config::RuntimeConfig;
+    use claide::runtime::create_runtime;
 
     let config = RuntimeConfig::default();
     let runtime = create_runtime(&config).await.unwrap();
@@ -1026,7 +1026,7 @@ async fn test_runtime_factory_native() {
 async fn test_cron_scheduling_dispatches_message() {
     use chrono::Utc;
     use tokio::time::{timeout, Duration};
-    use zeptoclaw::cron::{CronPayload, CronSchedule, CronService, OnMiss};
+    use claide::cron::{CronPayload, CronSchedule, CronService, OnMiss};
 
     let root = tempdir().unwrap();
     let bus = Arc::new(MessageBus::new());
@@ -1130,7 +1130,7 @@ async fn test_heartbeat_trigger_now_skips_non_actionable_content() {
 
 #[tokio::test]
 async fn test_available_runtimes_includes_native() {
-    use zeptoclaw::runtime::available_runtimes;
+    use claide::runtime::available_runtimes;
 
     let runtimes = available_runtimes().await;
     assert!(runtimes.contains(&"native"));
@@ -1139,9 +1139,9 @@ async fn test_available_runtimes_includes_native() {
 #[tokio::test]
 async fn test_shell_tool_with_native_runtime() {
     use std::sync::Arc;
-    use zeptoclaw::runtime::NativeRuntime;
-    use zeptoclaw::tools::shell::ShellTool;
-    use zeptoclaw::tools::{Tool, ToolContext};
+    use claide::runtime::NativeRuntime;
+    use claide::tools::shell::ShellTool;
+    use claide::tools::{Tool, ToolContext};
 
     let runtime = Arc::new(NativeRuntime::new());
     let tool = ShellTool::with_runtime(runtime);
@@ -1159,9 +1159,9 @@ async fn test_shell_tool_with_native_runtime() {
 async fn test_shell_tool_runtime_with_workspace() {
     use std::sync::Arc;
     use tempfile::tempdir;
-    use zeptoclaw::runtime::NativeRuntime;
-    use zeptoclaw::tools::shell::ShellTool;
-    use zeptoclaw::tools::{Tool, ToolContext};
+    use claide::runtime::NativeRuntime;
+    use claide::tools::shell::ShellTool;
+    use claide::tools::{Tool, ToolContext};
 
     let dir = tempdir().unwrap();
     std::fs::write(dir.path().join("test.txt"), "content").unwrap();
@@ -1180,7 +1180,7 @@ async fn test_shell_tool_runtime_with_workspace() {
 
 #[tokio::test]
 async fn test_config_runtime_serialization() {
-    use zeptoclaw::config::{RuntimeConfig, RuntimeType};
+    use claide::config::{RuntimeConfig, RuntimeType};
 
     let mut config = RuntimeConfig::default();
     config.runtime_type = RuntimeType::Docker;
@@ -1203,14 +1203,14 @@ async fn test_config_runtime_serialization() {
 fn test_container_agent_config_deserialization() {
     let json = r#"{
         "container_agent": {
-            "image": "zeptoclaw:custom",
+            "image": "claide:custom",
             "memory_limit": "2g",
             "timeout_secs": 600
         }
     }"#;
 
     let config: Config = serde_json::from_str(json).unwrap();
-    assert_eq!(config.container_agent.image, "zeptoclaw:custom");
+    assert_eq!(config.container_agent.image, "claide:custom");
     assert_eq!(config.container_agent.memory_limit, Some("2g".to_string()));
     assert_eq!(config.container_agent.timeout_secs, 600);
     // Defaults should still be set
@@ -1223,7 +1223,7 @@ fn test_container_agent_config_deserialization() {
 #[test]
 fn test_container_agent_config_defaults() {
     let config = Config::default();
-    assert_eq!(config.container_agent.image, "zeptoclaw:latest");
+    assert_eq!(config.container_agent.image, "claide:latest");
     assert_eq!(config.container_agent.memory_limit, Some("1g".to_string()));
     assert_eq!(config.container_agent.docker_binary, None);
     assert_eq!(config.container_agent.cpu_limit, Some("2.0".to_string()));
@@ -1233,7 +1233,7 @@ fn test_container_agent_config_defaults() {
 
 #[test]
 fn test_ipc_response_markers() {
-    use zeptoclaw::gateway::{parse_marked_response, AgentResponse, AgentResult};
+    use claide::gateway::{parse_marked_response, AgentResponse, AgentResult};
 
     let response = AgentResponse::success("req-123", "Hello!", None);
     let marked = response.to_marked_json();
@@ -1254,7 +1254,7 @@ fn test_ipc_response_markers() {
 
 #[test]
 fn test_ipc_error_response_roundtrip() {
-    use zeptoclaw::gateway::{parse_marked_response, AgentResponse, AgentResult};
+    use claide::gateway::{parse_marked_response, AgentResponse, AgentResult};
 
     let response = AgentResponse::error("req-err", "Timeout exceeded", "TIMEOUT");
     let marked = response.to_marked_json();
@@ -1272,7 +1272,7 @@ fn test_ipc_error_response_roundtrip() {
 
 #[test]
 fn test_ipc_parse_with_noisy_stdout() {
-    use zeptoclaw::gateway::{parse_marked_response, AgentResponse};
+    use claide::gateway::{parse_marked_response, AgentResponse};
 
     let response = AgentResponse::success("noisy-req", "Result", None);
     let marked = response.to_marked_json();
@@ -1287,7 +1287,7 @@ fn test_ipc_parse_with_noisy_stdout() {
 
 #[test]
 fn test_ipc_parse_missing_markers_returns_none() {
-    use zeptoclaw::gateway::parse_marked_response;
+    use claide::gateway::parse_marked_response;
 
     assert!(parse_marked_response("no markers here").is_none());
     assert!(parse_marked_response(
@@ -1298,7 +1298,7 @@ fn test_ipc_parse_missing_markers_returns_none() {
 
 #[test]
 fn test_container_agent_proxy_creation() {
-    use zeptoclaw::gateway::{ContainerAgentProxy, ResolvedBackend};
+    use claide::gateway::{ContainerAgentProxy, ResolvedBackend};
 
     let config = Config::default();
     let bus = Arc::new(MessageBus::new());
@@ -1308,7 +1308,7 @@ fn test_container_agent_proxy_creation() {
 
 #[test]
 fn test_agent_request_serialization() {
-    use zeptoclaw::gateway::AgentRequest;
+    use claide::gateway::AgentRequest;
 
     let request = AgentRequest {
         request_id: "test-req".to_string(),
@@ -1327,8 +1327,8 @@ fn test_agent_request_serialization() {
 
 #[test]
 fn test_agent_request_validation_rejects_mismatched_session_key() {
-    use zeptoclaw::gateway::AgentRequest;
-    use zeptoclaw::session::Session;
+    use claide::gateway::AgentRequest;
+    use claide::session::Session;
 
     let request = AgentRequest {
         request_id: "test-req-2".to_string(),
@@ -1346,12 +1346,12 @@ fn test_agent_request_validation_rejects_mismatched_session_key() {
 
 #[tokio::test]
 async fn test_delegate_tool_recursion_blocking() {
-    use zeptoclaw::providers::ClaudeProvider;
-    use zeptoclaw::tools::delegate::DelegateTool;
+    use claide::providers::ClaudeProvider;
+    use claide::tools::delegate::DelegateTool;
 
     let config = Config::default();
     let bus = Arc::new(MessageBus::new());
-    let provider: Arc<dyn zeptoclaw::providers::LLMProvider> =
+    let provider: Arc<dyn claide::providers::LLMProvider> =
         Arc::new(ClaudeProvider::new("fake-key"));
 
     let tool = DelegateTool::new(config, provider, bus);
@@ -1367,13 +1367,13 @@ async fn test_delegate_tool_recursion_blocking() {
 
 #[tokio::test]
 async fn test_delegate_tool_disabled_config() {
-    use zeptoclaw::providers::ClaudeProvider;
-    use zeptoclaw::tools::delegate::DelegateTool;
+    use claide::providers::ClaudeProvider;
+    use claide::tools::delegate::DelegateTool;
 
     let mut config = Config::default();
     config.swarm.enabled = false;
     let bus = Arc::new(MessageBus::new());
-    let provider: Arc<dyn zeptoclaw::providers::LLMProvider> =
+    let provider: Arc<dyn claide::providers::LLMProvider> =
         Arc::new(ClaudeProvider::new("fake-key"));
 
     let tool = DelegateTool::new(config, provider, bus);
@@ -1387,12 +1387,12 @@ async fn test_delegate_tool_disabled_config() {
 
 #[tokio::test]
 async fn test_delegate_tool_missing_args() {
-    use zeptoclaw::providers::ClaudeProvider;
-    use zeptoclaw::tools::delegate::DelegateTool;
+    use claide::providers::ClaudeProvider;
+    use claide::tools::delegate::DelegateTool;
 
     let config = Config::default();
     let bus = Arc::new(MessageBus::new());
-    let provider: Arc<dyn zeptoclaw::providers::LLMProvider> =
+    let provider: Arc<dyn claide::providers::LLMProvider> =
         Arc::new(ClaudeProvider::new("fake-key"));
 
     let tool = DelegateTool::new(config, provider, bus);
@@ -1417,12 +1417,12 @@ async fn test_delegate_tool_missing_args() {
 
 #[tokio::test]
 async fn test_delegate_tool_in_registry() {
-    use zeptoclaw::providers::ClaudeProvider;
-    use zeptoclaw::tools::delegate::DelegateTool;
+    use claide::providers::ClaudeProvider;
+    use claide::tools::delegate::DelegateTool;
 
     let config = Config::default();
     let bus = Arc::new(MessageBus::new());
-    let provider: Arc<dyn zeptoclaw::providers::LLMProvider> =
+    let provider: Arc<dyn claide::providers::LLMProvider> =
         Arc::new(ClaudeProvider::new("fake-key"));
 
     let mut registry = ToolRegistry::new();
@@ -1457,7 +1457,7 @@ async fn test_agent_loop_streaming_accessors() {
     let config = Config::default();
     let session_manager = SessionManager::new_memory();
     let bus = Arc::new(MessageBus::new());
-    let agent = zeptoclaw::agent::AgentLoop::new(config, session_manager, bus);
+    let agent = claide::agent::AgentLoop::new(config, session_manager, bus);
 
     assert!(!agent.is_streaming());
     agent.set_streaming(true);

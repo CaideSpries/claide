@@ -5,10 +5,10 @@ set -e
 if [ "$(id -u)" = '0' ]; then
     # Ensure data directory exists and has correct ownership
     mkdir -p /data
-    chown -R zeptoclaw:zeptoclaw /data
+    chown -R claide:claide /data
 
-    # Drop to zeptoclaw user and execute command
-    exec gosu zeptoclaw "$@"
+    # Drop to claide user and execute command
+    exec gosu claide "$@"
 fi
 
 exec "$@"

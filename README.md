@@ -1,25 +1,25 @@
 <p align="center">
-  <img src="assets/mascot-no-bg.png" width="200" alt="Zippy — ZeptoClaw mascot">
+  <img src="assets/mascot-no-bg.png" width="200" alt="Zippy — Claide mascot">
 </p>
-<h1 align="center">ZeptoClaw</h1>
+<h1 align="center">Claide</h1>
 <p align="center">
   <strong>Ultra-lightweight personal AI assistant.</strong>
 </p>
 <p align="center">
-  <a href="https://zeptoclaw.com/docs/"><img src="https://img.shields.io/badge/docs-zeptoclaw.com-3b82f6?style=for-the-badge&logo=bookstack&logoColor=white" alt="Documentation"></a>
+  <a href="https://claide.com/docs/"><img src="https://img.shields.io/badge/docs-claide.com-3b82f6?style=for-the-badge&logo=bookstack&logoColor=white" alt="Documentation"></a>
 </p>
 <p align="center">
-  <a href="https://github.com/qhkm/zeptoclaw/actions/workflows/ci.yml"><img src="https://github.com/qhkm/zeptoclaw/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
-  <a href="https://github.com/qhkm/zeptoclaw/releases/latest"><img src="https://img.shields.io/github/v/release/qhkm/zeptoclaw?color=blue" alt="Release"></a>
+  <a href="https://github.com/qhkm/claide/actions/workflows/ci.yml"><img src="https://github.com/qhkm/claide/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://github.com/qhkm/claide/releases/latest"><img src="https://img.shields.io/github/v/release/qhkm/claide?color=blue" alt="Release"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-blue" alt="License"></a>
 </p>
 
 ---
 
 ```
-$ zeptoclaw agent --stream -m "Analyze our API for security issues"
+$ claide agent --stream -m "Analyze our API for security issues"
 
-🤖 ZeptoClaw — Streaming analysis...
+🤖 Claide — Streaming analysis...
 
   [web_fetch]        Fetching API docs...
   [shell]            Running integration tests...
@@ -41,19 +41,19 @@ We studied the best AI assistants — and their tradeoffs. OpenClaw's integratio
   <img src="https://img.shields.io/badge/providers-9-3b82f6" alt="9 providers">
 </p>
 
-## Why ZeptoClaw
+## Why Claide
 
 We studied what works — and what doesn't.
 
 **OpenClaw** proved an AI assistant can handle 12 channels and 100+ skills. But it costs 100MB and 400K lines. **NanoClaw** proved security-first is possible. But it's still 50MB of TypeScript. **PicoClaw** proved AI assistants can run on $10 hardware. But it stripped out everything to get there.
 
-**ZeptoClaw** took notes. The integrations, the security, the size discipline — without the tradeoffs each one made. One 6MB Rust binary that starts in 50ms, uses 6MB of RAM, and ships with container isolation, prompt injection detection, and a circuit breaker provider stack.
+**Claide** took notes. The integrations, the security, the size discipline — without the tradeoffs each one made. One 6MB Rust binary that starts in 50ms, uses 6MB of RAM, and ships with container isolation, prompt injection detection, and a circuit breaker provider stack.
 
 ## Security
 
 AI agents execute code. Most frameworks trust that nothing will go wrong.
 
-The OpenClaw ecosystem has seen CVE-2026-25253 (CVSS 8.8 — cross-site WebSocket hijacking to RCE), ClawHavoc (341 malicious skills, 9,000+ compromised installations), and 42,000 exposed instances with auth bypass. ZeptoClaw was built with this threat model in mind.
+The OpenClaw ecosystem has seen CVE-2026-25253 (CVSS 8.8 — cross-site WebSocket hijacking to RCE), ClawHavoc (341 malicious skills, 9,000+ compromised installations), and 42,000 exposed instances with auth bypass. Claide was built with this threat model in mind.
 
 | Layer | What it does |
 |-------|-------------|
@@ -73,65 +73,65 @@ Every layer runs by default. No flags to remember, no config to enable.
 
 ```bash
 # One-liner (macOS / Linux)
-curl -fsSL https://raw.githubusercontent.com/qhkm/zeptoclaw/main/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/qhkm/claide/main/install.sh | sh
 
 # Homebrew
-brew install qhkm/tap/zeptoclaw
+brew install qhkm/tap/claide
 
 # Docker
-docker pull ghcr.io/qhkm/zeptoclaw:latest
+docker pull ghcr.io/qhkm/claide:latest
 
 # Build from source
-cargo install zeptoclaw --git https://github.com/qhkm/zeptoclaw
+cargo install claide --git https://github.com/qhkm/claide
 ```
 
 ## Quick Start
 
 ```bash
 # Interactive setup (walks you through API keys, channels, workspace)
-zeptoclaw onboard
+claide onboard
 
 # Talk to your agent
-zeptoclaw agent -m "Hello, set up my workspace"
+claide agent -m "Hello, set up my workspace"
 
 # Stream responses token-by-token
-zeptoclaw agent --stream -m "Explain async Rust"
+claide agent --stream -m "Explain async Rust"
 
 # Use a built-in template
-zeptoclaw agent --template researcher -m "Search for Rust agent frameworks"
+claide agent --template researcher -m "Search for Rust agent frameworks"
 
 # Process prompts in batch
-zeptoclaw batch --input prompts.txt --output results.jsonl
+claide batch --input prompts.txt --output results.jsonl
 
 # Start as a Telegram/Slack/Discord/Webhook gateway
-zeptoclaw gateway
+claide gateway
 
 # With full container isolation per request
-zeptoclaw gateway --containerized
+claide gateway --containerized
 ```
 
 ## Migrate from OpenClaw
 
-Already running OpenClaw? ZeptoClaw can import your config and skills in one command.
+Already running OpenClaw? Claide can import your config and skills in one command.
 
 ```bash
 # Auto-detect OpenClaw installation (~/.openclaw, ~/.clawdbot, ~/.moldbot)
-zeptoclaw migrate
+claide migrate
 
 # Specify path manually
-zeptoclaw migrate --from /path/to/openclaw
+claide migrate --from /path/to/openclaw
 
 # Preview what would be migrated (no files written)
-zeptoclaw migrate --dry-run
+claide migrate --dry-run
 
 # Non-interactive (skip confirmation prompts)
-zeptoclaw migrate --yes
+claide migrate --yes
 ```
 
 The migration command:
 - Converts provider API keys, model settings, and channel configs
-- Copies skills to `~/.zeptoclaw/skills/`
-- Backs up your existing ZeptoClaw config before overwriting
+- Copies skills to `~/.claide/skills/`
+- Backs up your existing Claide config before overwriting
 - Validates the migrated config and reports any issues
 - Lists features that can't be automatically ported
 
@@ -140,23 +140,23 @@ Supports JSON and JSON5 config files (comments, trailing commas, unquoted keys).
 ## Deploy
 
 <p align="center">
-  <a href="https://cloud.digitalocean.com/apps/new?repo=https://github.com/qhkm/zeptoclaw/tree/main"><img src="https://img.shields.io/badge/DigitalOcean-0080FF?style=for-the-badge&logo=digitalocean&logoColor=white" alt="Deploy to DigitalOcean"></a>
-  <a href="https://railway.com/deploy?template=https://github.com/qhkm/zeptoclaw"><img src="https://img.shields.io/badge/Railway-0B0D0E?style=for-the-badge&logo=railway&logoColor=white" alt="Deploy to Railway"></a>
-  <a href="https://render.com/deploy?repo=https://github.com/qhkm/zeptoclaw"><img src="https://img.shields.io/badge/Render-46E3B7?style=for-the-badge&logo=render&logoColor=white" alt="Deploy to Render"></a>
+  <a href="https://cloud.digitalocean.com/apps/new?repo=https://github.com/qhkm/claide/tree/main"><img src="https://img.shields.io/badge/DigitalOcean-0080FF?style=for-the-badge&logo=digitalocean&logoColor=white" alt="Deploy to DigitalOcean"></a>
+  <a href="https://railway.com/deploy?template=https://github.com/qhkm/claide"><img src="https://img.shields.io/badge/Railway-0B0D0E?style=for-the-badge&logo=railway&logoColor=white" alt="Deploy to Railway"></a>
+  <a href="https://render.com/deploy?repo=https://github.com/qhkm/claide"><img src="https://img.shields.io/badge/Render-46E3B7?style=for-the-badge&logo=render&logoColor=white" alt="Deploy to Render"></a>
   <a href="https://fly.io/docs/hands-on/"><img src="https://img.shields.io/badge/Fly.io-6E42C1?style=for-the-badge&logo=fly.io&logoColor=white" alt="Deploy to Fly.io"></a>
 </p>
 
 ### Any VPS
 
 ```bash
-curl -fsSL https://zeptoclaw.com/setup.sh | bash
+curl -fsSL https://claide.com/setup.sh | bash
 ```
 
-Installs the binary and prints next steps. Run `zeptoclaw onboard` to configure providers and channels.
+Installs the binary and prints next steps. Run `claide onboard` to configure providers and channels.
 
 ## Providers
 
-ZeptoClaw supports 9 LLM providers. All OpenAI-compatible endpoints work out of the box.
+Claide supports 9 LLM providers. All OpenAI-compatible endpoints work out of the box.
 
 | Provider | Config key | Setup |
 |----------|------------|-------|
@@ -170,7 +170,7 @@ ZeptoClaw supports 9 LLM providers. All OpenAI-compatible endpoints work out of 
 | **NVIDIA NIM** | `nvidia` | `api_key` |
 | **Zhipu (GLM)** | `zhipu` | `api_key` |
 
-Configure in `~/.zeptoclaw/config.json` or via environment variables:
+Configure in `~/.claide/config.json` or via environment variables:
 
 ```json
 {
@@ -183,10 +183,10 @@ Configure in `~/.zeptoclaw/config.json` or via environment variables:
 ```
 
 ```bash
-export ZEPTOCLAW_PROVIDERS_GROQ_API_KEY=gsk_...
+export CLAIDE_PROVIDERS_GROQ_API_KEY=gsk_...
 ```
 
-Any provider's base URL can be overridden with `api_base` for proxies or self-hosted endpoints. See the [provider docs](https://zeptoclaw.com/docs/concepts/providers/) for full details.
+Any provider's base URL can be overridden with `api_base` for proxies or self-hosted endpoints. See the [provider docs](https://claide.com/docs/concepts/providers/) for full details.
 
 ## Features
 
@@ -208,7 +208,7 @@ Any provider's base URL can be overridden with `api_base` for proxies or self-ho
 |---------|-------------|
 | **9-Channel Gateway** | Telegram, Slack, Discord, WhatsApp (bridge + Cloud), Lark, Email, Webhook, Serial — unified message bus |
 | **Persona System** | Per-chat personality switching via `/persona` command with LTM persistence |
-| **Plugin System** | JSON manifest plugins auto-discovered from `~/.zeptoclaw/plugins/` |
+| **Plugin System** | JSON manifest plugins auto-discovered from `~/.claide/plugins/` |
 | **Hooks** | `before_tool`, `after_tool`, `on_error` with Log, Block, and Notify actions |
 | **Cron & Heartbeat** | Schedule recurring tasks, proactive check-ins, background spawning |
 | **Memory & History** | Workspace memory, long-term key-value store, conversation history |
@@ -226,7 +226,7 @@ Any provider's base URL can be overridden with `api_base` for proxies or self-ho
 | **Token Budget & Cost** | Per-session budget enforcement, per-model cost estimation for 8 models |
 | **Rich Health Endpoint** | `/health` with version, uptime, RSS, usage metrics, component checks |
 | **Telemetry** | Prometheus + JSON metrics export, structured logging, per-tenant tracing |
-| **Self-Update** | `zeptoclaw update` downloads latest release from GitHub |
+| **Self-Update** | `claide update` downloads latest release from GitHub |
 | **Loop Guard** | SHA256 tool-call repetition detection with circuit-breaker stop |
 | **Context Trimming** | Normal/emergency/critical compaction tiers (70%/90%/95%) for context window management |
 | **Session Repair** | Auto-fixes orphan tool results, empty/duplicate messages, and alternation issues |
@@ -234,48 +234,48 @@ Any provider's base URL can be overridden with `api_base` for proxies or self-ho
 | **Hands-Lite** | `HAND.toml` agent profiles with bundled presets (researcher, coder, monitor) and `hand` CLI |
 | **Multi-Tenant** | Hundreds of tenants on one VPS — isolated workspaces, ~6MB RAM each |
 
-> **Full documentation** — [zeptoclaw.com/docs](https://zeptoclaw.com/docs/) covers configuration, environment variables, CLI reference, deployment guides, and more.
+> **Full documentation** — [claide.com/docs](https://claide.com/docs/) covers configuration, environment variables, CLI reference, deployment guides, and more.
 
 ## Inspired By
 
-ZeptoClaw is inspired by projects in the open-source AI agent ecosystem — OpenClaw, NanoClaw, and PicoClaw — each taking a different approach to the same problem. ZeptoClaw's contribution is Rust's memory safety, async performance, and container isolation for production multi-tenant deployments.
+Claide is inspired by projects in the open-source AI agent ecosystem — OpenClaw, NanoClaw, and PicoClaw — each taking a different approach to the same problem. Claide's contribution is Rust's memory safety, async performance, and container isolation for production multi-tenant deployments.
 
 ## Usage
 
 ```bash
 # CLI agent (one-shot)
-zeptoclaw agent -m "Summarize this repo"
+claide agent -m "Summarize this repo"
 
 # Streaming output
-zeptoclaw agent --stream -m "Explain async Rust"
+claide agent --stream -m "Explain async Rust"
 
 # Use a template (researcher, coder, task-manager, etc.)
-zeptoclaw agent --template coder -m "Add error handling to main.rs"
+claide agent --template coder -m "Add error handling to main.rs"
 
 # Batch process prompts from a file
-zeptoclaw batch --input prompts.txt --output results.jsonl --format jsonl
+claide batch --input prompts.txt --output results.jsonl --format jsonl
 
 # Run as a multi-channel gateway (Telegram, Slack, Discord, etc.)
-zeptoclaw gateway
+claide gateway
 
 # With container isolation per request
-zeptoclaw gateway --containerized
+claide gateway --containerized
 
 # Manage long-term memory
-zeptoclaw memory set project:name "ZeptoClaw" --category project
-zeptoclaw memory search "project"
+claide memory set project:name "Claide" --category project
+claide memory search "project"
 
 # Self-update to latest release
-zeptoclaw update
+claide update
 
 # Encrypt secrets in config
-zeptoclaw secrets encrypt
+claide secrets encrypt
 
 # Manage agent hands (profiles)
-zeptoclaw hand list
-zeptoclaw hand activate researcher
-zeptoclaw hand deactivate
-zeptoclaw hand status
+claide hand list
+claide hand activate researcher
+claide hand deactivate
+claide hand status
 ```
 
 ## Development
@@ -309,12 +309,12 @@ Apache 2.0 — see [LICENSE](LICENSE)
 
 ## Disclaimer
 
-ZeptoClaw is a pure open-source software project. It has no token, no cryptocurrency, no blockchain component, and no financial instrument of any kind. This project is not affiliated with any token or financial product.
+Claide is a pure open-source software project. It has no token, no cryptocurrency, no blockchain component, and no financial instrument of any kind. This project is not affiliated with any token or financial product.
 
 ---
 
 <p align="center">
-  <em>ZeptoClaw — Because your AI assistant shouldn't need more RAM than your text editor.</em>
+  <em>Claide — Because your AI assistant shouldn't need more RAM than your text editor.</em>
 </p>
 <p align="center">
   Built by <a href="https://github.com/qhkm">Aisar Labs</a>

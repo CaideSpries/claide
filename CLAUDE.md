@@ -1,4 +1,4 @@
-# ZeptoClaw
+# Claide
 
 Ultra-lightweight personal AI assistant. The best of OpenClaw's integrations, NanoClaw's security, and PicoClaw's minimalism — without their tradeoffs.
 
@@ -27,16 +27,16 @@ cargo fmt
 # lib: 2956, main: 92, cli_smoke: 23, e2e: 13, integration: 70, doc: 126 passed (27 ignored)
 
 # Version
-./target/release/zeptoclaw --version
+./target/release/claide --version
 
 # Run agent
-./target/release/zeptoclaw agent -m "Hello"
+./target/release/claide agent -m "Hello"
 
 # Run agent with streaming
-./target/release/zeptoclaw agent -m "Hello" --stream
+./target/release/claide agent -m "Hello" --stream
 
 # Run gateway (Telegram bot)
-./target/release/zeptoclaw gateway
+./target/release/claide gateway
 
 # Telegram model switching (in chat)
 /model
@@ -52,69 +52,69 @@ cargo fmt
 /persona reset        # clear per-chat override
 
 # Run gateway with container isolation
-./target/release/zeptoclaw gateway --containerized          # auto-detect
-./target/release/zeptoclaw gateway --containerized docker   # force Docker
-./target/release/zeptoclaw gateway --containerized apple    # force Apple Container (macOS)
+./target/release/claide gateway --containerized          # auto-detect
+./target/release/claide gateway --containerized docker   # force Docker
+./target/release/claide gateway --containerized apple    # force Apple Container (macOS)
 
 # Validate configuration
-./target/release/zeptoclaw config check
+./target/release/claide config check
 
 # Heartbeat and skills
-./target/release/zeptoclaw heartbeat --show
-./target/release/zeptoclaw skills list
+./target/release/claide heartbeat --show
+./target/release/claide skills list
 
 # Conversation history
-./target/release/zeptoclaw history list [--limit 20]
-./target/release/zeptoclaw history show <query>
-./target/release/zeptoclaw history cleanup [--keep 50]
+./target/release/claide history list [--limit 20]
+./target/release/claide history show <query>
+./target/release/claide history cleanup [--keep 50]
 
 # Agent templates
-./target/release/zeptoclaw template list
-./target/release/zeptoclaw template show coder
-./target/release/zeptoclaw agent --template researcher -m "Search for..."
-./target/release/zeptoclaw agent --template task-manager -m "Add task: finish proposal by Friday"
+./target/release/claide template list
+./target/release/claide template show coder
+./target/release/claide agent --template researcher -m "Search for..."
+./target/release/claide agent --template task-manager -m "Add task: finish proposal by Friday"
 
 # Hands-lite
-./target/release/zeptoclaw hand list
-./target/release/zeptoclaw hand activate researcher
-./target/release/zeptoclaw hand deactivate
-./target/release/zeptoclaw hand status
+./target/release/claide hand list
+./target/release/claide hand activate researcher
+./target/release/claide hand deactivate
+./target/release/claide hand status
 
 # Batch mode (process multiple prompts from file)
-./target/release/zeptoclaw batch --input prompts.txt
-./target/release/zeptoclaw batch --input prompts.jsonl --output results.jsonl --format jsonl
-./target/release/zeptoclaw batch --input prompts.txt --template coder --stop-on-error
+./target/release/claide batch --input prompts.txt
+./target/release/claide batch --input prompts.jsonl --output results.jsonl --format jsonl
+./target/release/claide batch --input prompts.txt --template coder --stop-on-error
 
 # Secret encryption
-./target/release/zeptoclaw secrets encrypt   # Encrypt plaintext secrets in config
-./target/release/zeptoclaw secrets decrypt   # Decrypt for editing
-./target/release/zeptoclaw secrets rotate    # Re-encrypt with new key
+./target/release/claide secrets encrypt   # Encrypt plaintext secrets in config
+./target/release/claide secrets decrypt   # Decrypt for editing
+./target/release/claide secrets rotate    # Re-encrypt with new key
 
 # Gateway with tunnel
-./target/release/zeptoclaw gateway --tunnel cloudflare
-./target/release/zeptoclaw gateway --tunnel ngrok
-./target/release/zeptoclaw gateway --tunnel tailscale
-./target/release/zeptoclaw gateway --tunnel auto
+./target/release/claide gateway --tunnel cloudflare
+./target/release/claide gateway --tunnel ngrok
+./target/release/claide gateway --tunnel tailscale
+./target/release/claide gateway --tunnel auto
 
 # Channel management
-./target/release/zeptoclaw channel list
-./target/release/zeptoclaw channel setup whatsapp
-./target/release/zeptoclaw channel test whatsapp
+./target/release/claide channel list
+./target/release/claide channel setup whatsapp
+./target/release/claide channel test whatsapp
 
 # Onboard (express setup by default)
-./target/release/zeptoclaw onboard
-./target/release/zeptoclaw onboard --full    # full 10-step wizard
+./target/release/claide onboard
+./target/release/claide onboard --full    # full 10-step wizard
 
 # Memory management
-./target/release/zeptoclaw memory list [--category user]
-./target/release/zeptoclaw memory search "project name"
-./target/release/zeptoclaw memory set user:name "Your Name" --category user --tags "profile,name"
-./target/release/zeptoclaw memory delete user:name
-./target/release/zeptoclaw memory stats
+./target/release/claide memory list [--category user]
+./target/release/claide memory search "project name"
+./target/release/claide memory set user:name "Your Name" --category user --tags "profile,name"
+./target/release/claide memory delete user:name
+./target/release/claide memory stats
 
 # Tool discovery
-./target/release/zeptoclaw tools list
-./target/release/zeptoclaw tools info web_search
+./target/release/claide tools list
+./target/release/claide tools info web_search
 
 # MCP server discovery (HTTP + stdio)
 # ~/.mcp/servers.json or .mcp.json:
@@ -122,14 +122,14 @@ cargo fmt
 # {"mcpServers":{"fs":{"command":"node","args":["server.js"]}}}
 
 # Watch URLs for changes
-./target/release/zeptoclaw watch https://example.com --interval 1h --notify telegram
+./target/release/claide watch https://example.com --interval 1h --notify telegram
 
 # Panel (control panel web UI)
-./target/release/zeptoclaw panel                    # Start panel API server
-./target/release/zeptoclaw panel install             # Install panel frontend (build from source)
-./target/release/zeptoclaw panel auth set-password   # Set panel password
-./target/release/zeptoclaw panel auth show-token     # Show API token
-./target/release/zeptoclaw panel uninstall           # Remove panel frontend
+./target/release/claide panel                    # Start panel API server
+./target/release/claide panel install             # Install panel frontend (build from source)
+./target/release/claide panel auth set-password   # Set panel password
+./target/release/claide panel auth show-token     # Show API token
+./target/release/claide panel uninstall           # Remove panel frontend
 
 # Release (requires cargo-release: cargo install cargo-release)
 cargo release patch          # preview bump 0.5.x → 0.5.x+1 (dry-run by default)
@@ -137,18 +137,18 @@ cargo release minor          # preview bump 0.5.x → 0.6.0
 cargo release patch --execute  # actually bump, commit, tag, push, publish to crates.io
 
 # Self-update
-./target/release/zeptoclaw update              # update to latest
-./target/release/zeptoclaw update --check      # check without downloading
-./target/release/zeptoclaw update --version v0.5.2  # specific version
-./target/release/zeptoclaw update --force      # re-download even if current
+./target/release/claide update              # update to latest
+./target/release/claide update --check      # check without downloading
+./target/release/claide update --version v0.5.2  # specific version
+./target/release/claide update --force      # re-download even if current
 
 # Per-provider quota management
-./target/release/zeptoclaw quota status
-./target/release/zeptoclaw quota reset
-./target/release/zeptoclaw quota reset anthropic
+./target/release/claide quota status
+./target/release/claide quota reset
+./target/release/claide quota reset anthropic
 
 # Provider chain status
-./target/release/zeptoclaw provider status
+./target/release/claide provider status
 ```
 
 ## Agent Workflow — Task Tracking Protocol
@@ -160,7 +160,7 @@ Every Claude Code session in this repo MUST follow these three rules:
 Before starting any work, run:
 
 ```bash
-gh issue list --repo qhkm/zeptoclaw --state open --limit 20
+gh issue list --repo qhkm/claide --state open --limit 20
 ```
 
 Present the open issues to the user and ask what they want to work on. If they pick an existing issue, reference it throughout the session.
@@ -170,7 +170,7 @@ Present the open issues to the user and ask what they want to work on. If they p
 When the user requests work that has no matching open issue (new feature, bug fix, refactor), create one **before writing code**:
 
 ```bash
-gh issue create --repo qhkm/zeptoclaw \
+gh issue create --repo qhkm/claide \
   --title "feat: short description" \
   --label "feat,area:tools" \
   --body "Brief description of the work."
@@ -354,7 +354,7 @@ src/
 └── main.rs         # Thin entry point delegating to cli::run()
 
 landing/
-└── zeptoclaw/
+└── claide/
     ├── index.html        # Static landing page (hero, sections, interactive animations)
     └── mascot-no-bg.png  # README mascot asset used in landing hero
 
@@ -447,7 +447,7 @@ Message input channels via `Channel` trait:
 - `HasDependencies` trait — components declare external dependencies
 - `DepKind` enum: Binary (GitHub Releases), DockerImage, NpmPackage, PipPackage
 - `DepManager` — install, start, stop, health check lifecycle orchestrator
-- `Registry` — JSON file at `~/.zeptoclaw/deps/registry.json` tracks installed state
+- `Registry` — JSON file at `~/.claide/deps/registry.json` tracks installed state
 - `DepFetcher` trait — abstracts network calls for testability
 
 ### Tools (`src/tools/`)
@@ -456,7 +456,7 @@ Message input channels via `Channel` trait:
 **Composed tools** (`src/tools/composed.rs`): Natural language tool composition.
 - `CreateToolTool` — agent tool with create/list/delete/run actions
 - `ComposedTool` — wraps a `ComposedToolDef`, interpolates `{{param}}` placeholders into action template, returns instructions for the agent to follow
-- `ComposedToolStore` — persistence at `~/.zeptoclaw/composed_tools.json`
+- `ComposedToolStore` — persistence at `~/.claide/composed_tools.json`
 - Auto-loaded at startup in `create_agent()` as first-class tools
 
 **Delegate tool** (`src/tools/delegate.rs`): Multi-agent orchestration with parallel + sequential modes.
@@ -500,7 +500,7 @@ Message input channels via `Channel` trait:
 - `Bm25Searcher` - Okapi BM25 keyword scorer (feature-gated: `memory-bm25`, zero deps)
 - `create_searcher()` - Factory maps `MemoryBackend` config to `Arc<dyn MemorySearcher>`
 - Workspace memory - Markdown search/read with pluggable searcher injection
-- `LongTermMemory` - Persistent key-value store at `~/.zeptoclaw/memory/longterm.json` with pluggable searcher, categories, tags, access tracking; injection guard on `set()` rejects values containing prompt injection patterns
+- `LongTermMemory` - Persistent key-value store at `~/.claide/memory/longterm.json` with pluggable searcher, categories, tags, access tracking; injection guard on `set()` rejects values containing prompt injection patterns
 - `decay_score()` on `MemoryEntry` - 30-day half-life decay with importance weighting; pinned entries exempt (always 1.0)
 - `build_memory_injection()` - Pinned + query-matched memory injection for system prompt (2000 char budget), now applied per inbound message via shared LTM
 - Pre-compaction memory flush - Silent LLM turn saves important facts before context compaction (10s timeout)
@@ -524,12 +524,12 @@ Panel web dashboard backend:
 - `TaskStore` — JSON file persistence for kanban tasks
 - `TaskTool` — Agent-accessible tool for kanban board operations
 
-### Landing (`landing/zeptoclaw/index.html`)
+### Landing (`landing/claide/index.html`)
 - Hero ambient animation, mascot eye/pupil motion, and magnetic CTA interactions
 - Scroll-triggered feature-card reveal and stats count-up animations
 - Architecture pipeline flow packets and enhanced terminal typing/thinking feedback
 - `prefers-reduced-motion` support for accessibility fallback
-- README mascot parity: hero now uses `landing/zeptoclaw/mascot-no-bg.png` (bundled by `landing/deploy.sh`)
+- README mascot parity: hero now uses `landing/claide/mascot-no-bg.png` (bundled by `landing/deploy.sh`)
 
 ### Safety (`src/safety/`)
 - `SafetyLayer` - Orchestrator: length check → leak detection → policy check → injection sanitization
@@ -541,7 +541,7 @@ Panel web dashboard backend:
 - Tiered inbound injection scanning in agent loop: webhook channel blocked on injection, allowlisted channels (telegram, discord, etc.) warn-only
 
 ### Security (`src/security/`)
-- `shell.rs` - Regex-based command blocklist + optional allowlist (`ShellAllowlistMode`: Off/Warn/Strict); includes `.zeptoclaw/config.json` blocklist to prevent LLM-driven config exfiltration
+- `shell.rs` - Regex-based command blocklist + optional allowlist (`ShellAllowlistMode`: Off/Warn/Strict); includes `.claide/config.json` blocklist to prevent LLM-driven config exfiltration
 - `path.rs` - Workspace path validation, symlink escape detection
 - `mount.rs` - Mount allowlist validation, docker binary verification
 - `encryption.rs` - `SecretEncryption`: XChaCha20-Poly1305 AEAD + Argon2id KDF, `ENC[...]` ciphertext format, `resolve_master_key()` for env/file/prompt sources, transparent config decrypt on load
@@ -567,66 +567,66 @@ Panel web dashboard backend:
 
 ## Configuration
 
-Config file: `~/.zeptoclaw/config.json`
+Config file: `~/.claide/config.json`
 
 Environment variables override config:
-- `ZEPTOCLAW_PROVIDERS_ANTHROPIC_API_KEY`
-- `ZEPTOCLAW_PROVIDERS_OPENAI_API_KEY`
-- `ZEPTOCLAW_OAUTH_CLIENT_ID` — OAuth client id (used by `auth login`)
-- `ZEPTOCLAW_PROVIDERS_ANTHROPIC_OAUTH_CLIENT_ID` — provider-specific OAuth client id override
-- `ZEPTOCLAW_CHANNELS_TELEGRAM_BOT_TOKEN`
-- `ZEPTOCLAW_AGENTS_DEFAULTS_AGENT_TIMEOUT_SECS` — wall-clock timeout for agent runs (default: 300)
-- `ZEPTOCLAW_AGENTS_DEFAULTS_MESSAGE_QUEUE_MODE` — "collect" (default) or "followup"
-- `ZEPTOCLAW_PROVIDERS_RETRY_ENABLED` — enable retry wrapper (default: false)
-- `ZEPTOCLAW_PROVIDERS_RETRY_MAX_RETRIES` — max retry attempts (default: 3)
-- `ZEPTOCLAW_PROVIDERS_RETRY_BASE_DELAY_MS` — base delay in ms (default: 1000)
-- `ZEPTOCLAW_PROVIDERS_RETRY_MAX_DELAY_MS` — max delay in ms (default: 30000)
-- `ZEPTOCLAW_PROVIDERS_RETRY_BUDGET_MS` — total wall-clock retry budget in ms, 0 = unlimited (default: 45000)
-- `ZEPTOCLAW_PROVIDERS_FALLBACK_ENABLED` — enable fallback provider (default: false)
-- `ZEPTOCLAW_PROVIDERS_FALLBACK_PROVIDER` — fallback provider name
-- `ZEPTOCLAW_PROVIDERS_<NAME>_MODEL` — per-provider model override (e.g. `ZEPTOCLAW_PROVIDERS_NVIDIA_MODEL=nvidia/llama-3.3-70b`); used instead of `agents.defaults.model` for this provider in fallback chains
-- `ZEPTOCLAW_PROVIDERS_ANTHROPIC_QUOTA_MAX_COST_USD` — max monthly (or daily) cost in USD for Anthropic
-- `ZEPTOCLAW_PROVIDERS_ANTHROPIC_QUOTA_MAX_TOKENS` — max token count for Anthropic
-- `ZEPTOCLAW_PROVIDERS_ANTHROPIC_QUOTA_PERIOD` — quota period: "monthly" (default) or "daily"
-- `ZEPTOCLAW_PROVIDERS_ANTHROPIC_QUOTA_ACTION` — quota action: "reject" (default), "fallback", "warn"
-- `ZEPTOCLAW_PROVIDERS_OPENAI_QUOTA_MAX_COST_USD` — max monthly (or daily) cost in USD for OpenAI
-- `ZEPTOCLAW_PROVIDERS_OPENAI_QUOTA_MAX_TOKENS` — max token count for OpenAI
-- `ZEPTOCLAW_PROVIDERS_OPENAI_QUOTA_PERIOD` — quota period: "monthly" (default) or "daily"
-- `ZEPTOCLAW_PROVIDERS_OPENAI_QUOTA_ACTION` — quota action: "reject" (default), "fallback", "warn"
-- `ZEPTOCLAW_PROVIDERS_AZURE_API_KEY` (or `AZURE_OPENAI_API_KEY`) — Azure OpenAI API key
-- `ZEPTOCLAW_PROVIDERS_AZURE_API_BASE` (or `AZURE_OPENAI_ENDPOINT`) — Azure deployment base URL (e.g. `https://myco.openai.azure.com/openai/deployments/gpt-4o`)
-- `ZEPTOCLAW_PROVIDERS_AZURE_API_VERSION` — Azure API version (default preset: `2024-08-01-preview`)
-- `ZEPTOCLAW_PROVIDERS_BEDROCK_API_KEY` (or `AWS_ACCESS_KEY_ID`) — Amazon Bedrock credential placeholder (SigV4 required; use with proxy)
-- `ZEPTOCLAW_PROVIDERS_BEDROCK_API_BASE` — Bedrock regional endpoint (default: `https://bedrock-runtime.us-east-1.amazonaws.com/v1`)
-- `ZEPTOCLAW_PROVIDERS_XAI_API_KEY` (or `XAI_API_KEY`) — xAI (Grok) API key
-- `ZEPTOCLAW_PROVIDERS_XAI_API_BASE` — xAI base URL (default: `https://api.x.ai/v1`)
-- `ZEPTOCLAW_PROVIDERS_XAI_MODEL` — xAI model override
-- `ZEPTOCLAW_PROVIDERS_QIANFAN_API_KEY` (or `QIANFAN_API_KEY`) — Baidu Qianfan API key
-- `ZEPTOCLAW_PROVIDERS_QIANFAN_API_BASE` — Qianfan base URL (default: `https://qianfan.baidubce.com/v2`)
-- `ZEPTOCLAW_PROVIDERS_QIANFAN_MODEL` — Qianfan model override
-- `ZEPTOCLAW_AGENTS_DEFAULTS_TOKEN_BUDGET` — per-session token budget (default: 0 = unlimited)
-- `ZEPTOCLAW_SAFETY_ENABLED` — enable safety layer (default: true)
-- `ZEPTOCLAW_SAFETY_LEAK_DETECTION_ENABLED` — enable secret leak detection (default: true)
-- `ZEPTOCLAW_COMPACTION_ENABLED` — enable context compaction (default: false)
-- `ZEPTOCLAW_COMPACTION_CONTEXT_LIMIT` — max tokens before compaction (default: 100000)
-- `ZEPTOCLAW_COMPACTION_THRESHOLD` — compaction trigger threshold (default: 0.80)
-- `ZEPTOCLAW_ROUTINES_ENABLED` — enable routines engine (default: false)
-- `ZEPTOCLAW_ROUTINES_CRON_INTERVAL_SECS` — cron tick interval (default: 60)
-- `ZEPTOCLAW_ROUTINES_MAX_CONCURRENT` — max concurrent routine executions (default: 3)
-- `ZEPTOCLAW_ROUTINES_JITTER_MS` — jitter window in ms for scheduled dispatches (default: 0)
-- `ZEPTOCLAW_ROUTINES_ON_MISS` — missed schedule policy: "skip" (default) or "run_once"
-- `ZEPTOCLAW_HEARTBEAT_DELIVER_TO` — channel for heartbeat result delivery (default: none)
-- `ZEPTOCLAW_MASTER_KEY` — hex-encoded 32-byte master encryption key for secret encryption
-- `ZEPTOCLAW_TUNNEL_PROVIDER` — tunnel provider (cloudflare, ngrok, tailscale, auto)
-- `ZEPTOCLAW_MEMORY_BACKEND` — memory search backend: builtin (default), bm25, embedding, hnsw, tantivy, none
-- `ZEPTOCLAW_MEMORY_EMBEDDING_PROVIDER` — embedding provider name (for embedding backend)
-- `ZEPTOCLAW_MEMORY_EMBEDDING_MODEL` — embedding model name (for embedding backend)
-- `ZEPTOCLAW_PANEL_ENABLED` — enable panel API server (default: false)
-- `ZEPTOCLAW_PANEL_PORT` — panel frontend port (default: 9092)
-- `ZEPTOCLAW_PANEL_API_PORT` — panel API port (default: 9091)
-- `ZEPTOCLAW_PANEL_BIND` — bind address (default: 127.0.0.1)
-- `ZEPTOCLAW_TOOLS_WEB_SEARCH_PROVIDER` — search provider: "brave", "searxng", "ddg" (default: auto-detect)
-- `ZEPTOCLAW_TOOLS_WEB_SEARCH_API_URL` — SearXNG instance URL (required when provider is "searxng")
+- `CLAIDE_PROVIDERS_ANTHROPIC_API_KEY`
+- `CLAIDE_PROVIDERS_OPENAI_API_KEY`
+- `CLAIDE_OAUTH_CLIENT_ID` — OAuth client id (used by `auth login`)
+- `CLAIDE_PROVIDERS_ANTHROPIC_OAUTH_CLIENT_ID` — provider-specific OAuth client id override
+- `CLAIDE_CHANNELS_TELEGRAM_BOT_TOKEN`
+- `CLAIDE_AGENTS_DEFAULTS_AGENT_TIMEOUT_SECS` — wall-clock timeout for agent runs (default: 300)
+- `CLAIDE_AGENTS_DEFAULTS_MESSAGE_QUEUE_MODE` — "collect" (default) or "followup"
+- `CLAIDE_PROVIDERS_RETRY_ENABLED` — enable retry wrapper (default: false)
+- `CLAIDE_PROVIDERS_RETRY_MAX_RETRIES` — max retry attempts (default: 3)
+- `CLAIDE_PROVIDERS_RETRY_BASE_DELAY_MS` — base delay in ms (default: 1000)
+- `CLAIDE_PROVIDERS_RETRY_MAX_DELAY_MS` — max delay in ms (default: 30000)
+- `CLAIDE_PROVIDERS_RETRY_BUDGET_MS` — total wall-clock retry budget in ms, 0 = unlimited (default: 45000)
+- `CLAIDE_PROVIDERS_FALLBACK_ENABLED` — enable fallback provider (default: false)
+- `CLAIDE_PROVIDERS_FALLBACK_PROVIDER` — fallback provider name
+- `CLAIDE_PROVIDERS_<NAME>_MODEL` — per-provider model override (e.g. `CLAIDE_PROVIDERS_NVIDIA_MODEL=nvidia/llama-3.3-70b`); used instead of `agents.defaults.model` for this provider in fallback chains
+- `CLAIDE_PROVIDERS_ANTHROPIC_QUOTA_MAX_COST_USD` — max monthly (or daily) cost in USD for Anthropic
+- `CLAIDE_PROVIDERS_ANTHROPIC_QUOTA_MAX_TOKENS` — max token count for Anthropic
+- `CLAIDE_PROVIDERS_ANTHROPIC_QUOTA_PERIOD` — quota period: "monthly" (default) or "daily"
+- `CLAIDE_PROVIDERS_ANTHROPIC_QUOTA_ACTION` — quota action: "reject" (default), "fallback", "warn"
+- `CLAIDE_PROVIDERS_OPENAI_QUOTA_MAX_COST_USD` — max monthly (or daily) cost in USD for OpenAI
+- `CLAIDE_PROVIDERS_OPENAI_QUOTA_MAX_TOKENS` — max token count for OpenAI
+- `CLAIDE_PROVIDERS_OPENAI_QUOTA_PERIOD` — quota period: "monthly" (default) or "daily"
+- `CLAIDE_PROVIDERS_OPENAI_QUOTA_ACTION` — quota action: "reject" (default), "fallback", "warn"
+- `CLAIDE_PROVIDERS_AZURE_API_KEY` (or `AZURE_OPENAI_API_KEY`) — Azure OpenAI API key
+- `CLAIDE_PROVIDERS_AZURE_API_BASE` (or `AZURE_OPENAI_ENDPOINT`) — Azure deployment base URL (e.g. `https://myco.openai.azure.com/openai/deployments/gpt-4o`)
+- `CLAIDE_PROVIDERS_AZURE_API_VERSION` — Azure API version (default preset: `2024-08-01-preview`)
+- `CLAIDE_PROVIDERS_BEDROCK_API_KEY` (or `AWS_ACCESS_KEY_ID`) — Amazon Bedrock credential placeholder (SigV4 required; use with proxy)
+- `CLAIDE_PROVIDERS_BEDROCK_API_BASE` — Bedrock regional endpoint (default: `https://bedrock-runtime.us-east-1.amazonaws.com/v1`)
+- `CLAIDE_PROVIDERS_XAI_API_KEY` (or `XAI_API_KEY`) — xAI (Grok) API key
+- `CLAIDE_PROVIDERS_XAI_API_BASE` — xAI base URL (default: `https://api.x.ai/v1`)
+- `CLAIDE_PROVIDERS_XAI_MODEL` — xAI model override
+- `CLAIDE_PROVIDERS_QIANFAN_API_KEY` (or `QIANFAN_API_KEY`) — Baidu Qianfan API key
+- `CLAIDE_PROVIDERS_QIANFAN_API_BASE` — Qianfan base URL (default: `https://qianfan.baidubce.com/v2`)
+- `CLAIDE_PROVIDERS_QIANFAN_MODEL` — Qianfan model override
+- `CLAIDE_AGENTS_DEFAULTS_TOKEN_BUDGET` — per-session token budget (default: 0 = unlimited)
+- `CLAIDE_SAFETY_ENABLED` — enable safety layer (default: true)
+- `CLAIDE_SAFETY_LEAK_DETECTION_ENABLED` — enable secret leak detection (default: true)
+- `CLAIDE_COMPACTION_ENABLED` — enable context compaction (default: false)
+- `CLAIDE_COMPACTION_CONTEXT_LIMIT` — max tokens before compaction (default: 100000)
+- `CLAIDE_COMPACTION_THRESHOLD` — compaction trigger threshold (default: 0.80)
+- `CLAIDE_ROUTINES_ENABLED` — enable routines engine (default: false)
+- `CLAIDE_ROUTINES_CRON_INTERVAL_SECS` — cron tick interval (default: 60)
+- `CLAIDE_ROUTINES_MAX_CONCURRENT` — max concurrent routine executions (default: 3)
+- `CLAIDE_ROUTINES_JITTER_MS` — jitter window in ms for scheduled dispatches (default: 0)
+- `CLAIDE_ROUTINES_ON_MISS` — missed schedule policy: "skip" (default) or "run_once"
+- `CLAIDE_HEARTBEAT_DELIVER_TO` — channel for heartbeat result delivery (default: none)
+- `CLAIDE_MASTER_KEY` — hex-encoded 32-byte master encryption key for secret encryption
+- `CLAIDE_TUNNEL_PROVIDER` — tunnel provider (cloudflare, ngrok, tailscale, auto)
+- `CLAIDE_MEMORY_BACKEND` — memory search backend: builtin (default), bm25, embedding, hnsw, tantivy, none
+- `CLAIDE_MEMORY_EMBEDDING_PROVIDER` — embedding provider name (for embedding backend)
+- `CLAIDE_MEMORY_EMBEDDING_MODEL` — embedding model name (for embedding backend)
+- `CLAIDE_PANEL_ENABLED` — enable panel API server (default: false)
+- `CLAIDE_PANEL_PORT` — panel frontend port (default: 9092)
+- `CLAIDE_PANEL_API_PORT` — panel API port (default: 9091)
+- `CLAIDE_PANEL_BIND` — bind address (default: 127.0.0.1)
+- `CLAIDE_TOOLS_WEB_SEARCH_PROVIDER` — search provider: "brave", "searxng", "ddg" (default: auto-detect)
+- `CLAIDE_TOOLS_WEB_SEARCH_API_URL` — SearXNG instance URL (required when provider is "searxng")
 
 ### Cargo Features
 
@@ -653,13 +653,13 @@ cargo build --release --features sandbox-landlock,sandbox-firejail,sandbox-bubbl
 ### Compile-time Configuration
 
 Default models can be set at compile time using environment variables:
-- `ZEPTOCLAW_DEFAULT_MODEL` - Default model for agent (default: claude-sonnet-4-5-20250929)
-- `ZEPTOCLAW_CLAUDE_DEFAULT_MODEL` - Default Claude model (default: claude-sonnet-4-5-20250929)
-- `ZEPTOCLAW_OPENAI_DEFAULT_MODEL` - Default OpenAI model (default: gpt-5.1)
+- `CLAIDE_DEFAULT_MODEL` - Default model for agent (default: claude-sonnet-4-5-20250929)
+- `CLAIDE_CLAUDE_DEFAULT_MODEL` - Default Claude model (default: claude-sonnet-4-5-20250929)
+- `CLAIDE_OPENAI_DEFAULT_MODEL` - Default OpenAI model (default: gpt-5.1)
 
 Example:
 ```bash
-export ZEPTOCLAW_DEFAULT_MODEL=gpt-5.1
+export CLAIDE_DEFAULT_MODEL=gpt-5.1
 cargo build --release
 ```
 
@@ -687,7 +687,7 @@ Install: `cargo install cargo-nextest --locked`
 cargo nextest run --lib
 
 # Main binary tests
-cargo nextest run --bin zeptoclaw
+cargo nextest run --bin claide
 
 # CLI smoke tests
 cargo nextest run --test cli_smoke
@@ -739,20 +739,20 @@ Verified on Apple Silicon (release build):
 4. Add to channel factory wiring used by `src/cli/gateway.rs`
 
 ### Add a new skill
-1. Create `~/.zeptoclaw/skills/<name>/SKILL.md`
+1. Create `~/.claide/skills/<name>/SKILL.md`
 2. Add YAML frontmatter (name, description, metadata)
 3. Add markdown instructions for the agent
-4. Or use: `zeptoclaw skills create <name>`
+4. Or use: `claide skills create <name>`
 
-Skills are OpenClaw-compatible — the loader reads `metadata.zeptoclaw`, `metadata.openclaw`, or raw metadata objects (in that priority order). Supported extensions: `os` platform filter, `requires.anyBins` (alias `any_bins`).
+Skills are OpenClaw-compatible — the loader reads `metadata.claide`, `metadata.openclaw`, or raw metadata objects (in that priority order). Supported extensions: `os` platform filter, `requires.anyBins` (alias `any_bins`).
 
 **Core skills** (bundled in this repo — `skills/`): `github`, `skill-creator`
-- Only skills essential to ZeptoClaw's own dev workflow belong here.
+- Only skills essential to Claide's own dev workflow belong here.
 
 **Community skills** (third-party integrations, platform-specific, utilities):
-- Maintained at: https://github.com/qhkm/zeptoclaw-skills
-- Discoverable via: `zeptoclaw skills search <query>`
-- Installable via: `zeptoclaw skills install --github qhkm/zeptoclaw-skills`
+- Maintained at: https://github.com/qhkm/claide-skills
+- Discoverable via: `claide skills search <query>`
+- Installable via: `claide skills install --github qhkm/claide-skills`
 - To contribute a skill, open a PR to that repo instead of this one.
 
 ## Dependencies

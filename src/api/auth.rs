@@ -1,4 +1,4 @@
-//! Authentication helpers for the ZeptoClaw control panel.
+//! Authentication helpers for the Claide control panel.
 //!
 //! Provides token generation, bearer verification, bcrypt password hashing,
 //! and HS256 JWT issuance/validation used by the panel HTTP API.
@@ -24,7 +24,7 @@ use crate::error::{Result, ZeptoError};
 /// # Example
 ///
 /// ```
-/// let token = zeptoclaw::api::auth::generate_api_token();
+/// let token = claide::api::auth::generate_api_token();
 /// assert_eq!(token.len(), 64);
 /// assert!(token.chars().all(|c| c.is_ascii_hexdigit()));
 /// ```

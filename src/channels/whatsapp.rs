@@ -2,11 +2,11 @@
 //!
 //! Connects to an external whatsmeow-rs bridge binary over WebSocket.
 //! The bridge handles WhatsApp protocol complexity (E2E encryption, QR pairing,
-//! session persistence). ZeptoClaw just consumes/sends JSON messages.
+//! session persistence). Claide just consumes/sends JSON messages.
 //!
 //! # Bridge Protocol (JSON over WebSocket)
 //!
-//! Inbound (bridge → ZeptoClaw):
+//! Inbound (bridge → Claide):
 //! ```json
 //! {"type":"message","from":"60123456789","chat_id":"60123456789@s.whatsapp.net","content":"Hello","message_id":"wamid.xyz","timestamp":1707900000,"sender_name":"John"}
 //! {"type":"connected"}
@@ -14,7 +14,7 @@
 //! {"type":"qr_code","data":"2@base64data"}
 //! ```
 //!
-//! Outbound (ZeptoClaw → bridge):
+//! Outbound (Claide → bridge):
 //! ```json
 //! {"type":"send","to":"60123456789@s.whatsapp.net","content":"Reply text","reply_to":"wamid.xyz"}
 //! ```
@@ -198,14 +198,27 @@ impl WhatsAppChannel {
             inbound = inbound.with_metadata("sender_name", name);
         }
 
-        // Decode and attach inline image data from the bridge
+        // Decode and attach media data from the bridge (images, audio, documents)
         if let Some(ref b64_data) = msg.media_base64 {
             use base64::Engine;
             if let Ok(bytes) = base64::engine::general_purpose::STANDARD.decode(b64_data) {
-                if bytes.len() <= 20 * 1024 * 1024 {
+                if bytes.len() <= 25 * 1024 * 1024 {
                     let mime = msg.media_mime_type.as_deref().unwrap_or("image/jpeg");
-                    if mime.starts_with("image/") {
-                        let media = MediaAttachment::new(MediaType::Image)
+                    let media_type = if mime.starts_with("image/") {
+                        Some(MediaType::Image)
+                    } else if mime.starts_with("audio/") || mime == "video/ogg" {
+                        Some(MediaType::Audio)
+                    } else if mime.starts_with("application/pdf")
+                        || mime == "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                        || mime == "text/plain"
+                    {
+                        Some(MediaType::Document)
+                    } else {
+                        None
+                    };
+
+                    if let Some(mt) = media_type {
+                        let media = MediaAttachment::new(mt)
                             .with_data(bytes)
                             .with_mime_type(mime);
                         inbound = inbound.with_media(media);

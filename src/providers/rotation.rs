@@ -1,4 +1,4 @@
-//! Provider rotation for ZeptoClaw
+//! Provider rotation for Claide
 //!
 //! This module provides a [`RotationProvider`] that manages N LLM providers
 //! with health-aware selection. Unlike [`FallbackProvider`] which chains exactly
@@ -8,9 +8,9 @@
 //! # Example
 //!
 //! ```rust,ignore
-//! use zeptoclaw::providers::rotation::{RotationProvider, RotationStrategy};
-//! use zeptoclaw::providers::claude::ClaudeProvider;
-//! use zeptoclaw::providers::openai::OpenAIProvider;
+//! use claide::providers::rotation::{RotationProvider, RotationStrategy};
+//! use claide::providers::claude::ClaudeProvider;
+//! use claide::providers::openai::OpenAIProvider;
 //!
 //! let providers: Vec<Box<dyn LLMProvider>> = vec![
 //!     Box::new(ClaudeProvider::new("claude-key")),

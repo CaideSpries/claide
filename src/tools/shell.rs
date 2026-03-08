@@ -1,4 +1,4 @@
-//! Shell tool for ZeptoClaw
+//! Shell tool for Claide
 //!
 //! This module provides a tool for executing shell commands. Commands are run
 //! in a subprocess with configurable timeout and workspace directory support.
@@ -30,8 +30,8 @@ use super::{Tool, ToolCategory, ToolContext, ToolOutput};
 ///
 /// # Example
 /// ```rust
-/// use zeptoclaw::tools::{Tool, ToolContext};
-/// use zeptoclaw::tools::shell::ShellTool;
+/// use claide::tools::{Tool, ToolContext};
+/// use claide::tools::shell::ShellTool;
 /// use serde_json::json;
 ///
 /// # tokio_test::block_on(async {

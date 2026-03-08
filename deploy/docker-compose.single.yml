@@ -1,9 +1,9 @@
-# ZeptoClaw Single-Tenant Deployment
+# Claide Single-Tenant Deployment
 #
-# The simplest way to run ZeptoClaw on a VPS.
+# The simplest way to run Claide on a VPS.
 #
 # Setup:
-#   1. Build image:  docker build -t zeptoclaw ..
+#   1. Build image:  docker build -t claide ..
 #   2. Configure:    cp .env.example .env && nano .env
 #   3. Start:        docker compose -f docker-compose.single.yml up -d
 #   4. Logs:         docker compose -f docker-compose.single.yml logs -f
@@ -13,15 +13,15 @@
 # Resources: ~6MB RAM, ~4MB disk for binary
 
 services:
-  zeptoclaw:
-    image: zeptoclaw:latest
-    container_name: zeptoclaw
+  claide:
+    image: claide:latest
+    container_name: claide
     restart: unless-stopped
     volumes:
-      - zeptoclaw-data:/data
+      - claide-data:/data
     env_file: .env
     environment:
-      - RUST_LOG=zeptoclaw=info
+      - RUST_LOG=claide=info
       - RUST_LOG_FORMAT=json
     ports:
       - "8080:8080"   # Gateway API
@@ -42,7 +42,7 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
-    command: ["zeptoclaw", "gateway"]
+    command: ["claide", "gateway"]
 
 volumes:
-  zeptoclaw-data:
+  claide-data:

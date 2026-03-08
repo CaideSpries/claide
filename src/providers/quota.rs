@@ -7,14 +7,14 @@
 //! # Example
 //!
 //! ```rust
-//! use zeptoclaw::providers::quota::{QuotaConfig, QuotaStore, QuotaCheckResult, QuotaPeriod};
+//! use claide::providers::quota::{QuotaConfig, QuotaStore, QuotaCheckResult, QuotaPeriod};
 //!
 //! let store = QuotaStore::load_or_default();
 //! let config = QuotaConfig {
 //!     max_cost_usd: Some(50.0),
 //!     max_tokens: None,
 //!     period: QuotaPeriod::Monthly,
-//!     action: zeptoclaw::providers::quota::QuotaAction::Reject,
+//!     action: claide::providers::quota::QuotaAction::Reject,
 //! };
 //!
 //! // Record some usage
@@ -115,7 +115,7 @@ pub enum QuotaCheckResult {
 /// Persistent store for per-provider quota usage.
 ///
 /// Thread-safe via an internal `Mutex`. Persists state to
-/// `~/.zeptoclaw/quota/usage.json` after every `record()` call (best-effort;
+/// `~/.claide/quota/usage.json` after every `record()` call (best-effort;
 /// write errors are silently ignored).
 pub struct QuotaStore {
     /// In-memory state: provider name → usage for the current period.
@@ -128,7 +128,7 @@ pub struct QuotaStore {
 const WARNING_THRESHOLD: f64 = 0.8;
 
 impl QuotaStore {
-    /// Load usage state from `~/.zeptoclaw/quota/usage.json`.
+    /// Load usage state from `~/.claide/quota/usage.json`.
     ///
     /// Returns an empty store if the file does not exist or cannot be parsed.
     pub fn load_or_default() -> Self {
@@ -465,10 +465,10 @@ impl crate::providers::LLMProvider for QuotaProvider {
 // Internal helpers
 // ---------------------------------------------------------------------------
 
-/// Canonical path for the usage file: `~/.zeptoclaw/quota/usage.json`.
+/// Canonical path for the usage file: `~/.claide/quota/usage.json`.
 fn dirs_path() -> PathBuf {
     let base = dirs::home_dir().unwrap_or_else(|| PathBuf::from("."));
-    base.join(".zeptoclaw").join("quota").join("usage.json")
+    base.join(".claide").join("quota").join("usage.json")
 }
 
 /// Load `HashMap<String, QuotaUsage>` from JSON; returns empty map on error.

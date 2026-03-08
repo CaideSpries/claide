@@ -5,7 +5,7 @@ use std::path::Path;
 /// Default heartbeat file content.
 pub const HEARTBEAT_TEMPLATE: &str = r#"# Heartbeat Tasks
 
-This file is checked periodically by your ZeptoClaw agent.
+This file is checked periodically by your Claide agent.
 Add background tasks below. Keep tasks actionable and specific.
 
 ## Active Tasks

@@ -12,7 +12,7 @@ A clear description of what went wrong.
 **To reproduce**
 Steps or command to trigger the bug:
 ```bash
-zeptoclaw agent -m "..."
+claide agent -m "..."
 ```
 
 **Expected behavior**
@@ -23,7 +23,7 @@ What actually happened. Include error output if available.
 
 **Environment**
 - OS: [e.g. macOS 15.3, Ubuntu 24.04]
-- ZeptoClaw version: [e.g. 0.3.1]
+- Claide version: [e.g. 0.3.1]
 - Provider: [e.g. Claude, OpenAI, OpenRouter]
 - Install method: [cargo install / binary release / source]
 

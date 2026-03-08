@@ -1,4 +1,4 @@
-# ZeptoClaw vs OpenClaw vs PicoClaw vs NanoClaw vs ZeroClaw
+# Claide vs OpenClaw vs PicoClaw vs NanoClaw vs ZeroClaw
 
 > Factual comparison based on source code analysis. Last updated: 2026-02-26.
 
@@ -6,7 +6,7 @@ Five open-source projects solving the same problem — a self-hosted AI assistan
 
 ## At a Glance
 
-| | **OpenClaw** | **PicoClaw** | **NanoClaw** | **ZeroClaw** | **ZeptoClaw** |
+| | **OpenClaw** | **PicoClaw** | **NanoClaw** | **ZeroClaw** | **Claide** |
 |---|---|---|---|---|---|
 | **Language** | TypeScript / Node.js | Go | TypeScript / Node.js | Rust | Rust |
 | **Binary / Install** | ~100MB+ (Node + 53 deps) | Single binary (<10MB) | Node.js + 10 deps | Single binary (~3.4MB) | Single binary (~4MB) |
@@ -22,7 +22,7 @@ Five open-source projects solving the same problem — a self-hosted AI assistan
 
 ## Tools & Capabilities
 
-| Capability | OpenClaw | PicoClaw | NanoClaw | ZeroClaw | ZeptoClaw |
+| Capability | OpenClaw | PicoClaw | NanoClaw | ZeroClaw | Claide |
 |---|---|---|---|---|---|
 | Shell execution | Yes | Yes | Via Claude Agent SDK | Yes (allowlist-based) | Yes (with runtime isolation) |
 | Filesystem (read/write/edit) | Yes | Yes (5 tools) | Via Claude Agent SDK | Yes (2 tools) | Yes (3 tools) |
@@ -47,7 +47,7 @@ Five open-source projects solving the same problem — a self-hosted AI assistan
 
 ## Channels
 
-| Channel | OpenClaw | PicoClaw | NanoClaw | ZeroClaw | ZeptoClaw |
+| Channel | OpenClaw | PicoClaw | NanoClaw | ZeroClaw | Claide |
 |---|---|---|---|---|---|
 | Telegram | Yes | Yes | Planned (via skill) | Yes | Yes |
 | Slack | Yes | Yes | Planned (via skill) | Yes | Yes |
@@ -66,11 +66,11 @@ Five open-source projects solving the same problem — a self-hosted AI assistan
 | Matrix | Yes | No | No | Yes | No |
 | MaixCAM (device) | No | Yes | No | No | No |
 
-OpenClaw leads on channel breadth (14+32 extensions). PicoClaw covers Chinese platforms. NanoClaw focuses on WhatsApp. ZeroClaw has 7 channels including iMessage and Matrix. ZeptoClaw has 9 channels (Telegram, Slack, Discord, WhatsApp, WhatsApp Cloud, Lark, Email, Webhook, Serial).
+OpenClaw leads on channel breadth (14+32 extensions). PicoClaw covers Chinese platforms. NanoClaw focuses on WhatsApp. ZeroClaw has 7 channels including iMessage and Matrix. Claide has 9 channels (Telegram, Slack, Discord, WhatsApp, WhatsApp Cloud, Lark, Email, Webhook, Serial).
 
 ## Security
 
-| Feature | OpenClaw | PicoClaw | NanoClaw | ZeroClaw | ZeptoClaw |
+| Feature | OpenClaw | PicoClaw | NanoClaw | ZeroClaw | Claide |
 |---|---|---|---|---|---|
 | Workspace path isolation | Yes | Yes | Yes (per-group mount) | Yes (14 system dirs blocked) | Yes |
 | Shell command blocklist | Limited | Yes (8 patterns) | No (relies on container) | Yes (allowlist-based) | Yes (regex-based) |
@@ -88,13 +88,13 @@ OpenClaw leads on channel breadth (14+32 extensions). PicoClaw covers Chinese pl
 | Audit trails | Yes | No | No | No | No |
 | Tool approval gate | No | No | No | Autonomy levels | Yes |
 
-ZeroClaw and ZeptoClaw take different security approaches. ZeroClaw focuses on access control — gateway pairing, sender allowlists, secret encryption, autonomy levels. ZeptoClaw focuses on content security — prompt injection detection, leak scanning, SSRF prevention, policy engine — and now also has secret encryption at rest (XChaCha20-Poly1305 + Argon2id) and deny-by-default sender allowlists. Both block sensitive filesystem paths.
+ZeroClaw and Claide take different security approaches. ZeroClaw focuses on access control — gateway pairing, sender allowlists, secret encryption, autonomy levels. Claide focuses on content security — prompt injection detection, leak scanning, SSRF prevention, policy engine — and now also has secret encryption at rest (XChaCha20-Poly1305 + Argon2id) and deny-by-default sender allowlists. Both block sensitive filesystem paths.
 
 **Known vulnerabilities:** OpenClaw's ecosystem has seen CVE-2026-25253 (CVSS 8.8 — WebSocket hijacking to RCE), ClawHavoc (341 malicious skills), and 42,000 exposed instances. The other projects have no known CVEs as of this writing.
 
 ## Memory & Context
 
-| Feature | OpenClaw | PicoClaw | NanoClaw | ZeroClaw | ZeptoClaw |
+| Feature | OpenClaw | PicoClaw | NanoClaw | ZeroClaw | Claide |
 |---|---|---|---|---|---|
 | Session persistence | Yes | Yes | Yes (SQLite) | Yes (SQLite) | Yes |
 | Conversation history CLI | No | No | No | No | Yes (list, show, search, cleanup) |
@@ -107,11 +107,11 @@ ZeroClaw and ZeptoClaw take different security approaches. ZeroClaw focuses on a
 | Cost tracking | No | No | No | No | Yes (8 models, per-provider) |
 | Metrics / telemetry | OpenTelemetry (extension) | No | No | Observer trait (Log/Noop/Multi) | Yes (Prometheus + JSON) |
 
-ZeroClaw has the strongest memory search after OpenClaw — hybrid SQLite FTS5 (BM25 scoring) + vector embeddings with cosine similarity, all built-in with no external dependencies. ZeptoClaw uses simpler text matching but adds token budgeting and context compaction.
+ZeroClaw has the strongest memory search after OpenClaw — hybrid SQLite FTS5 (BM25 scoring) + vector embeddings with cosine similarity, all built-in with no external dependencies. Claide uses simpler text matching but adds token budgeting and context compaction.
 
 ## Architecture
 
-| Aspect | OpenClaw | PicoClaw | NanoClaw | ZeroClaw | ZeptoClaw |
+| Aspect | OpenClaw | PicoClaw | NanoClaw | ZeroClaw | Claide |
 |---|---|---|---|---|---|
 | Runtime | Node.js >= 22.12 | Go binary | Node.js 20+ | Rust binary (Tokio) | Rust binary (Tokio async) |
 | Concurrency | Event loop | Goroutines | Per-group queue | Tokio async | Tokio async + futures::join_all |
@@ -127,7 +127,7 @@ ZeroClaw has the strongest memory search after OpenClaw — hybrid SQLite FTS5 (
 
 ## Design Philosophy
 
-| | OpenClaw | PicoClaw | NanoClaw | ZeroClaw | ZeptoClaw |
+| | OpenClaw | PicoClaw | NanoClaw | ZeroClaw | Claide |
 |---|---|---|---|---|---|
 | **Philosophy** | Feature-complete platform | Ultra-portable IoT agent | Minimal, forkable, secure | Zero overhead, pluggable everything | Dense, secure, agent-first |
 | **Target user** | Power users, businesses | IoT/embedded developers | Single-user, personal | Provider-agnostic developers | Developers, multi-tenant ops |
@@ -141,28 +141,28 @@ ZeroClaw has the strongest memory search after OpenClaw — hybrid SQLite FTS5 (
 |---|---|---|
 | Maximum channel coverage | **OpenClaw** | 14 channels + 32 extensions, companion apps |
 | Chinese platform integration | **PicoClaw** | QQ, DingTalk, Feishu built-in |
-| Embedded / IoT devices | **PicoClaw** or **ZeptoClaw** | PicoClaw: I2C/SPI on $10 SBCs. ZeptoClaw: ESP32/RPi/Arduino/Nucleo with GPIO, I2C, NVS |
+| Embedded / IoT devices | **PicoClaw** or **Claide** | PicoClaw: I2C/SPI on $10 SBCs. Claide: ESP32/RPi/Arduino/Nucleo with GPIO, I2C, NVS |
 | WhatsApp-first personal assistant | **NanoClaw** | WhatsApp primary, group isolation, tiny codebase |
 | Smallest codebase to fork | **NanoClaw** | 3.4K lines, designed to be forked |
 | Most LLM providers | **ZeroClaw** | 22+ providers, any OpenAI-compatible endpoint |
 | Best memory search (no external deps) | **ZeroClaw** | Built-in hybrid FTS5 + vector embeddings |
-| Secrets encryption at rest | **ZeroClaw** or **ZeptoClaw** | ZeroClaw: ChaCha20-Poly1305. ZeptoClaw: XChaCha20-Poly1305 + Argon2id |
-| Tunnel support (Cloudflare/ngrok) | **ZeroClaw** or **ZeptoClaw** | ZeroClaw: 4 options. ZeptoClaw: Cloudflare, ngrok, Tailscale |
-| Security-sensitive deployment | **ZeptoClaw** | Multi-layer safety, container isolation, leak detection |
-| Resource-constrained server | **ZeptoClaw** or **ZeroClaw** | Both Rust, both <5MB binary |
-| Multi-tenant hosting | **ZeptoClaw** | ~6MB per tenant, container isolation per request |
+| Secrets encryption at rest | **ZeroClaw** or **Claide** | ZeroClaw: ChaCha20-Poly1305. Claide: XChaCha20-Poly1305 + Argon2id |
+| Tunnel support (Cloudflare/ngrok) | **ZeroClaw** or **Claide** | ZeroClaw: 4 options. Claide: Cloudflare, ngrok, Tailscale |
+| Security-sensitive deployment | **Claide** | Multi-layer safety, container isolation, leak detection |
+| Resource-constrained server | **Claide** or **ZeroClaw** | Both Rust, both <5MB binary |
+| Multi-tenant hosting | **Claide** | ~6MB per tenant, container isolation per request |
 | Plugin ecosystem | **OpenClaw** | 32 extensions, mature plugin system |
 | Voice + mobile companion | **OpenClaw** | Wake Mode, Talk Mode, iOS/Android apps |
-| Batch processing / automation | **ZeptoClaw** | Batch mode, routines, cron, agent templates |
-| Cost-conscious API usage | **ZeptoClaw** | Token budget, cost tracking, retry + fallback |
+| Batch processing / automation | **Claide** | Batch mode, routines, cron, agent templates |
+| Cost-conscious API usage | **Claide** | Token budget, cost tracking, retry + fallback |
 | Browser automation | **OpenClaw** or **ZeroClaw** | OpenClaw: CDP. ZeroClaw: agent-browser |
-| Hardware sensor integration | **PicoClaw** or **ZeptoClaw** | PicoClaw: I2C, SPI. ZeptoClaw: GPIO, I2C, NVS for 4 board families |
-| Agent swarms | **NanoClaw** or **ZeptoClaw** | NanoClaw: Claude Agent Teams. ZeptoClaw: DelegateTool (parallel fan-out + sequential scratchpad) |
+| Hardware sensor integration | **PicoClaw** or **Claide** | PicoClaw: I2C, SPI. Claide: GPIO, I2C, NVS for 4 board families |
+| Agent swarms | **NanoClaw** or **Claide** | NanoClaw: Claude Agent Teams. Claide: DelegateTool (parallel fan-out + sequential scratchpad) |
 | 1000+ app integrations | **ZeroClaw** | Composio integration (OAuth apps) |
 
 ## Project Status
 
-| | OpenClaw | PicoClaw | NanoClaw | ZeroClaw | ZeptoClaw |
+| | OpenClaw | PicoClaw | NanoClaw | ZeroClaw | Claide |
 |---|---|---|---|---|---|
 | **Stage** | Established (160K+ stars) | New (5K+ stars in first week) | New | New | New (v0.6.0) |
 | **Community** | Large | Growing fast | Small | Early | Early |
@@ -179,6 +179,6 @@ ZeroClaw has the strongest memory search after OpenClaw — hybrid SQLite FTS5 (
 
 **ZeroClaw** is the most provider-agnostic — 22+ LLM providers, built-in hybrid memory search (FTS5 + vector), secret encryption at rest, and 7 channels including iMessage and Matrix. The tradeoff is no container isolation (planned), no content security (injection/leak detection), and no multi-tenant support.
 
-**ZeptoClaw** is the most secure and operationally complete — multi-layer safety, per-command container isolation, secret encryption at rest (XChaCha20-Poly1305 + Argon2id), sender allowlists, tunnel support (Cloudflare/ngrok/Tailscale), token budgeting, cost tracking, batch mode, hardware peripherals (ESP32/RPi/Arduino/Nucleo), and parallel agent swarms in a 4MB binary. 9 channels including Serial for embedded devices. The tradeoff is no companion apps.
+**Claide** is the most secure and operationally complete — multi-layer safety, per-command container isolation, secret encryption at rest (XChaCha20-Poly1305 + Argon2id), sender allowlists, tunnel support (Cloudflare/ngrok/Tailscale), token budgeting, cost tracking, batch mode, hardware peripherals (ESP32/RPi/Arduino/Nucleo), and parallel agent swarms in a 4MB binary. 9 channels including Serial for embedded devices. The tradeoff is no companion apps.
 
-All five are open source, self-hosted, and built for developers who want to own their AI assistant. The right choice depends on your priorities: features (OpenClaw), portability (PicoClaw), simplicity (NanoClaw), provider flexibility (ZeroClaw), or security and efficiency (ZeptoClaw).
+All five are open source, self-hosted, and built for developers who want to own their AI assistant. The right choice depends on your priorities: features (OpenClaw), portability (PicoClaw), simplicity (NanoClaw), provider flexibility (ZeroClaw), or security and efficiency (Claide).

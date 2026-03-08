@@ -29,7 +29,7 @@ impl SkillsLoader {
     pub fn with_defaults() -> Self {
         let workspace = dirs::home_dir()
             .unwrap_or_else(|| PathBuf::from("."))
-            .join(".zeptoclaw")
+            .join(".claide")
             .join("skills");
         Self::new(workspace, None)
     }
@@ -231,8 +231,8 @@ impl SkillsLoader {
             .metadata
             .as_ref()
             .and_then(|value| {
-                // Priority: zeptoclaw > clawdbot > openclaw > clawdis > raw object
-                if let Some(scoped) = value.get("zeptoclaw") {
+                // Priority: claide > clawdbot > openclaw > clawdis > raw object
+                if let Some(scoped) = value.get("claide") {
                     serde_json::from_value(scoped.clone()).ok()
                 } else if let Some(scoped) = value.get("clawdbot") {
                     serde_json::from_value(scoped.clone()).ok()
@@ -356,7 +356,7 @@ mod tests {
         let content = r#"---
 name: weather
 description: Weather helper
-metadata: {"zeptoclaw":{"emoji":"🌤️","requires":{"bins":["curl"]}}}
+metadata: {"claide":{"emoji":"🌤️","requires":{"bins":["curl"]}}}
 ---
 # Weather
 
@@ -424,20 +424,20 @@ Use wttr.in.
     }
 
     #[test]
-    fn test_zeptoclaw_metadata_takes_priority_over_openclaw() {
+    fn test_claide_metadata_takes_priority_over_openclaw() {
         let temp = tempfile::tempdir().unwrap();
         let ws = temp.path().join("skills");
         std::fs::create_dir_all(ws.join("dual")).unwrap();
         std::fs::write(
             ws.join("dual/SKILL.md"),
-            "---\nname: dual\ndescription: Both namespaces\nmetadata: {\"zeptoclaw\":{\"emoji\":\"🦀\"},\"openclaw\":{\"emoji\":\"🦞\"}}\n---\nBody.",
+            "---\nname: dual\ndescription: Both namespaces\nmetadata: {\"claide\":{\"emoji\":\"🦀\"},\"openclaw\":{\"emoji\":\"🦞\"}}\n---\nBody.",
         )
         .unwrap();
 
         let loader = SkillsLoader::new(ws, Some(temp.path().join("empty")));
         let skill = loader.load_skill("dual").unwrap();
         let meta = loader.get_zeptometa(&skill);
-        // zeptoclaw takes priority
+        // claide takes priority
         assert_eq!(meta.emoji, Some("🦀".to_string()));
     }
 
@@ -446,7 +446,7 @@ Use wttr.in.
         let temp = tempfile::tempdir().unwrap();
         let ws = temp.path().join("skills");
         std::fs::create_dir_all(ws.join("compat")).unwrap();
-        // Include OpenClaw-only fields that ZeptoClaw doesn't have
+        // Include OpenClaw-only fields that Claide doesn't have
         std::fs::write(
             ws.join("compat/SKILL.md"),
             "---\nname: compat\ndescription: With extra fields\nmetadata: {\"openclaw\":{\"emoji\":\"✅\",\"primaryEnv\":\"MY_API_KEY\",\"skillKey\":\"my-skill\",\"requires\":{\"bins\":[],\"config\":[\"some.config.path\"]}}}\n---\nBody.",
@@ -486,7 +486,7 @@ Use wttr.in.
         std::fs::create_dir_all(ws.join("missing")).unwrap();
         std::fs::write(
             ws.join("missing/SKILL.md"),
-            "---\nname: missing\ndescription: Missing bins\nmetadata: {\"zeptoclaw\":{\"requires\":{\"any_bins\":[\"zzz_nonexistent_1\",\"zzz_nonexistent_2\"]}}}\n---\nBody.",
+            "---\nname: missing\ndescription: Missing bins\nmetadata: {\"claide\":{\"requires\":{\"any_bins\":[\"zzz_nonexistent_1\",\"zzz_nonexistent_2\"]}}}\n---\nBody.",
         )
         .unwrap();
 
@@ -610,13 +610,13 @@ Use wttr.in.
     }
 
     #[test]
-    fn test_zeptoclaw_priority_over_clawdbot() {
+    fn test_claide_priority_over_clawdbot() {
         let temp = tempfile::tempdir().unwrap();
         let ws = temp.path().join("skills");
         std::fs::create_dir_all(ws.join("prio")).unwrap();
         std::fs::write(
             ws.join("prio/SKILL.md"),
-            "---\nname: prio\ndescription: Priority test\nmetadata: {\"zeptoclaw\":{\"emoji\":\"🦀\"},\"clawdbot\":{\"emoji\":\"🤖\"}}\n---\nBody.",
+            "---\nname: prio\ndescription: Priority test\nmetadata: {\"claide\":{\"emoji\":\"🦀\"},\"clawdbot\":{\"emoji\":\"🤖\"}}\n---\nBody.",
         )
         .unwrap();
 
@@ -708,7 +708,7 @@ Use wttr.in.
     #[test]
     fn test_parse_new_manifest_fields() {
         let loader = SkillsLoader::with_defaults();
-        let content = "---\nname: sea-orders\ndescription: SEA order management\nversion: 1.0.0\nauthor: Kitakod Ventures\nlicense: MIT\ntags:\n  - messaging\n  - sea\ndepends:\n  - longterm-memory\nconflicts:\n  - orders-lite\nenv_needed:\n  - name: WHATSAPP_PHONE_NUMBER_ID\n    description: Your phone number ID\n    required: true\n  - name: WEBHOOK_TOKEN\n    description: Webhook verify token\n    required: false\nmetadata: {\"zeptoclaw\": {\"emoji\": \"\u{1F6D2}\"}}\n---\nBody.\n";
+        let content = "---\nname: sea-orders\ndescription: SEA order management\nversion: 1.0.0\nauthor: Kitakod Ventures\nlicense: MIT\ntags:\n  - messaging\n  - sea\ndepends:\n  - longterm-memory\nconflicts:\n  - orders-lite\nenv_needed:\n  - name: WHATSAPP_PHONE_NUMBER_ID\n    description: Your phone number ID\n    required: true\n  - name: WEBHOOK_TOKEN\n    description: Webhook verify token\n    required: false\nmetadata: {\"claide\": {\"emoji\": \"\u{1F6D2}\"}}\n---\nBody.\n";
         let (meta, _) = loader.parse_frontmatter(content);
         assert_eq!(meta.author.as_deref(), Some("Kitakod Ventures"));
         assert_eq!(meta.license.as_deref(), Some("MIT"));

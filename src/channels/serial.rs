@@ -1,4 +1,4 @@
-//! Serial (UART) channel for ZeptoClaw.
+//! Serial (UART) channel for Claide.
 //!
 //! Enables two-way agent communication over a serial port. Inbound messages
 //! arrive as newline-delimited JSON (`{"type":"message","text":"...","sender":"..."}`).

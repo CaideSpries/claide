@@ -8,7 +8,7 @@
 //!
 //! ```rust
 //! # tokio_test::block_on(async {
-//! use zeptoclaw::api::tasks::TaskStore;
+//! use claide::api::tasks::TaskStore;
 //!
 //! let store = TaskStore::new_in_memory();
 //! let id = store.create("Buy milk", "backlog", None).await.unwrap();

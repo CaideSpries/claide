@@ -35,7 +35,7 @@ use anyhow::Result;
 use clap::{CommandFactory, Parser, Subcommand, ValueEnum};
 
 #[derive(Parser)]
-#[command(name = "zeptoclaw")]
+#[command(name = "claide")]
 #[command(version)]
 #[command(about = "Ultra-lightweight personal AI assistant", long_about = None)]
 struct Cli {
@@ -56,7 +56,7 @@ enum Commands {
         /// Direct message to process (non-interactive mode)
         #[arg(short, long)]
         message: Option<String>,
-        /// Apply an agent template (built-in or ~/.zeptoclaw/templates/*.json)
+        /// Apply an agent template (built-in or ~/.claide/templates/*.json)
         #[arg(long)]
         template: Option<String>,
         /// Stream the response token-by-token
@@ -220,9 +220,9 @@ enum Commands {
     },
     /// Start supervised daemon (auto-restarts gateway on failure)
     Daemon,
-    /// Migrate config and skills from an OpenClaw installation
+    /// Migrate config and skills from an OpenClaw or ZeroClaw installation
     Migrate {
-        /// Path to OpenClaw directory (auto-detected if omitted)
+        /// Path to source directory (auto-detected if omitted)
         #[arg(long)]
         from: Option<String>,
         /// Accept all defaults without prompting
@@ -231,6 +231,9 @@ enum Commands {
         /// Preview what would be migrated without making changes
         #[arg(long)]
         dry_run: bool,
+        /// Migrate from a ZeroClaw installation (TOML config)
+        #[arg(long)]
+        zeroclaw: bool,
     },
     /// Check for updates or update to latest version
     Update {
@@ -308,7 +311,7 @@ pub enum MemoryAction {
     },
     /// Export longterm memory to a JSON snapshot file
     Export {
-        /// Output file path (default: ~/.zeptoclaw/memory/snapshot.json)
+        /// Output file path (default: ~/.claide/memory/snapshot.json)
         #[arg(long)]
         output: Option<std::path::PathBuf>,
     },
@@ -523,10 +526,10 @@ pub async fn run() -> Result<()> {
     // Initialize logging from config (format, level, optional file output).
     // Load config early so we can respect the logging settings; fall back to
     // defaults if the config file is missing or unreadable.
-    let logging_cfg = zeptoclaw::config::Config::load()
+    let logging_cfg = claide::config::Config::load()
         .map(|c| c.logging)
         .unwrap_or_default();
-    zeptoclaw::utils::logging::init_logging(&logging_cfg);
+    claide::utils::logging::init_logging(&logging_cfg);
 
     let cli = Cli::parse();
 
@@ -631,7 +634,7 @@ pub async fn run() -> Result<()> {
             api_port,
             rotate_token,
         }) => {
-            let config = zeptoclaw::config::Config::load()
+            let config = claide::config::Config::load()
                 .map_err(|e| anyhow::anyhow!("Failed to load configuration: {e}"))?;
             panel::cmd_panel(config, action, dev, api_only, port, api_port, rotate_token).await?;
         }
@@ -641,8 +644,12 @@ pub async fn run() -> Result<()> {
         Some(Commands::Daemon) => {
             daemon::cmd_daemon().await?;
         }
-        Some(Commands::Migrate { from, yes, dry_run }) => {
-            migrate::cmd_migrate(from, yes, dry_run).await?;
+        Some(Commands::Migrate { from, yes, dry_run, zeroclaw }) => {
+            if zeroclaw {
+                migrate::cmd_migrate_zeroclaw(from, yes, dry_run).await?;
+            } else {
+                migrate::cmd_migrate(from, yes, dry_run).await?;
+            }
         }
         Some(Commands::Update {
             check,
@@ -668,15 +675,15 @@ pub async fn run() -> Result<()> {
 
 /// Display version information
 fn cmd_version() {
-    println!("zeptoclaw {}", env!("CARGO_PKG_VERSION"));
+    println!("claide {}", env!("CARGO_PKG_VERSION"));
     println!();
     println!("Ultra-lightweight personal AI assistant");
-    println!("https://github.com/qhkm/zeptoclaw");
+    println!("https://github.com/qhkm/claide");
 }
 
 /// Handle hardware subcommands (list, info).
 fn cmd_hardware(action: HardwareAction) {
-    use zeptoclaw::hardware::HardwareManager;
+    use claide::hardware::HardwareManager;
 
     let mgr = HardwareManager::new();
 
@@ -729,7 +736,7 @@ fn cmd_hardware(action: HardwareAction) {
             None => {
                 println!("Device '{}' not found.", device);
                 println!();
-                println!("Try: zeptoclaw hardware list");
+                println!("Try: claide hardware list");
                 println!("Or use a VID:PID format (e.g., 0483:374b)");
             }
         },
@@ -740,9 +747,9 @@ fn cmd_hardware(action: HardwareAction) {
 async fn cmd_mcp_server(http: Option<String>) -> Result<()> {
     use std::sync::Arc;
 
-    use zeptoclaw::bus::MessageBus;
-    use zeptoclaw::config::Config;
-    use zeptoclaw::mcp_server::McpServer;
+    use claide::bus::MessageBus;
+    use claide::config::Config;
+    use claide::mcp_server::McpServer;
 
     // Config::load() performs blocking filesystem I/O; move it off the
     // async runtime thread to avoid starving other tasks.
@@ -752,7 +759,7 @@ async fn cmd_mcp_server(http: Option<String>) -> Result<()> {
         .map_err(|e| anyhow::anyhow!("Failed to load configuration: {e}"))?;
     let bus = Arc::new(MessageBus::new());
 
-    let kernel = zeptoclaw::kernel::ZeptoKernel::boot(config, bus, None, None).await?;
+    let kernel = claide::kernel::ZeptoKernel::boot(config, bus, None, None).await?;
     let kernel = Arc::new(kernel);
     let server = McpServer::new(kernel);
 
@@ -768,7 +775,7 @@ async fn cmd_mcp_server(http: Option<String>) -> Result<()> {
                 anyhow::bail!(
                     "HTTP transport requires the 'panel' feature. \
                      Build with: cargo build --features panel\n\
-                     Or use stdio transport (default): zeptoclaw mcp-server"
+                     Or use stdio transport (default): claide mcp-server"
                 );
             }
         }

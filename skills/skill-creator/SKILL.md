@@ -1,12 +1,12 @@
 ---
 name: skill-creator
-description: Create or update ZeptoClaw skills. Use when designing, structuring, or authoring new agent skills.
-metadata: {"zeptoclaw":{"emoji":"🛠️","requires":{}}}
+description: Create or update Claide skills. Use when designing, structuring, or authoring new agent skills.
+metadata: {"claide":{"emoji":"🛠️","requires":{}}}
 ---
 
 # Skill Creator
 
-Guide users through designing and building ZeptoClaw skills. Follow these six steps in order — do not skip ahead.
+Guide users through designing and building Claide skills. Follow these six steps in order — do not skip ahead.
 
 ## Step 1 — Gather Concrete Examples
 
@@ -48,10 +48,10 @@ Match specificity to fragility — only lock down what breaks when done differen
 Create the skill directory and file:
 
 ```bash
-zeptoclaw skills create <skill-name>
+claide skills create <skill-name>
 ```
 
-This creates `~/.zeptoclaw/skills/<skill-name>/SKILL.md` with a starter template.
+This creates `~/.claide/skills/<skill-name>/SKILL.md` with a starter template.
 
 If the skill needs bundled resources, create subdirectories:
 - `scripts/` — executable code the agent runs (deterministic, token-efficient)
@@ -70,11 +70,11 @@ Every SKILL.md starts with YAML frontmatter:
 ---
 name: skill-name
 description: One-line description of what this skill does.
-metadata: {"zeptoclaw":{"emoji":"📦","requires":{"bins":["curl"],"any_bins":[],"env":[]},"install":[],"always":false,"os":[]}}
+metadata: {"claide":{"emoji":"📦","requires":{"bins":["curl"],"any_bins":[],"env":[]},"install":[],"always":false,"os":[]}}
 ---
 ```
 
-**ZeptoClaw metadata fields:**
+**Claide metadata fields:**
 - `emoji` — Display emoji for skill listings
 - `requires.bins` — All listed binaries must exist in PATH
 - `requires.any_bins` — At least one listed binary must exist
@@ -86,7 +86,7 @@ metadata: {"zeptoclaw":{"emoji":"📦","requires":{"bins":["curl"],"any_bins":[]
 Only include fields you need. Minimal example:
 
 ```yaml
-metadata: {"zeptoclaw":{"emoji":"🔧","requires":{}}}
+metadata: {"claide":{"emoji":"🔧","requires":{}}}
 ```
 
 ### Body
@@ -115,8 +115,8 @@ Check the skill:
 2. `name` is lowercase-hyphenated, max 64 characters
 3. `description` exists and is a non-empty string
 4. Body contains actionable instructions (not just placeholders)
-5. Run `zeptoclaw skills show <name>` to verify it loads correctly
-6. Run `zeptoclaw skills list` to confirm it appears
+5. Run `claide skills show <name>` to verify it loads correctly
+6. Run `claide skills list` to confirm it appears
 
 Then test it: replay the example queries from Step 1 against the agent with the skill loaded. Observe where the agent struggles or produces wrong output. Update the skill content and repeat.
 

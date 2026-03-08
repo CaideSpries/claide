@@ -1,8 +1,8 @@
-# ZeptoClaw Dockerfile
+# Claide Dockerfile
 # Multi-stage build for minimal image size
 #
-# Build: docker build -t zeptoclaw .
-# Run:   docker run -v zeptoclaw-data:/data zeptoclaw
+# Build: docker build -t claide .
+# Run:   docker run -v claide-data:/data claide
 
 # =============================================================================
 # Stage 1: Build
@@ -38,7 +38,7 @@ COPY benches ./benches
 RUN touch src/main.rs src/lib.rs
 
 # Build release binary
-RUN cargo build --release --bin zeptoclaw
+RUN cargo build --release --bin claide
 
 # =============================================================================
 # Stage 2: Runtime (minimal)
@@ -52,17 +52,17 @@ RUN apt-get update && apt-get install -y \
     gosu \
     wget \
     && rm -rf /var/lib/apt/lists/* \
-    && useradd -r -s /bin/false -d /data zeptoclaw
+    && useradd -r -s /bin/false -d /data claide
 
 # Copy binary from builder
-COPY --from=builder /app/target/release/zeptoclaw /usr/local/bin/
+COPY --from=builder /app/target/release/claide /usr/local/bin/
 
 # Copy entrypoint
 COPY docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 # Set environment
-ENV RUST_LOG=zeptoclaw=info
+ENV RUST_LOG=claide=info
 
 # Expose gateway port and health check port
 EXPOSE 8080 9090
@@ -74,4 +74,4 @@ VOLUME /data
 ENTRYPOINT ["docker-entrypoint.sh"]
 
 # Default command - show help
-CMD ["zeptoclaw", "--help"]
+CMD ["claide", "--help"]

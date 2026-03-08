@@ -1,4 +1,4 @@
-//! Fallback LLM provider for ZeptoClaw
+//! Fallback LLM provider for Claide
 //!
 //! This module provides a [`FallbackProvider`] that chains two LLM providers:
 //! if the primary provider fails, the request is automatically retried against
@@ -8,9 +8,9 @@
 //! # Example
 //!
 //! ```rust,ignore
-//! use zeptoclaw::providers::fallback::FallbackProvider;
-//! use zeptoclaw::providers::claude::ClaudeProvider;
-//! use zeptoclaw::providers::openai::OpenAIProvider;
+//! use claide::providers::fallback::FallbackProvider;
+//! use claide::providers::claude::ClaudeProvider;
+//! use claide::providers::openai::OpenAIProvider;
 //!
 //! let primary = Box::new(ClaudeProvider::new("claude-key"));
 //! let fallback = Box::new(OpenAIProvider::new("openai-key"));

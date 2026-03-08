@@ -75,12 +75,12 @@ pub struct SkillMetadata {
     /// Environment variables needed by this skill (informational + gating).
     #[serde(default)]
     pub env_needed: Vec<EnvSpec>,
-    /// ZeptoClaw metadata payload.
+    /// Claide metadata payload.
     pub metadata: Option<serde_json::Value>,
 }
 
-/// ZeptoClaw metadata extension.
-/// Compatible with both `metadata.zeptoclaw` and `metadata.openclaw` namespaces.
+/// Claide metadata extension.
+/// Compatible with both `metadata.claide` and `metadata.openclaw` namespaces.
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(default)]
 pub struct ZeptoMetadata {

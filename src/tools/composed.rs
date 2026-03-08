@@ -1,4 +1,4 @@
-//! Natural language tool composition for ZeptoClaw.
+//! Natural language tool composition for Claide.
 //!
 //! Lets users define new tools by describing them in natural language.
 //! When a composed tool is called, the action description (with parameters
@@ -6,7 +6,7 @@
 //!
 //! # Storage
 //!
-//! Definitions are persisted at `~/.zeptoclaw/composed_tools.json`.
+//! Definitions are persisted at `~/.claide/composed_tools.json`.
 //!
 //! # Example
 //!
@@ -83,11 +83,11 @@ pub struct ComposedToolDef {
 pub struct ComposedToolStore;
 
 impl ComposedToolStore {
-    /// Default storage path: `~/.zeptoclaw/composed_tools.json`.
+    /// Default storage path: `~/.claide/composed_tools.json`.
     pub fn default_path() -> PathBuf {
         dirs::home_dir()
             .unwrap_or_else(|| PathBuf::from("."))
-            .join(".zeptoclaw")
+            .join(".claide")
             .join("composed_tools.json")
     }
 

@@ -1,5 +1,5 @@
 // Polls GET /api/metrics every 10 seconds via react-query.
-// Shape mirrors ZeptoClaw's telemetry JSON output (src/utils/telemetry.rs).
+// Shape mirrors Claide's telemetry JSON output (src/utils/telemetry.rs).
 
 import { useQuery } from '@tanstack/react-query'
 import { apiFetch } from '../lib/api'

@@ -1,4 +1,4 @@
-//! Plugin types for ZeptoClaw
+//! Plugin types for Claide
 //!
 //! This module defines all types used by the plugin system, including
 //! manifest structures for parsing `plugin.json` files, plugin configuration,
@@ -32,7 +32,7 @@ fn default_protocol() -> String {
 ///   "name": "git-tools",
 ///   "version": "1.0.0",
 ///   "description": "Git integration tools",
-///   "author": "ZeptoClaw",
+///   "author": "Claide",
 ///   "tools": [
 ///     {
 ///       "name": "git_status",
@@ -197,7 +197,7 @@ pub struct PluginConfig {
     pub enabled: bool,
 
     /// Directories to scan for plugin subdirectories.
-    /// Defaults to `["~/.zeptoclaw/plugins"]`.
+    /// Defaults to `["~/.claide/plugins"]`.
     #[serde(default = "default_plugin_dirs")]
     pub plugin_dirs: Vec<String>,
 
@@ -241,7 +241,7 @@ impl PluginConfig {
 
 /// Returns the default plugin directories.
 fn default_plugin_dirs() -> Vec<String> {
-    vec!["~/.zeptoclaw/plugins".to_string()]
+    vec!["~/.claide/plugins".to_string()]
 }
 
 #[cfg(test)]
@@ -293,7 +293,7 @@ mod tests {
             "name": "git-tools",
             "version": "1.0.0",
             "description": "Git integration tools",
-            "author": "ZeptoClaw",
+            "author": "Claide",
             "tools": [
                 {
                     "name": "git_status",
@@ -385,7 +385,7 @@ mod tests {
     fn test_plugin_config_defaults() {
         let config = PluginConfig::default();
         assert!(!config.enabled);
-        assert_eq!(config.plugin_dirs, vec!["~/.zeptoclaw/plugins"]);
+        assert_eq!(config.plugin_dirs, vec!["~/.claide/plugins"]);
         assert!(config.allowed_plugins.is_empty());
         assert!(config.blocked_plugins.is_empty());
     }
@@ -395,7 +395,7 @@ mod tests {
         let json_str = r#"{}"#;
         let config: PluginConfig = serde_json::from_str(json_str).unwrap();
         assert!(!config.enabled);
-        assert_eq!(config.plugin_dirs, vec!["~/.zeptoclaw/plugins"]);
+        assert_eq!(config.plugin_dirs, vec!["~/.claide/plugins"]);
         assert!(config.allowed_plugins.is_empty());
         assert!(config.blocked_plugins.is_empty());
     }

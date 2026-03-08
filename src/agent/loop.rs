@@ -192,11 +192,45 @@ fn propagate_routing_metadata(outbound: &mut OutboundMessage, inbound: &InboundM
 async fn inbound_to_message(
     msg: &InboundMessage,
     media_store: Option<&crate::session::media::MediaStore>,
+    transcriber: Option<&crate::transcription::TranscriberService>,
 ) -> crate::session::Message {
     use crate::session::media::validate_image;
     use crate::session::{ContentPart, ImageSource};
     use base64::Engine as _;
 
+    // Transcribe audio attachments and prepend to message content.
+    let mut extra_context = String::new();
+    for attachment in msg.media.iter().filter(|m| matches!(m.media_type, crate::bus::MediaType::Audio)) {
+        if let Some(data) = &attachment.data {
+            if let Some(svc) = transcriber {
+                let mime = attachment.mime_type.as_deref().unwrap_or("audio/ogg");
+                let transcript = svc.transcribe(data.clone(), mime).await;
+                if !transcript.is_empty() && transcript != "[Voice Message]" {
+                    extra_context.push_str(&format!("[Voice transcription: {}]\n", transcript));
+                } else if transcript == "[Voice Message]" {
+                    extra_context.push_str("[Voice message received but transcription failed]\n");
+                }
+            } else {
+                extra_context.push_str("[Voice message received — transcription not configured]\n");
+            }
+        }
+    }
+
+    // Note document attachments in the message context.
+    for attachment in msg.media.iter().filter(|m| matches!(m.media_type, crate::bus::MediaType::Document)) {
+        let fname = attachment.filename.as_deref().unwrap_or("unknown");
+        let mime = attachment.mime_type.as_deref().unwrap_or("application/octet-stream");
+        extra_context.push_str(&format!("[Document attached: {} ({})]\n", fname, mime));
+    }
+
+    // Build the effective message content with any transcription/document prefixes.
+    let effective_content = if extra_context.is_empty() {
+        msg.content.clone()
+    } else {
+        format!("{}{}", extra_context, msg.content)
+    };
+
+    // Process image attachments as before.
     let image_media: Vec<&crate::bus::MediaAttachment> = msg
         .media
         .iter()
@@ -205,7 +239,7 @@ async fn inbound_to_message(
         .collect();
 
     if image_media.is_empty() {
-        return crate::session::Message::user(&msg.content);
+        return crate::session::Message::user(&effective_content);
     }
 
     let mut image_parts: Vec<ContentPart> = Vec::new();
@@ -213,7 +247,6 @@ async fn inbound_to_message(
         let data = attachment.data.as_ref().unwrap();
         let mime = attachment.mime_type.as_deref().unwrap_or("image/jpeg");
 
-        // Skip images that fail size/type validation.
         if validate_image(data, mime, 20 * 1024 * 1024).is_err() {
             continue;
         }
@@ -238,9 +271,9 @@ async fn inbound_to_message(
     }
 
     if image_parts.is_empty() {
-        crate::session::Message::user(&msg.content)
+        crate::session::Message::user(&effective_content)
     } else {
-        crate::session::Message::user_with_images(&msg.content, image_parts)
+        crate::session::Message::user_with_images(&effective_content, image_parts)
     }
 }
 
@@ -341,10 +374,10 @@ pub enum ToolFeedbackPhase {
 ///
 /// ```rust,ignore
 /// use std::sync::Arc;
-/// use zeptoclaw::agent::AgentLoop;
-/// use zeptoclaw::bus::MessageBus;
-/// use zeptoclaw::config::Config;
-/// use zeptoclaw::session::SessionManager;
+/// use claide::agent::AgentLoop;
+/// use claide::bus::MessageBus;
+/// use claide::config::Config;
+/// use claide::session::SessionManager;
 ///
 /// let config = Config::default();
 /// let session_manager = SessionManager::new_memory();
@@ -417,6 +450,8 @@ pub struct AgentLoop {
     event_bus: Option<crate::api::events::EventBus>,
     /// MCP clients to shut down when the agent stops (prevents zombie child processes).
     mcp_clients: Arc<tokio::sync::RwLock<Vec<Arc<crate::tools::mcp::client::McpClient>>>>,
+    /// Optional transcription service for converting audio attachments to text.
+    transcriber: Option<Arc<crate::transcription::TranscriberService>>,
 }
 
 impl AgentLoop {
@@ -458,10 +493,10 @@ impl AgentLoop {
     /// # Example
     /// ```rust
     /// use std::sync::Arc;
-    /// use zeptoclaw::agent::AgentLoop;
-    /// use zeptoclaw::bus::MessageBus;
-    /// use zeptoclaw::config::Config;
-    /// use zeptoclaw::session::SessionManager;
+    /// use claide::agent::AgentLoop;
+    /// use claide::bus::MessageBus;
+    /// use claide::config::Config;
+    /// use claide::session::SessionManager;
     ///
     /// let config = Config::default();
     /// let session_manager = SessionManager::new_memory();
@@ -491,6 +526,7 @@ impl AgentLoop {
         };
         let cache = Self::build_cache(&config);
         let pairing = Self::build_pairing(&config);
+        let transcriber = crate::transcription::TranscriberService::from_config(&config).map(Arc::new);
         Self {
             config,
             session_manager: Arc::new(session_manager),
@@ -520,6 +556,7 @@ impl AgentLoop {
             #[cfg(feature = "panel")]
             event_bus: None,
             mcp_clients: Arc::new(tokio::sync::RwLock::new(Vec::new())),
+            transcriber,
         }
     }
 
@@ -557,6 +594,7 @@ impl AgentLoop {
         };
         let cache = Self::build_cache(&config);
         let pairing = Self::build_pairing(&config);
+        let transcriber = crate::transcription::TranscriberService::from_config(&config).map(Arc::new);
         Self {
             config,
             session_manager: Arc::new(session_manager),
@@ -586,6 +624,7 @@ impl AgentLoop {
             #[cfg(feature = "panel")]
             event_bus: None,
             mcp_clients: Arc::new(tokio::sync::RwLock::new(Vec::new())),
+            transcriber,
         }
     }
 
@@ -619,7 +658,7 @@ impl AgentLoop {
     ///
     /// # Example
     /// ```rust,ignore
-    /// use zeptoclaw::providers::ClaudeProvider;
+    /// use claide::providers::ClaudeProvider;
     ///
     /// let provider = ClaudeProvider::new("api-key");
     /// agent.set_provider(Box::new(provider)).await;
@@ -710,7 +749,7 @@ impl AgentLoop {
     ///
     /// # Example
     /// ```rust,ignore
-    /// use zeptoclaw::tools::EchoTool;
+    /// use claide::tools::EchoTool;
     ///
     /// agent.register_tool(Box::new(EchoTool)).await;
     /// ```
@@ -878,7 +917,7 @@ impl AgentLoop {
         // The user message is added to the session *before* building the context
         // so that the history slice passed to the provider already contains images
         // for the current turn.
-        let user_message = inbound_to_message(msg, None).await;
+        let user_message = inbound_to_message(msg, None, self.transcriber.as_deref()).await;
         session.add_message(user_message);
 
         // Build messages with history and per-message memory override.
@@ -1452,7 +1491,7 @@ impl AgentLoop {
 
         // Convert inbound message to a session Message with image content parts,
         // then add it to the session before building the provider message list.
-        let user_message = inbound_to_message(msg, None).await;
+        let user_message = inbound_to_message(msg, None, self.transcriber.as_deref()).await;
         session.add_message(user_message);
 
         // Pass an empty user_input: the current user message is already in session.
@@ -2255,7 +2294,7 @@ impl AgentLoop {
                                 let mut rejection = OutboundMessage::new(
                                     &msg.channel,
                                     &msg.chat_id,
-                                    "Access denied: device not paired. Use `zeptoclaw pair new` to generate a pairing code.",
+                                    "Access denied: device not paired. Use `claide pair new` to generate a pairing code.",
                                 );
                                 propagate_routing_metadata(&mut rejection, &msg);
                                 if let Err(e) = self.bus.publish_outbound(rejection).await {
@@ -2772,7 +2811,7 @@ mod tests {
     fn test_context_builder_standalone() {
         let builder = ContextBuilder::new();
         let system = builder.build_system_message();
-        assert!(system.content.contains("ZeptoClaw"));
+        assert!(system.content.contains("Claide"));
     }
 
     #[test]
@@ -3249,7 +3288,7 @@ mod tests {
         let msg =
             InboundMessage::new("telegram", "user1", "chat1", "What is this?").with_media(media);
 
-        let result = inbound_to_message(&msg, None).await;
+        let result = inbound_to_message(&msg, None, None).await;
         assert!(result.has_images(), "message should carry the image part");
         assert_eq!(result.content_parts.len(), 2, "text + one image part");
         assert_eq!(result.content, "What is this?");
@@ -3258,7 +3297,7 @@ mod tests {
     #[tokio::test]
     async fn test_inbound_to_message_without_media() {
         let msg = InboundMessage::new("telegram", "user1", "chat1", "Hello");
-        let result = inbound_to_message(&msg, None).await;
+        let result = inbound_to_message(&msg, None, None).await;
         assert!(!result.has_images(), "message should have no images");
         assert_eq!(result.content_parts.len(), 1, "text part only");
     }
@@ -3272,7 +3311,7 @@ mod tests {
             .with_mime_type("audio/mpeg");
         let msg = InboundMessage::new("telegram", "user1", "chat1", "Listen").with_media(media);
 
-        let result = inbound_to_message(&msg, None).await;
+        let result = inbound_to_message(&msg, None, None).await;
         assert!(
             !result.has_images(),
             "audio media should not become an image part"
@@ -3290,7 +3329,7 @@ mod tests {
             .with_mime_type("image/tiff");
         let msg = InboundMessage::new("telegram", "user1", "chat1", "TIFF file").with_media(media);
 
-        let result = inbound_to_message(&msg, None).await;
+        let result = inbound_to_message(&msg, None, None).await;
         assert!(
             !result.has_images(),
             "unsupported MIME type should be skipped"
@@ -3312,7 +3351,7 @@ mod tests {
         let msg =
             InboundMessage::new("telegram", "user1", "chat1", "What is this?").with_media(media);
 
-        let result = inbound_to_message(&msg, Some(&store)).await;
+        let result = inbound_to_message(&msg, Some(&store), None).await;
         assert!(result.has_images());
 
         // With MediaStore, images should be saved as FilePath, not Base64

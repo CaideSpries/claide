@@ -6,8 +6,8 @@
 //! # Example
 //!
 //! ```rust,ignore
-//! use zeptoclaw::providers::{claude::ClaudeProvider, ChatOptions, LLMProvider};
-//! use zeptoclaw::session::Message;
+//! use claide::providers::{claude::ClaudeProvider, ChatOptions, LLMProvider};
+//! use claide::session::Message;
 //!
 //! async fn example() {
 //!     let provider = ClaudeProvider::new("your-api-key");
@@ -42,8 +42,8 @@ use super::{
 const CLAUDE_API_URL: &str = "https://api.anthropic.com/v1/messages";
 
 /// The default Claude model to use.
-/// Can be overridden at compile time with `ZEPTOCLAW_CLAUDE_DEFAULT_MODEL` env var.
-const DEFAULT_MODEL: &str = match option_env!("ZEPTOCLAW_CLAUDE_DEFAULT_MODEL") {
+/// Can be overridden at compile time with `CLAIDE_CLAUDE_DEFAULT_MODEL` env var.
+const DEFAULT_MODEL: &str = match option_env!("CLAIDE_CLAUDE_DEFAULT_MODEL") {
     Some(v) => v,
     None => "claude-sonnet-4-5-20250929",
 };
@@ -70,8 +70,8 @@ impl ClaudeProvider {
     ///
     /// # Example
     /// ```
-    /// use zeptoclaw::providers::claude::ClaudeProvider;
-    /// use zeptoclaw::providers::LLMProvider;
+    /// use claide::providers::claude::ClaudeProvider;
+    /// use claide::providers::LLMProvider;
     ///
     /// let provider = ClaudeProvider::new("sk-ant-api03-xxx");
     /// assert_eq!(provider.name(), "claude");
@@ -646,13 +646,13 @@ struct SseMessage {
 // Conversion Functions
 // ============================================================================
 
-/// Convert ZeptoClaw messages to Claude API format.
+/// Convert Claide messages to Claude API format.
 ///
 /// Extracts the system message (if present) and converts all other messages
 /// to Claude's message format. Handles tool calls and tool results.
 ///
 /// # Arguments
-/// * `messages` - ZeptoClaw messages
+/// * `messages` - Claide messages
 ///
 /// # Returns
 /// A tuple of (optional system message, Claude messages)
@@ -782,7 +782,7 @@ fn convert_messages(messages: Vec<Message>) -> Result<(Option<String>, Vec<Claud
     Ok((system, claude_messages))
 }
 
-/// Convert ZeptoClaw tool definitions to Claude API format.
+/// Convert Claide tool definitions to Claude API format.
 fn convert_tools(tools: Vec<ToolDefinition>) -> Vec<ClaudeTool> {
     tools
         .into_iter()
@@ -794,7 +794,7 @@ fn convert_tools(tools: Vec<ToolDefinition>) -> Vec<ClaudeTool> {
         .collect()
 }
 
-/// Convert Claude API response to ZeptoClaw LLMResponse.
+/// Convert Claude API response to Claide LLMResponse.
 fn convert_response(response: ClaudeResponse) -> LLMResponse {
     let mut content = String::new();
     let mut tool_calls: Vec<LLMToolCall> = Vec::new();
@@ -830,7 +830,7 @@ fn convert_response(response: ClaudeResponse) -> LLMResponse {
     }
 }
 
-/// Convert ZeptoClaw ToolCall to LLMToolCall.
+/// Convert Claide ToolCall to LLMToolCall.
 ///
 /// This is a helper for converting between the session's ToolCall type
 /// and the provider's LLMToolCall type.

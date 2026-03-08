@@ -1,6 +1,6 @@
 //! Gateway startup guard — degrades to minimal mode after consecutive crashes.
 //!
-//! Persists crash state to `~/.zeptoclaw/crash_guard.json`. When the gateway
+//! Persists crash state to `~/.claide/crash_guard.json`. When the gateway
 //! experiences N consecutive crashes within a time window, the guard signals
 //! degraded mode so the gateway can disable dangerous tools.
 
@@ -32,11 +32,11 @@ pub struct StartupGuard {
 }
 
 impl StartupGuard {
-    /// Create a guard using the default path `~/.zeptoclaw/crash_guard.json`.
+    /// Create a guard using the default path `~/.claide/crash_guard.json`.
     pub fn new(threshold: u32, window_secs: u64) -> Self {
         let path = dirs::home_dir()
             .unwrap_or_else(|| PathBuf::from("."))
-            .join(".zeptoclaw")
+            .join(".claide")
             .join("crash_guard.json");
         Self::with_path(path, threshold, window_secs)
     }

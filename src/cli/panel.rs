@@ -1,12 +1,12 @@
-//! `zeptoclaw panel` command — install, start, auth management.
+//! `claide panel` command — install, start, auth management.
 
 use anyhow::{Context, Result};
 use std::path::PathBuf;
-use zeptoclaw::api::auth::generate_api_token;
-use zeptoclaw::api::config::PanelConfig;
-use zeptoclaw::api::events::EventBus;
-use zeptoclaw::api::server::{start_server, AppState};
-use zeptoclaw::config::Config;
+use claide::api::auth::generate_api_token;
+use claide::api::config::PanelConfig;
+use claide::api::events::EventBus;
+use claide::api::server::{start_server, AppState};
+use claide::config::Config;
 
 /// Panel subcommands.
 #[derive(clap::Subcommand, Debug)]
@@ -43,7 +43,7 @@ pub enum PanelAuthAction {
     Status,
 }
 
-/// Main entry point for `zeptoclaw panel`.
+/// Main entry point for `claide panel`.
 pub async fn cmd_panel(
     config: Config,
     action: Option<PanelAction>,
@@ -67,14 +67,14 @@ pub async fn cmd_panel(
 ///
 /// Checks two locations in order:
 /// 1. `./panel/dist/` — local repo checkout (dev mode)
-/// 2. `~/.zeptoclaw/panel/dist/` — downloaded/installed assets
+/// 2. `~/.claide/panel/dist/` — downloaded/installed assets
 fn resolve_panel_dir() -> Option<PathBuf> {
     let local = PathBuf::from("panel/dist");
     if local.join("index.html").exists() {
         return Some(local);
     }
     if let Some(home) = dirs::home_dir() {
-        let global = home.join(".zeptoclaw/panel/dist");
+        let global = home.join(".claide/panel/dist");
         if global.join("index.html").exists() {
             return Some(global);
         }
@@ -86,14 +86,14 @@ fn resolve_panel_dir() -> Option<PathBuf> {
 ///
 /// Checks two locations in order:
 /// 1. `./panel/` — local repo checkout (development)
-/// 2. `~/.zeptoclaw/panel/` — user-level installed source
+/// 2. `~/.claide/panel/` — user-level installed source
 fn resolve_panel_source_dir() -> Option<PathBuf> {
     let local = PathBuf::from("panel");
     if local.join("package.json").exists() {
         return Some(local);
     }
     if let Some(home) = dirs::home_dir() {
-        let global = home.join(".zeptoclaw/panel");
+        let global = home.join(".claide/panel");
         if global.join("package.json").exists() {
             return Some(global);
         }
@@ -105,7 +105,7 @@ fn resolve_panel_source_dir() -> Option<PathBuf> {
 fn token_path() -> PathBuf {
     dirs::home_dir()
         .unwrap_or_else(|| PathBuf::from("."))
-        .join(".zeptoclaw/panel.token")
+        .join(".claide/panel.token")
 }
 
 /// Ensure API token exists, generating one if needed.
@@ -173,7 +173,7 @@ async fn cmd_start(
                 Some(dir)
             }
             None => {
-                println!("Panel assets not found. Run 'zeptoclaw panel install' first.");
+                println!("Panel assets not found. Run 'claide panel install' first.");
                 println!("Starting in API-only mode.");
                 None
             }
@@ -185,7 +185,7 @@ async fn cmd_start(
 
     // Wire in the TaskStore so kanban endpoints return real data.
     let task_store_path = Config::dir().join("tasks.json");
-    let task_store = std::sync::Arc::new(zeptoclaw::api::tasks::TaskStore::new(task_store_path));
+    let task_store = std::sync::Arc::new(claide::api::tasks::TaskStore::new(task_store_path));
     if let Err(e) = task_store.load().await {
         tracing::warn!("Failed to load task store: {e}");
     }
@@ -216,10 +216,10 @@ async fn cmd_install(download: bool, rebuild: bool) -> Result<()> {
     if download {
         anyhow::bail!(
             "Downloading pre-built panel is not yet implemented. \
-             Use `zeptoclaw panel install` (without --download) to build from source."
+             Use `claide panel install` (without --download) to build from source."
         );
     } else {
-        println!("Installing ZeptoClaw Panel...\n");
+        println!("Installing Claide Panel...\n");
 
         // ------------------------------------------------------------------
         // 1. Check Node.js >= 18
@@ -299,8 +299,8 @@ async fn cmd_install(download: bool, rebuild: bool) -> Result<()> {
         let panel_dir = resolve_panel_source_dir().ok_or_else(|| {
             anyhow::anyhow!(
                 "Panel source not found (no package.json in ./panel/ or \
-                     ~/.zeptoclaw/panel/). Clone the repo or run from the \
-                     ZeptoClaw source directory."
+                     ~/.claide/panel/). Clone the repo or run from the \
+                     Claide source directory."
             )
         })?;
 
@@ -355,7 +355,7 @@ async fn cmd_install(download: bool, rebuild: bool) -> Result<()> {
 
     println!("\n  Panel installed successfully!");
     println!("  API token: {token}");
-    println!("\n  Start with: zeptoclaw panel");
+    println!("\n  Start with: claide panel");
 
     Ok(())
 }
@@ -369,20 +369,20 @@ async fn cmd_auth(action: PanelAuthAction) -> Result<()> {
             if tp.exists() {
                 println!("Token file: {}", tp.display());
             } else {
-                println!("No token file found. Run 'zeptoclaw panel install' to generate one.");
+                println!("No token file found. Run 'claide panel install' to generate one.");
             }
             Ok(())
         }
         PanelAuthAction::Mode { mode } => {
             anyhow::bail!(
                 "Setting auth mode to '{mode}' is not yet implemented. \
-                 Edit ~/.zeptoclaw/config.json manually to set panel.auth_mode."
+                 Edit ~/.claide/config.json manually to set panel.auth_mode."
             );
         }
         PanelAuthAction::ResetPassword => {
             anyhow::bail!(
                 "Password reset is not yet implemented. \
-                 Edit ~/.zeptoclaw/config.json manually to set panel.password_hash."
+                 Edit ~/.claide/config.json manually to set panel.password_hash."
             );
         }
     }
@@ -456,12 +456,12 @@ mod tests {
     }
 
     #[test]
-    fn test_token_path_contains_zeptoclaw() {
+    fn test_token_path_contains_claide() {
         let path = token_path();
         let s = path.to_str().unwrap();
         assert!(
-            s.contains(".zeptoclaw"),
-            "token path must be inside .zeptoclaw dir"
+            s.contains(".claide"),
+            "token path must be inside .claide dir"
         );
         assert!(
             s.ends_with("panel.token"),

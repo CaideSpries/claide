@@ -483,7 +483,7 @@ mod tests {
         let workspace = dir.path();
         fs::write(
             workspace.join("MEMORY.md"),
-            "Project: ZeptoClaw\nPreference: concise responses\n",
+            "Project: Claide\nPreference: concise responses\n",
         )
         .unwrap();
 
@@ -568,16 +568,16 @@ mod tests {
         let dir = tempfile::TempDir::new().unwrap();
         let path = dir.path().join("lt.json");
         let mut ltm = crate::memory::longterm::LongTermMemory::with_path(path).unwrap();
-        ltm.set("fact:project", "ZeptoClaw is 4MB", "fact", vec![], 1.0)
+        ltm.set("fact:project", "Claide is 4MB", "fact", vec![], 1.0)
             .await
             .unwrap();
         ltm.set("fact:other", "unrelated thing", "fact", vec![], 1.0)
             .await
             .unwrap();
 
-        let result = build_memory_injection(&ltm, "ZeptoClaw", 2000);
+        let result = build_memory_injection(&ltm, "Claide", 2000);
         assert!(result.contains("### Relevant"));
-        assert!(result.contains("ZeptoClaw is 4MB"));
+        assert!(result.contains("Claide is 4MB"));
     }
 
     #[tokio::test]

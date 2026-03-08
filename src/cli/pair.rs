@@ -1,8 +1,8 @@
 //! CLI commands for device pairing management.
 
 use anyhow::Result;
-use zeptoclaw::config::Config;
-use zeptoclaw::security::PairingManager;
+use claide::config::Config;
+use claide::security::PairingManager;
 
 use super::PairAction;
 

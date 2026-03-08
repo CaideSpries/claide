@@ -1,4 +1,4 @@
-//! Input content validator for ZeptoClaw.
+//! Input content validator for Claide.
 //!
 //! Validates raw input text before it enters the agent processing pipeline.
 //! Checks for structural issues (length, encoding) and anomalous patterns

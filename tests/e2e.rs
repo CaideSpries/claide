@@ -1,4 +1,4 @@
-//! End-to-end tests for ZeptoClaw
+//! End-to-end tests for Claide
 //!
 //! These tests exercise the agent and gateway subsystems in a manner closer
 //! to production usage, combining multiple components rather than testing
@@ -7,9 +7,9 @@
 //! # Test gating
 //!
 //! - Tests requiring live LLM API keys are gated behind the
-//!   `ZEPTOCLAW_E2E_LIVE` environment variable.
+//!   `CLAIDE_E2E_LIVE` environment variable.
 //! - Tests requiring a running Docker daemon are gated behind the
-//!   `ZEPTOCLAW_E2E_DOCKER` environment variable.
+//!   `CLAIDE_E2E_DOCKER` environment variable.
 //!
 //! By default, only tests that use mock providers run.
 
@@ -17,15 +17,15 @@ use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::Arc;
 
 use async_trait::async_trait;
-use zeptoclaw::bus::{InboundMessage, MessageBus};
-use zeptoclaw::config::Config;
-use zeptoclaw::error::ZeptoError;
-use zeptoclaw::gateway::{
+use claide::bus::{InboundMessage, MessageBus};
+use claide::config::Config;
+use claide::error::ZeptoError;
+use claide::gateway::{
     parse_marked_response, resolve_backend, AgentRequest, AgentResponse, AgentResult,
 };
-use zeptoclaw::providers::{ChatOptions, LLMProvider, LLMResponse, LLMToolCall, ToolDefinition};
-use zeptoclaw::session::{Message, SessionManager};
-use zeptoclaw::tools::{EchoTool, ToolContext, ToolRegistry};
+use claide::providers::{ChatOptions, LLMProvider, LLMResponse, LLMToolCall, ToolDefinition};
+use claide::session::{Message, SessionManager};
+use claide::tools::{EchoTool, ToolContext, ToolRegistry};
 
 // ============================================================================
 // Mock Providers for E2E Tests
@@ -62,7 +62,7 @@ impl LLMProvider for MockStaticProvider {
         _tools: Vec<ToolDefinition>,
         _model: Option<&str>,
         _options: ChatOptions,
-    ) -> zeptoclaw::error::Result<LLMResponse> {
+    ) -> claide::error::Result<LLMResponse> {
         Ok(LLMResponse::text(&self.response))
     }
 }
@@ -99,7 +99,7 @@ impl LLMProvider for MockToolCallingProvider {
         _tools: Vec<ToolDefinition>,
         _model: Option<&str>,
         _options: ChatOptions,
-    ) -> zeptoclaw::error::Result<LLMResponse> {
+    ) -> claide::error::Result<LLMResponse> {
         let count = self.call_count.fetch_add(1, Ordering::SeqCst);
         if count == 0 {
             // First call: request a tool call
@@ -140,7 +140,7 @@ impl LLMProvider for MockFailProvider {
         _tools: Vec<ToolDefinition>,
         _model: Option<&str>,
         _options: ChatOptions,
-    ) -> zeptoclaw::error::Result<LLMResponse> {
+    ) -> claide::error::Result<LLMResponse> {
         Err(ZeptoError::Provider("simulated LLM failure".to_string()))
     }
 }
@@ -166,7 +166,7 @@ impl LLMProvider for MockSlowProvider {
         _tools: Vec<ToolDefinition>,
         _model: Option<&str>,
         _options: ChatOptions,
-    ) -> zeptoclaw::error::Result<LLMResponse> {
+    ) -> claide::error::Result<LLMResponse> {
         // Sleep for 60 seconds -- the agent timeout will fire first.
         tokio::time::sleep(std::time::Duration::from_secs(60)).await;
         Ok(LLMResponse::text("should never be returned"))
@@ -204,12 +204,12 @@ impl LLMProvider for MockTokenCountingProvider {
         _tools: Vec<ToolDefinition>,
         _model: Option<&str>,
         _options: ChatOptions,
-    ) -> zeptoclaw::error::Result<LLMResponse> {
+    ) -> claide::error::Result<LLMResponse> {
         let count = self.call_count.fetch_add(1, Ordering::SeqCst);
         Ok(LLMResponse {
             content: format!("response {}", count),
             tool_calls: vec![],
-            usage: Some(zeptoclaw::providers::Usage {
+            usage: Some(claide::providers::Usage {
                 prompt_tokens: 500,
                 completion_tokens: 200,
                 total_tokens: 700,
@@ -223,11 +223,11 @@ impl LLMProvider for MockTokenCountingProvider {
 // ============================================================================
 
 fn is_live_enabled() -> bool {
-    std::env::var("ZEPTOCLAW_E2E_LIVE").is_ok()
+    std::env::var("CLAIDE_E2E_LIVE").is_ok()
 }
 
 fn is_docker_enabled() -> bool {
-    std::env::var("ZEPTOCLAW_E2E_DOCKER").is_ok()
+    std::env::var("CLAIDE_E2E_DOCKER").is_ok()
 }
 
 // ============================================================================
@@ -241,7 +241,7 @@ async fn test_agent_start_and_respond() {
     let config = Config::default();
     let session_manager = SessionManager::new_memory();
     let bus = Arc::new(MessageBus::new());
-    let agent = zeptoclaw::agent::AgentLoop::new(config, session_manager, bus.clone());
+    let agent = claide::agent::AgentLoop::new(config, session_manager, bus.clone());
 
     agent
         .set_provider(Box::new(MockStaticProvider::new("Hello from E2E!")))
@@ -263,7 +263,7 @@ async fn test_agent_with_echo_tool() {
     let config = Config::default();
     let session_manager = SessionManager::new_memory();
     let bus = Arc::new(MessageBus::new());
-    let agent = zeptoclaw::agent::AgentLoop::new(config, session_manager, bus.clone());
+    let agent = claide::agent::AgentLoop::new(config, session_manager, bus.clone());
 
     agent
         .set_provider(Box::new(MockToolCallingProvider::new()))
@@ -288,7 +288,7 @@ async fn test_agent_provider_failure() {
     let config = Config::default();
     let session_manager = SessionManager::new_memory();
     let bus = Arc::new(MessageBus::new());
-    let agent = zeptoclaw::agent::AgentLoop::new(config, session_manager, bus.clone());
+    let agent = claide::agent::AgentLoop::new(config, session_manager, bus.clone());
 
     agent.set_provider(Box::new(MockFailProvider)).await;
 
@@ -314,7 +314,7 @@ async fn test_agent_timeout_handling() {
 
     let session_manager = SessionManager::new_memory();
     let bus = Arc::new(MessageBus::new());
-    let agent = zeptoclaw::agent::AgentLoop::new(config, session_manager, bus.clone());
+    let agent = claide::agent::AgentLoop::new(config, session_manager, bus.clone());
 
     agent.set_provider(Box::new(MockSlowProvider)).await;
 
@@ -345,7 +345,7 @@ async fn test_agent_with_token_budget() {
 
     let session_manager = SessionManager::new_memory();
     let bus = Arc::new(MessageBus::new());
-    let agent = zeptoclaw::agent::AgentLoop::new(config, session_manager, bus.clone());
+    let agent = claide::agent::AgentLoop::new(config, session_manager, bus.clone());
 
     agent
         .set_provider(Box::new(MockTokenCountingProvider::new()))
@@ -408,7 +408,7 @@ fn test_gateway_config_validation() {
     assert_eq!(config.gateway.host, "0.0.0.0");
 
     // Container agent defaults should be valid
-    assert_eq!(config.container_agent.image, "zeptoclaw:latest");
+    assert_eq!(config.container_agent.image, "claide:latest");
     assert_eq!(config.container_agent.timeout_secs, 300);
     assert_eq!(config.container_agent.network, "none");
 }
@@ -419,7 +419,7 @@ fn test_gateway_config_validation() {
 #[tokio::test]
 async fn test_container_backend_resolution_docker() {
     let mut config = Config::default();
-    config.container_agent.backend = zeptoclaw::config::ContainerAgentBackend::Docker;
+    config.container_agent.backend = claide::config::ContainerAgentBackend::Docker;
 
     let result = resolve_backend(&config.container_agent).await;
     assert!(result.is_ok());
@@ -487,7 +487,7 @@ fn test_agent_request_validation_rejects_mismatch() {
         request_id: "e2e-req-002".to_string(),
         message: InboundMessage::new("test", "user", "chat-a", "Hello"),
         agent_config: Config::default().agents.defaults,
-        session: Some(zeptoclaw::session::Session::new("test:chat-b")),
+        session: Some(claide::session::Session::new("test:chat-b")),
     };
 
     let result = request.validate();
@@ -508,18 +508,18 @@ fn test_agent_request_validation_rejects_mismatch() {
 // ============================================================================
 
 /// Test that Docker is available on the host. This test only runs when
-/// `ZEPTOCLAW_E2E_DOCKER` is set.
+/// `CLAIDE_E2E_DOCKER` is set.
 #[tokio::test]
 async fn test_docker_availability() {
     if !is_docker_enabled() {
-        eprintln!("Skipping Docker availability test (ZEPTOCLAW_E2E_DOCKER not set)");
+        eprintln!("Skipping Docker availability test (CLAIDE_E2E_DOCKER not set)");
         return;
     }
 
-    let available = zeptoclaw::gateway::is_docker_available().await;
+    let available = claide::gateway::is_docker_available().await;
     assert!(
         available,
-        "Docker should be available when ZEPTOCLAW_E2E_DOCKER is set"
+        "Docker should be available when CLAIDE_E2E_DOCKER is set"
     );
 }
 
@@ -528,16 +528,16 @@ async fn test_docker_availability() {
 // ============================================================================
 
 /// Test a real agent run with a live LLM provider. This test only runs when
-/// `ZEPTOCLAW_E2E_LIVE` is set and `ZEPTOCLAW_PROVIDERS_ANTHROPIC_API_KEY`
+/// `CLAIDE_E2E_LIVE` is set and `CLAIDE_PROVIDERS_ANTHROPIC_API_KEY`
 /// is configured.
 #[tokio::test]
 async fn test_live_agent_run() {
     if !is_live_enabled() {
-        eprintln!("Skipping live agent test (ZEPTOCLAW_E2E_LIVE not set)");
+        eprintln!("Skipping live agent test (CLAIDE_E2E_LIVE not set)");
         return;
     }
 
-    let api_key = match std::env::var("ZEPTOCLAW_PROVIDERS_ANTHROPIC_API_KEY") {
+    let api_key = match std::env::var("CLAIDE_PROVIDERS_ANTHROPIC_API_KEY") {
         Ok(key) if !key.is_empty() => key,
         _ => {
             eprintln!("Skipping live agent test (no Anthropic API key)");
@@ -548,9 +548,9 @@ async fn test_live_agent_run() {
     let config = Config::default();
     let session_manager = SessionManager::new_memory();
     let bus = Arc::new(MessageBus::new());
-    let agent = zeptoclaw::agent::AgentLoop::new(config, session_manager, bus.clone());
+    let agent = claide::agent::AgentLoop::new(config, session_manager, bus.clone());
 
-    let provider = zeptoclaw::providers::ClaudeProvider::new(&api_key);
+    let provider = claide::providers::ClaudeProvider::new(&api_key);
     agent.set_provider(Box::new(provider)).await;
     agent.register_tool(Box::new(EchoTool)).await;
 

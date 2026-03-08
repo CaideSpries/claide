@@ -55,7 +55,7 @@ pub async fn create_runtime(config: &RuntimeConfig) -> RuntimeResult<Arc<dyn Con
         RuntimeType::AppleContainer => {
             if !config.apple.allow_experimental {
                 return Err(RuntimeError::NotAvailable(
-                    "Apple Container runtime is experimental. Set `allow_experimental: true` in runtime.apple config or ZEPTOCLAW_RUNTIME_APPLE_ALLOW_EXPERIMENTAL=true to enable.".to_string(),
+                    "Apple Container runtime is experimental. Set `allow_experimental: true` in runtime.apple config or CLAIDE_RUNTIME_APPLE_ALLOW_EXPERIMENTAL=true to enable.".to_string(),
                 ));
             }
             #[cfg(target_os = "macos")]

@@ -8,7 +8,7 @@
 
 ## Background
 
-ZeptoClaw currently has three shell execution runtimes: `Native`, `Docker`, and `AppleContainer`. The shell security layer uses a **blocklist** (`src/security/shell.rs`) which, by design, cannot be exhaustive. Container isolation (Docker/Apple) provides the primary sandbox boundary on those platforms.
+Claide currently has three shell execution runtimes: `Native`, `Docker`, and `AppleContainer`. The shell security layer uses a **blocklist** (`src/security/shell.rs`) which, by design, cannot be exhaustive. Container isolation (Docker/Apple) provides the primary sandbox boundary on those platforms.
 
 On Linux, three additional lightweight sandbox tools are available that complement or replace container-level isolation:
 
@@ -269,4 +269,4 @@ RuntimeType::Bubblewrap => { /* feature check, linux check, binary check, build 
 
 - Add three new `RuntimeType` variants to architecture section
 - Document new Cargo features
-- Add env vars: `ZEPTOCLAW_RUNTIME_TYPE=landlock|firejail|bubblewrap`
+- Add env vars: `CLAIDE_RUNTIME_TYPE=landlock|firejail|bubblewrap`

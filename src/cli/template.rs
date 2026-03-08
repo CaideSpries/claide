@@ -2,7 +2,7 @@
 
 use anyhow::Result;
 
-use zeptoclaw::config::templates::TemplateRegistry;
+use claide::config::templates::TemplateRegistry;
 
 use super::common::load_template_registry;
 use super::TemplateAction;

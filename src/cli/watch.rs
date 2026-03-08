@@ -50,7 +50,7 @@ fn url_hash(url: &str) -> u64 {
 /// Get path for storing last snapshot of a watched URL.
 fn snapshot_path(url: &str) -> PathBuf {
     let hash = format!("{:x}", url_hash(url));
-    zeptoclaw::config::Config::dir()
+    claide::config::Config::dir()
         .join("watch")
         .join(format!("{}.txt", hash))
 }
@@ -64,12 +64,12 @@ async fn validate_watch_url(url: &str) -> Result<Url> {
         other => bail!("Only http/https URLs are allowed, got: {}", other),
     }
 
-    if zeptoclaw::tools::is_blocked_host(&parsed) {
+    if claide::tools::is_blocked_host(&parsed) {
         bail!("Blocked URL host (local or private network): {}", url);
     }
 
     // DNS-based SSRF check
-    zeptoclaw::tools::resolve_and_check_host(&parsed)
+    claide::tools::resolve_and_check_host(&parsed)
         .await
         .map_err(|e| anyhow::anyhow!("SSRF check failed for {}: {}", url, e))?;
 
@@ -109,7 +109,7 @@ pub(crate) async fn cmd_watch(url: String, interval: String, notify: Option<Stri
     println!();
 
     // Create watch directory
-    let watch_dir = zeptoclaw::config::Config::dir().join("watch");
+    let watch_dir = claide::config::Config::dir().join("watch");
     std::fs::create_dir_all(&watch_dir)
         .with_context(|| format!("Failed to create watch directory: {:?}", watch_dir))?;
 
@@ -126,7 +126,7 @@ pub(crate) async fn cmd_watch(url: String, interval: String, notify: Option<Stri
         match client.get(&url).send().await {
             Ok(resp) => {
                 // Post-redirect SSRF check
-                if zeptoclaw::tools::is_blocked_host(resp.url()) {
+                if claide::tools::is_blocked_host(resp.url()) {
                     eprintln!(
                         "[{}] Blocked: redirect to local/private host {}",
                         chrono::Local::now().format("%H:%M"),

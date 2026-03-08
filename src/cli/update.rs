@@ -1,6 +1,6 @@
 //! Self-update command.
 //!
-//! Downloads the latest ZeptoClaw binary from GitHub Releases,
+//! Downloads the latest Claide binary from GitHub Releases,
 //! verifies its SHA256 checksum, and atomically replaces the
 //! running executable.
 
@@ -31,7 +31,7 @@ struct GitHubAsset {
 
 /// Asset name that matches CI output for this platform.
 ///
-/// CI produces: `zeptoclaw-{os}-{arch}` where os = macos|linux,
+/// CI produces: `claide-{os}-{arch}` where os = macos|linux,
 /// arch = aarch64|x86_64.
 fn platform_asset_name() -> Result<&'static str> {
     // OS
@@ -54,7 +54,7 @@ fn platform_asset_name() -> Result<&'static str> {
 
     // Leak a formatted string into a &'static str. This only runs once per
     // invocation so the tiny allocation is fine.
-    let name: &'static str = Box::leak(format!("zeptoclaw-{os}-{arch}").into_boxed_str());
+    let name: &'static str = Box::leak(format!("claide-{os}-{arch}").into_boxed_str());
     Ok(name)
 }
 
@@ -70,15 +70,15 @@ async fn fetch_release(version: Option<&str>) -> Result<GitHubRelease> {
             } else {
                 format!("v{v}")
             };
-            format!("https://api.github.com/repos/qhkm/zeptoclaw/releases/tags/{tag}")
+            format!("https://api.github.com/repos/qhkm/claide/releases/tags/{tag}")
         }
-        None => "https://api.github.com/repos/qhkm/zeptoclaw/releases/latest".to_string(),
+        None => "https://api.github.com/repos/qhkm/claide/releases/latest".to_string(),
     };
 
     let client = reqwest::Client::new();
     let resp = client
         .get(&url)
-        .header("User-Agent", "zeptoclaw-self-update")
+        .header("User-Agent", "claide-self-update")
         .header("Accept", "application/vnd.github+json")
         .send()
         .await
@@ -132,7 +132,7 @@ async fn download_and_verify(asset_url: &str, checksum_url: &str, dest: &Path) -
     println!("  Downloading binary...");
     let binary_bytes = client
         .get(asset_url)
-        .header("User-Agent", "zeptoclaw-self-update")
+        .header("User-Agent", "claide-self-update")
         .send()
         .await
         .context("failed to download binary")?
@@ -144,7 +144,7 @@ async fn download_and_verify(asset_url: &str, checksum_url: &str, dest: &Path) -
     println!("  Downloading checksum...");
     let checksum_text = client
         .get(checksum_url)
-        .header("User-Agent", "zeptoclaw-self-update")
+        .header("User-Agent", "claide-self-update")
         .send()
         .await
         .context("failed to download checksum")?
@@ -356,7 +356,7 @@ mod tests {
     #[test]
     fn test_platform_asset_name_valid() {
         let name = platform_asset_name().unwrap();
-        assert!(name.starts_with("zeptoclaw-"));
+        assert!(name.starts_with("claide-"));
 
         // Should contain a known OS
         assert!(name.contains("macos") || name.contains("linux"));

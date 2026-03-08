@@ -1,4 +1,4 @@
-//! MCP Server — exposes ZeptoClaw tools to MCP-capable clients.
+//! MCP Server — exposes Claide tools to MCP-capable clients.
 //!
 //! Supports two transports:
 //! - **Stdio** (default): line-delimited JSON-RPC 2.0 over stdin/stdout

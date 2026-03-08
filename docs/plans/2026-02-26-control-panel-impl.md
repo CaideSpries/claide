@@ -1,8 +1,8 @@
-# ZeptoClaw Control Panel — Implementation Plan
+# Claide Control Panel — Implementation Plan
 
 > **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.
 
-**Goal:** Add an axum-based API server and React dashboard to ZeptoClaw as a monorepo workspace, started via `zeptoclaw panel`.
+**Goal:** Add an axum-based API server and React dashboard to Claide as a monorepo workspace, started via `claide panel`.
 
 **Architecture:** axum serves REST + WebSocket on `:9091` and static files from `panel/dist/` on `:9092`. A `tokio::broadcast` event bus bridges agent loop events to WebSocket clients. The React frontend (Vite + Tailwind) consumes both REST and WebSocket. New `TaskTool` gives the agent kanban board access.
 
@@ -139,16 +139,16 @@ pub panel: crate::api::config::PanelConfig,
 
 In `src/config/mod.rs` `apply_env_overrides()`, add:
 ```rust
-if let Ok(val) = std::env::var("ZEPTOCLAW_PANEL_ENABLED") {
+if let Ok(val) = std::env::var("CLAIDE_PANEL_ENABLED") {
     self.panel.enabled = val.to_lowercase() == "true";
 }
-if let Ok(val) = std::env::var("ZEPTOCLAW_PANEL_PORT") {
+if let Ok(val) = std::env::var("CLAIDE_PANEL_PORT") {
     if let Ok(v) = val.parse() { self.panel.port = v; }
 }
-if let Ok(val) = std::env::var("ZEPTOCLAW_PANEL_API_PORT") {
+if let Ok(val) = std::env::var("CLAIDE_PANEL_API_PORT") {
     if let Ok(v) = val.parse() { self.panel.api_port = v; }
 }
-if let Ok(val) = std::env::var("ZEPTOCLAW_PANEL_BIND") {
+if let Ok(val) = std::env::var("CLAIDE_PANEL_BIND") {
     self.panel.bind = val;
 }
 ```
@@ -466,7 +466,7 @@ Run: `cargo test --lib api::server`
 
 `src/api/server.rs`:
 ```rust
-//! Axum API server for ZeptoClaw Panel.
+//! Axum API server for Claide Panel.
 
 use crate::api::config::PanelConfig;
 use crate::api::events::EventBus;
@@ -738,7 +738,7 @@ mod tests {
 **Step 2: Implement TaskStore + KanbanTask model**
 
 ```rust
-//! Kanban task model — persisted at ~/.zeptoclaw/tasks.json
+//! Kanban task model — persisted at ~/.claide/tasks.json
 
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -851,7 +851,7 @@ mod tests {
 **Step 2: Implement panel command**
 
 ```rust
-//! `zeptoclaw panel` command — install, start, auth management.
+//! `claide panel` command — install, start, auth management.
 
 use crate::api::auth::generate_api_token;
 use crate::api::config::PanelConfig;
@@ -943,7 +943,7 @@ Run: `cargo test --lib cli::panel`
 **Step 5: Commit**
 
 ```bash
-git commit -m "feat(panel): CLI 'zeptoclaw panel' command with install/start/auth/uninstall"
+git commit -m "feat(panel): CLI 'claide panel' command with install/start/auth/uninstall"
 ```
 
 ---
@@ -1010,7 +1010,7 @@ git commit -m "feat(panel): emit PanelEvents from agent loop tool execution"
 **Step 1: Initialize project**
 
 ```bash
-cd /Users/dr.noranizaahmad/ios/zeptoclaw
+cd /Users/dr.noranizaahmad/ios/claide
 pnpm create vite panel --template react-ts
 cd panel
 pnpm install
@@ -1221,7 +1221,7 @@ Implement:
 - Auth middleware in axum: check `Authorization: Bearer` header on all `/api/*` routes
 - Login page (only shown in `password` mode)
 - `useAuth()` hook: stores JWT in memory (not localStorage), refreshes on expiry
-- Token mode: read from `~/.zeptoclaw/panel.token`, inject via initial handshake
+- Token mode: read from `~/.claide/panel.token`, inject via initial handshake
 - Protected route wrapper in App.tsx
 
 **Commit:**
@@ -1267,8 +1267,8 @@ Implement `cmd_install()`:
 7. Print success
 
 Implement `cmd_install()` with `--download`:
-1. Fetch `https://github.com/qhkm/zeptoclaw/releases/download/v{version}/panel-dist.tar.gz`
-2. Extract to `~/.zeptoclaw/panel/dist/`
+1. Fetch `https://github.com/qhkm/claide/releases/download/v{version}/panel-dist.tar.gz`
+2. Extract to `~/.claide/panel/dist/`
 3. `ensure_api_token()`
 
 **Commit:**
@@ -1288,7 +1288,7 @@ git commit -m "feat(panel): implement 'panel install' — build from source and 
 - Modify: `src/api/routes/channels.rs` (read from ChannelManager/HealthRegistry)
 - Modify: `src/api/routes/metrics.rs` (read from MetricsCollector + CostTracker)
 
-This task replaces the stub responses with real data from ZeptoClaw's existing stores.
+This task replaces the stub responses with real data from Claide's existing stores.
 
 **AppState additions:**
 ```rust
@@ -1319,12 +1319,12 @@ git commit -m "feat(panel): wire real data stores into API routes"
 - Modify: `AGENTS.md` (if exists, add panel module docs)
 
 Add:
-- `zeptoclaw panel` commands to Quick Reference
+- `claide panel` commands to Quick Reference
 - `src/api/` to Architecture section
 - `panel/` to project structure
 - New dependencies to Dependencies section
 - `panel` config to Configuration section
-- New env vars: `ZEPTOCLAW_PANEL_*`
+- New env vars: `CLAIDE_PANEL_*`
 
 **Commit:**
 ```bash

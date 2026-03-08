@@ -30,8 +30,8 @@ use crate::session::{ContentPart, Message, Role};
 ///
 /// # Examples
 /// ```
-/// use zeptoclaw::session::Message;
-/// use zeptoclaw::agent::compaction::truncate_messages;
+/// use claide::session::Message;
+/// use claide::agent::compaction::truncate_messages;
 ///
 /// let msgs = vec![
 ///     Message::system("You are helpful."),
@@ -100,8 +100,8 @@ pub fn truncate_messages(messages: Vec<Message>, keep_recent: usize) -> Vec<Mess
 ///
 /// # Examples
 /// ```
-/// use zeptoclaw::session::Message;
-/// use zeptoclaw::agent::compaction::summarize_messages;
+/// use claide::session::Message;
+/// use claide::agent::compaction::summarize_messages;
 ///
 /// let msgs = vec![
 ///     Message::system("You are helpful."),
@@ -179,8 +179,8 @@ pub fn summarize_messages(
 ///
 /// # Examples
 /// ```
-/// use zeptoclaw::session::Message;
-/// use zeptoclaw::agent::compaction::shrink_tool_results;
+/// use claide::session::Message;
+/// use claide::agent::compaction::shrink_tool_results;
 ///
 /// let msgs = vec![
 ///     Message::user("Hi"),
@@ -234,8 +234,8 @@ pub fn shrink_tool_results(
 ///
 /// # Examples
 /// ```
-/// use zeptoclaw::session::Message;
-/// use zeptoclaw::agent::compaction::shrink_tool_results_progressive;
+/// use claide::session::Message;
+/// use claide::agent::compaction::shrink_tool_results_progressive;
 ///
 /// let msgs = vec![
 ///     Message::tool_result("call_1", "old result that is quite long"),
@@ -310,8 +310,8 @@ pub fn shrink_tool_results_progressive(
 ///
 /// # Examples
 /// ```
-/// use zeptoclaw::session::Message;
-/// use zeptoclaw::agent::compaction::try_recover_context;
+/// use claide::session::Message;
+/// use claide::agent::compaction::try_recover_context;
 ///
 /// let msgs = vec![Message::user("Hello"), Message::assistant("Hi!")];
 /// let (result, tier) = try_recover_context(msgs, 100_000, 8, 5120);
@@ -407,8 +407,8 @@ pub fn try_recover_context_with_urgency(
 ///
 /// # Examples
 /// ```
-/// use zeptoclaw::session::Message;
-/// use zeptoclaw::agent::compaction::build_summary_prompt;
+/// use claide::session::Message;
+/// use claide::agent::compaction::build_summary_prompt;
 ///
 /// let msgs = vec![
 ///     Message::user("Hello"),

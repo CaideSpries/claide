@@ -1,6 +1,6 @@
 // Base API client — reads panel_token from localStorage and injects Bearer auth.
 // API_BASE is empty so requests hit the same origin; the dev proxy in vite.config.ts
-// forwards /api/* and /ws/* to the ZeptoClaw health server.
+// forwards /api/* and /ws/* to the Claide health server.
 //
 // Mutating requests (POST/PUT/DELETE/PATCH) automatically fetch and attach a CSRF
 // token via the X-CSRF-Token header.  On a 403 response the token is cleared and

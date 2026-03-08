@@ -1,7 +1,7 @@
 ---
 name: github
 description: Interact with GitHub using the gh CLI for pull requests, issues, and runs.
-metadata: {"zeptoclaw":{"emoji":"🐙","requires":{"bins":["gh"]}}}
+metadata: {"claide":{"emoji":"🐙","requires":{"bins":["gh"]}}}
 ---
 
 # GitHub Skill

@@ -5,7 +5,7 @@ Project-level guidance for coding agents working in this repository.
 ## Project Snapshot
 
 - Language: Rust (edition 2021)
-- Core binary: `zeptoclaw` (`src/main.rs` thin entrypoint; CLI handlers in `src/cli/`)
+- Core binary: `claide` (`src/main.rs` thin entrypoint; CLI handlers in `src/cli/`)
 - Extra binary: `benchmark` (`src/bin/benchmark.rs`)
 - Benchmarks: `benches/message_bus.rs`
 - Integration tests: `tests/integration.rs`
@@ -13,11 +13,11 @@ Project-level guidance for coding agents working in this repository.
 - Channels: 9 (Telegram, Slack, Discord, WhatsApp, WhatsApp Cloud, Lark, Email, Webhook, Serial)
 - Runtimes: 6 (Native, Docker, Apple Container, Landlock, Firejail, Bubblewrap)
 - Peripherals: 4 boards (ESP32, RPi, Arduino, Nucleo) with GPIO, I2C, NVS, Serial
-- Skills: OpenClaw-compatible (reads `metadata.zeptoclaw` > `metadata.openclaw` > raw)
+- Skills: OpenClaw-compatible (reads `metadata.claide` > `metadata.openclaw` > raw)
 - Plugins: Command-mode (shell template) + Binary-mode (JSON-RPC 2.0 stdin/stdout)
 - Library facade: `ZeptoAgent::builder()` for embedding as a crate (Tauri, GUI apps)
 - Runtime provider resolution: builds chain in registry order only when `providers.fallback.enabled`; honors `providers.fallback.provider`; can wrap chain with `RetryProvider` via `providers.retry.*`
-- Provider introspection CLI: `zeptoclaw provider status` prints resolved providers, wrapper config (retry/fallback), and quota usage snapshot
+- Provider introspection CLI: `claide provider status` prints resolved providers, wrapper config (retry/fallback), and quota usage snapshot
 - Channel dispatch: avoids holding the channels map `RwLock` across async `send()` awaits
 - Channel supervisor: polling (15s) detects dead channels, restarts with 60s cooldown, max 5 restarts
 - Channel panic isolation: Slack/Discord/Webhook/WhatsApp/WhatsApp Cloud/Lark/Email/MQTT/Serial spawned tasks are wrapped with `catch_unwind` and panic logging
@@ -44,7 +44,7 @@ Project-level guidance for coding agents working in this repository.
 
 **Every session MUST track work via GitHub Issues.**
 
-1. **Start of session** — Run `gh issue list --repo qhkm/zeptoclaw --state open --limit 20` and present open issues
+1. **Start of session** — Run `gh issue list --repo qhkm/claide --state open --limit 20` and present open issues
 2. **New work** — If no issue exists for the requested work, create one with `gh issue create` before writing code. Use labels: type (`bug`/`feat`/`rfc`/`chore`/`docs`), area (`area:tools`/`area:channels`/etc.), priority (`P1`/`P2`/`P3`)
 3. **End of work** — Create PR with `Closes #N` in body, or `gh issue close N` for direct commits
 4. **NEVER merge PRs** — Only the user merges PRs. After creating a PR, wait for CI, present the URL to the user, and only merge after explicit user approval

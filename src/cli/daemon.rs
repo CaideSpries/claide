@@ -9,7 +9,7 @@ use anyhow::Result;
 use serde::{Deserialize, Serialize};
 use tracing::{error, info, warn};
 
-use zeptoclaw::config::Config;
+use claide::config::Config;
 
 pub const INITIAL_BACKOFF_MS: u64 = 1_000;
 pub const MAX_BACKOFF_MS: u64 = 300_000; // 5 minutes
@@ -63,9 +63,9 @@ pub fn remove_state() {
     let _ = std::fs::remove_file(daemon_state_path());
 }
 
-/// CLI entry point for `zeptoclaw daemon`.
+/// CLI entry point for `claide daemon`.
 pub(crate) async fn cmd_daemon() -> Result<()> {
-    println!("Starting ZeptoClaw Daemon...");
+    println!("Starting Claide Daemon...");
 
     let config = Config::load()?;
 

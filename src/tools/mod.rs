@@ -34,9 +34,9 @@
 //! # Example
 //!
 //! ```rust
-//! use zeptoclaw::tools::{Tool, ToolContext, ToolOutput, ToolRegistry, EchoTool};
-//! use zeptoclaw::tools::filesystem::ReadFileTool;
-//! use zeptoclaw::tools::shell::ShellTool;
+//! use claide::tools::{Tool, ToolContext, ToolOutput, ToolRegistry, EchoTool};
+//! use claide::tools::filesystem::ReadFileTool;
+//! use claide::tools::shell::ShellTool;
 //! use serde_json::json;
 //!
 //! # tokio_test::block_on(async {
@@ -145,7 +145,7 @@ use crate::error::Result;
 /// # Example
 ///
 /// ```rust
-/// use zeptoclaw::tools::{Tool, ToolContext, ToolOutput, EchoTool};
+/// use claide::tools::{Tool, ToolContext, ToolOutput, EchoTool};
 /// use serde_json::json;
 ///
 /// # tokio_test::block_on(async {

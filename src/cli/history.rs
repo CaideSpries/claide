@@ -2,7 +2,7 @@
 
 use anyhow::{Context, Result};
 
-use zeptoclaw::session::{ConversationHistory, Role, SessionManager};
+use claide::session::{ConversationHistory, Role, SessionManager};
 
 use super::HistoryAction;
 

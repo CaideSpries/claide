@@ -1,0 +1,4 @@
+# Newsletter senders — one domain per line
+# Used by check-email skill to filter newsletters from inbox
+slidebean.com
+theopenletter.io
