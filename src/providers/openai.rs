@@ -146,6 +146,9 @@ struct OpenAIToolCallRequest {
     r#type: String,
     /// Function details
     function: OpenAIFunctionCall,
+    /// Gemini 3.x thought signature (echoed back for multi-turn tool calling)
+    #[serde(skip_serializing_if = "Option::is_none")]
+    thought_signature: Option<String>,
 }
 
 /// Function call details.
@@ -213,6 +216,9 @@ struct OpenAIToolCallResponse {
     id: String,
     /// Function details
     function: OpenAIFunctionCall,
+    /// Gemini 3.x thought signature (must be echoed back for multi-turn tool calling)
+    #[serde(default)]
+    thought_signature: Option<String>,
 }
 
 /// OpenAI token usage.
@@ -265,6 +271,9 @@ struct OpenAIStreamToolCallDelta {
     /// Function details
     #[serde(default)]
     function: Option<OpenAIStreamFunctionDelta>,
+    /// Gemini 3.x thought signature (usually first chunk only)
+    #[serde(default)]
+    thought_signature: Option<String>,
 }
 
 /// Streamed function call fragment.
@@ -296,6 +305,7 @@ struct PendingToolCall {
     id: String,
     name: String,
     arguments: String,
+    thought_signature: Option<String>,
 }
 
 /// Which token limit field to send to OpenAI.
@@ -537,6 +547,7 @@ fn convert_messages(messages: Vec<Message>) -> Vec<OpenAIMessage> {
                             name: tc.name,
                             arguments: tc.arguments,
                         },
+                        thought_signature: tc.thought_signature,
                     })
                     .collect()
             });
@@ -615,7 +626,12 @@ fn convert_response(response: OpenAIResponse) -> LLMResponse {
                 .map(|tcs| {
                     tcs.into_iter()
                         .map(|tc| {
-                            LLMToolCall::new(&tc.id, &tc.function.name, &tc.function.arguments)
+                            LLMToolCall::with_thought_signature(
+                                &tc.id,
+                                &tc.function.name,
+                                &tc.function.arguments,
+                                tc.thought_signature,
+                            )
                         })
                         .collect()
                 })
@@ -701,6 +717,9 @@ fn apply_stream_chunk(
                 if let Some(id) = tool_delta.id {
                     pending.id = id;
                 }
+                if let Some(sig) = tool_delta.thought_signature {
+                    pending.thought_signature = Some(sig);
+                }
 
                 if let Some(function) = tool_delta.function {
                     if let Some(name) = function.name {
@@ -724,10 +743,11 @@ fn finalize_tool_calls(pending_tool_calls: Vec<PendingToolCall>) -> Vec<LLMToolC
             if pending.id.is_empty() || pending.name.is_empty() {
                 None
             } else {
-                Some(LLMToolCall::new(
+                Some(LLMToolCall::with_thought_signature(
                     &pending.id,
                     &pending.name,
                     &pending.arguments,
+                    pending.thought_signature,
                 ))
             }
         })

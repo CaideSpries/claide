@@ -359,6 +359,9 @@ pub struct LLMToolCall {
     pub name: String,
     /// JSON-encoded arguments for the tool
     pub arguments: String,
+    /// Opaque provider signature (Gemini 3.x thought_signature).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub thought_signature: Option<String>,
 }
 
 impl LLMToolCall {
@@ -381,6 +384,22 @@ impl LLMToolCall {
             id: id.to_string(),
             name: name.to_string(),
             arguments: arguments.to_string(),
+            thought_signature: None,
+        }
+    }
+
+    /// Create a new tool call with a provider thought signature.
+    pub fn with_thought_signature(
+        id: &str,
+        name: &str,
+        arguments: &str,
+        thought_signature: Option<String>,
+    ) -> Self {
+        Self {
+            id: id.to_string(),
+            name: name.to_string(),
+            arguments: arguments.to_string(),
+            thought_signature,
         }
     }
 

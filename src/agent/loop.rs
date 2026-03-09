@@ -1050,6 +1050,7 @@ impl AgentLoop {
                         id: tc.id.clone(),
                         name: tc.name.clone(),
                         arguments: tc.arguments.clone(),
+                        thought_signature: tc.thought_signature.clone(),
                     })
                     .collect(),
             );
@@ -1561,6 +1562,7 @@ impl AgentLoop {
                         id: tc.id.clone(),
                         name: tc.name.clone(),
                         arguments: tc.arguments.clone(),
+                        thought_signature: tc.thought_signature.clone(),
                     })
                     .collect(),
             );
@@ -3194,6 +3196,7 @@ mod tests {
             id: format!("call_{name}"),
             name: name.to_string(),
             arguments: "{}".to_string(),
+            thought_signature: None,
         }
     }
 
