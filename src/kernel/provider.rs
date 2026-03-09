@@ -38,7 +38,7 @@ pub async fn build_provider_chain(
 /// Moved from `cli/common.rs:139–199`.
 pub fn provider_from_runtime_selection(
     selection: &RuntimeProviderSelection,
-    configured_model: &str,
+    _configured_model: &str,
 ) -> Option<Box<dyn LLMProvider>> {
     match selection.backend {
         "anthropic" => {
