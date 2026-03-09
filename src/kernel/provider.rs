@@ -12,7 +12,7 @@ use crate::auth::{self, AuthMethod};
 use crate::config::Config;
 use crate::providers::{
     provider_config_by_name, resolve_runtime_providers, ClaudeProvider, FallbackProvider,
-    GeminiProvider, LLMProvider, OpenAIProvider, RetryProvider, RuntimeProviderSelection,
+    LLMProvider, OpenAIProvider, RetryProvider, RuntimeProviderSelection,
 };
 
 /// Build the complete provider chain from config.
@@ -52,28 +52,9 @@ pub fn provider_from_runtime_selection(
             }
         }
         "openai" => {
-            // Route ALL Gemini selections through the native GeminiProvider, which
-            // speaks the Gemini REST API directly and applies thinking-model filtering
-            // (extract_text skips parts tagged `thought: true`).  This applies to
-            // both OAuth bearer tokens (from Gemini CLI) and plain API keys.
-            if selection.name == "gemini" {
-                // Use the user-configured model, falling back to the built-in default.
-                // from_config handles the full auth priority chain:
-                //   config key → GEMINI_API_KEY → GOOGLE_API_KEY → Gemini CLI OAuth
-                let model = if configured_model.is_empty() {
-                    GeminiProvider::default_gemini_model()
-                } else {
-                    configured_model
-                };
-                let api_key = if selection.credential.is_bearer() {
-                    None
-                } else {
-                    Some(selection.api_key.as_str())
-                };
-                let prefer_oauth = selection.credential.is_bearer();
-                return GeminiProvider::from_config(api_key, model, prefer_oauth)
-                    .map(|p| Box::new(p) as Box<dyn LLMProvider>);
-            }
+            // All OpenAI-compatible providers (including Gemini) go through OpenAIProvider.
+            // This ensures tool/function definitions are sent in the API request.
+            // Gemini's OpenAI-compatible endpoint at /v1beta/openai supports function calling.
             let api_base = match selection.api_base.as_deref() {
                 Some(base) => base,
                 None if selection.name == "openai" => "https://api.openai.com/v1",
