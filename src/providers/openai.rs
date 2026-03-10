@@ -547,7 +547,13 @@ fn convert_messages(messages: Vec<Message>) -> Vec<OpenAIMessage> {
                             name: tc.name,
                             arguments: tc.arguments,
                         },
-                        thought_signature: tc.thought_signature,
+                        // Gemini 3.x requires thought_signature on tool calls but the
+                        // OpenAI-compatible endpoint may not return it.  Use the
+                        // documented sentinel to bypass the validator when missing.
+                        thought_signature: Some(
+                            tc.thought_signature
+                                .unwrap_or_else(|| "skip_thought_signature_validator".to_string()),
+                        ),
                     })
                     .collect()
             });
