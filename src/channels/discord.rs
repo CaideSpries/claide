@@ -1114,7 +1114,8 @@ impl DiscordChannel {
                                                                                             if let Ok(bytes) = resp.bytes().await {
                                                                                                 let mut media = MediaAttachment::new(mt)
                                                                                                     .with_data(bytes.to_vec())
-                                                                                                    .with_mime_type(ct);
+                                                                                                    .with_mime_type(ct)
+                                                                                                    .with_url(&att.url);
                                                                                                 if let Some(ref name) = att.filename {
                                                                                                     media = media.with_filename(name);
                                                                                                 }

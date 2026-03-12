@@ -223,6 +223,14 @@ async fn inbound_to_message(
         extra_context.push_str(&format!("[Document attached: {} ({})]\n", fname, mime));
     }
 
+    // Note image attachment URLs so skills can download them.
+    for attachment in msg.media.iter().filter(|m| matches!(m.media_type, crate::bus::MediaType::Image)) {
+        let fname = attachment.filename.as_deref().unwrap_or("image");
+        if let Some(ref url) = attachment.url {
+            extra_context.push_str(&format!("[Image attached: {} — URL: {}]\n", fname, url));
+        }
+    }
+
     // Build the effective message content with any transcription/document prefixes.
     let effective_content = if extra_context.is_empty() {
         msg.content.clone()
